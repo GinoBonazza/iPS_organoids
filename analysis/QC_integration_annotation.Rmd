@@ -158,7 +158,7 @@ QC_pre_Doublets <- p1 + p2 + plot_layout(ncol = 2)
 QC_pre_Doublets
 ```
 
-```{r}
+```{r eval=FALSE}
 saveRDS(iPS_preQC, 
         here::here(output_dir_data, "iPS_preQC.rds"))
 ```
@@ -242,36 +242,29 @@ QC_post_VlnPlots_zoom <- p1 + p2 + p3 + p4 + plot_layout(ncol = 2)
 QC_post_VlnPlots_zoom
 ```
 
-```{r}
-saveRDS(iPS, 
-        here::here(output_dir_data, "iPS.rds"))
-```
-
 
 ## Integration and clustering
 
 Normalization and scaling using SCTransform.
 
-```{r}
+```{r eval=FALSE}
 DefaultAssay(iPS) <- "RNA"
 iPS.list <- SplitObject(iPS, split.by = "Sample")
 for (i in 1:length(iPS.list)) {
   iPS.list[[i]] <- SCTransform(iPS.list[[i]], vst.flavor = "v2", vars.to.regress = c("percent.mt", "percent.rp"))
 }
-
-features <- SelectIntegrationFeatures(object.list = iPS.list, nfeatures = 2000)
 ```
 
 PCA without integration
 
-```{r Elbow_not_integrated, fig.width=4, fig.height=4}
+```{r, eval=FALSE}
+features <- SelectIntegrationFeatures(object.list = iPS.list, nfeatures = 2000)
 iPS_not_integrated <- Merge_Seurat_List(iPS.list)
 VariableFeatures(iPS_not_integrated) <- features
 iPS_not_integrated <- RunPCA(iPS_not_integrated)
-ElbowPlot(iPS_not_integrated, ndims = 50)
 ```
 
-```{r eval=FALSE, include=FALSE}
+```{r eval=FALSE}
 saveRDS(iPS_not_integrated, 
         here::here(output_dir_data, "iPS_not_integrated.rds"))
 ```
@@ -280,12 +273,20 @@ saveRDS(iPS_not_integrated,
 iPS_not_integrated <- readRDS(here::here(output_dir_data, "iPS_not_integrated.rds"))
 ```
 
+
+```{r Elbow_not_integrated, fig.width=4, fig.height=4}
+ElbowPlot(iPS_not_integrated, ndims = 50)
+```
+
 Clustering without integration
 
-```{r Clustree_not_integrated, fig.width=6, fig.height=9}
+```{r eval=FALSE}
 iPS_not_integrated <- RunUMAP(iPS_not_integrated, dims = 1:40)
 iPS_not_integrated <- FindNeighbors(iPS_not_integrated, dims = 1:40)
 iPS_not_integrated <- FindClusters(iPS_not_integrated, resolution = seq(0.1, 0.8, by=0.1))
+```
+
+```{r Clustree_not_integrated, fig.width=6, fig.height=9}
 clustree::clustree(iPS_not_integrated@meta.data[,grep("SCT_snn_res", colnames(iPS_not_integrated@meta.data))],
                    prefix = "SCT_snn_res.")
 ```
@@ -295,9 +296,14 @@ DimPlot(iPS_not_integrated, reduction = "umap", shuffle = T,
         group.by = c("SCT_snn_res.0.3", "Sample", "Condition", "Cell_line"), ncol = 2)
 ```
 
+```{r eval=FALSE}
+saveRDS(iPS_not_integrated, 
+        here::here(output_dir_data, "iPS_not_integrated.rds"))
+```
+
 Integrate the samples
 
-```{r}
+```{r eval=FALSE}
 iPS.list <- PrepSCTIntegration(object.list = iPS.list, anchor.features = features)
 iPS.anchors <- FindIntegrationAnchors(object.list = iPS.list, normalization.method = "SCT",
                                       anchor.features = features)
@@ -306,9 +312,8 @@ iPS_integrated <- IntegrateData(anchorset = iPS.anchors, normalization.method = 
 
 PCA after integration
 
-```{r Elbow_integrated_low_quality, fig.width=4, fig.height=4}
+```{r eval=FALSE}
 iPS_integrated <- RunPCA(iPS_integrated)
-ElbowPlot(iPS_integrated, ndims = 50)
 ```
 
 ```{r, eval=FALSE}
@@ -320,13 +325,20 @@ saveRDS(iPS_integrated,
 iPS_integrated <- readRDS(here::here(output_dir_data, "iPS_integrated_low_quality.rds"))
 ```
 
+```{r Elbow_integrated_low_quality, fig.width=4, fig.height=4}
+ElbowPlot(iPS_integrated, ndims = 50)
+```
+
 Clustering after integration
 
-```{r Clustree_integrated_low_quality, fig.width=6, fig.height=9}
+```{r eval=FALSE}
 DefaultAssay(iPS_integrated) <- "integrated"
 iPS_integrated <- RunUMAP(iPS_integrated, dims = 1:30, reduction = "pca")
 iPS_integrated <- FindNeighbors(iPS_integrated, dims = 1:30, reduction = "pca")
 iPS_integrated <- FindClusters(iPS_integrated, resolution = seq(0.1, 0.8, by=0.1))
+```
+
+```{r Clustree_integrated_low_quality, fig.width=6, fig.height=9}
 clustree::clustree(iPS_integrated@meta.data[,grep("integrated_snn_res", colnames(iPS_integrated@meta.data))],
                    prefix = "integrated_snn_res.")
 ```
@@ -334,6 +346,11 @@ clustree::clustree(iPS_integrated@meta.data[,grep("integrated_snn_res", colnames
 ```{r UMAPs_integrated_low_quality, fig.width=12, fig.height=10}
 DimPlot(iPS_integrated, reduction = "umap", shuffle = T,
         group.by = c("integrated_snn_res.0.2", "Sample", "Condition", "Cell_line"), ncol = 2)
+```
+
+```{r, eval=FALSE}
+saveRDS(iPS_integrated, 
+        here::here(output_dir_data, "iPS_integrated_low_quality.rds"))
 ```
 
 Find the markers that characterize each cell population
@@ -373,20 +390,17 @@ VlnPlot(iPS_integrated, features = c("nCount_RNA", "nFeature_RNA", "percent.mt",
 
 Remove low quality cells (clusters with low number of features)
 ```{r}
-saveRDS(iPS_integrated, 
-        here::here(output_dir_data, "iPS_integrated_low_quality.rds"))
 iPS_integrated <- subset(iPS_integrated, subset = integrated_snn_res.0.2 != "3" & integrated_snn_res.0.2 != "5")
 ```
 
 Recluster
 
-```{r Elbow_integrated, fig.width=4, fig.height=4}
+```{r eval=FALSE}
 DefaultAssay(iPS_integrated) <- "integrated"
 iPS_integrated <- RunPCA(iPS_integrated)
-ElbowPlot(iPS_integrated, ndims = 50)
 ```
 
-```{r, eval=FALSE}
+```{r eval=FALSE}
 saveRDS(iPS_integrated, 
         here::here(output_dir_data, "iPS_integrated.rds"))
 ```
@@ -395,11 +409,18 @@ saveRDS(iPS_integrated,
 iPS_integrated <- readRDS(here::here(output_dir_data, "iPS_integrated.rds"))
 ```
 
-```{r Clustree_integrated, fig.width=6, fig.height=9}
+```{r Elbow_integrated, fig.width=4, fig.height=4}
+ElbowPlot(iPS_integrated, ndims = 50)
+```
+
+```{r eval=FALSE}
 DefaultAssay(iPS_integrated) <- "integrated"
 iPS_integrated <- RunUMAP(iPS_integrated, dims = 1:30, reduction = "pca")
 iPS_integrated <- FindNeighbors(iPS_integrated, dims = 1:30, reduction = "pca")
 iPS_integrated <- FindClusters(iPS_integrated, resolution = seq(0.1, 0.8, by=0.1))
+```
+
+```{r Clustree_integrated, fig.width=6, fig.height=9}
 clustree::clustree(iPS_integrated@meta.data[,grep("integrated_snn_res", colnames(iPS_integrated@meta.data))],
                    prefix = "integrated_snn_res.")
 ```
@@ -439,8 +460,8 @@ DimPlot(iPS_integrated, reduction = "umap", shuffle = T,
 Annotate the clusters based on the characteristic markers
 
 ```{r}
-iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("0"), "cell_type"] = "Ventricular Cardiomyocytes"
-iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("1"), "cell_type"] = "Atrial Cardiomyocytes"
+iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("0"), "cell_type"] = "Atrial Cardiomyocytes"
+iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("1"), "cell_type"] = "Ventricular Cardiomyocytes"
 iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("2"), "cell_type"] = "CDKN1A+ Cardiomyocytes"
 iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("3"), "cell_type"] = "Fibroblasts"
 iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("4"), "cell_type"] = "Progenitor cells"
@@ -474,21 +495,21 @@ p <- DimPlot(iPS_integrated, group.by = "cell_type", reduction = "umap", label =
 LabelClusters(p, id = "cell_type", fontface = "bold", size = 5.5, repel = T)
 ```
 
-```{r, eval = FALSE}
-saveRDS(iPS_integrated, 
-        here::here(output_dir_data, "iPS_integrated.rds"))
-```
-
 ```{r DotPlot_markers, fig.width=6, fig.height=7}
 DotPlot(iPS_integrated, assay = "SCT", features = rev(Markers_top3$gene), dot.scale = 5, cluster.idents = FALSE) +
   RotatedAxis() +
   coord_flip() +
-  theme(axis.title = element_blank(), axis.text.x = element_text(size = 14), axis.text.y = element_text(size = 13), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0), 
+  theme(axis.title = element_blank(), axis.text.x = element_text(size = 14), axis.text.y = element_text(size = 13), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
                            "inches"))
 ```
 
 ```{r FeatPlot_markers, fig.width=13.5, fig.height=8}
 FeaturePlot(iPS_integrated, features = c("MYH6", "MYH7", "CDKN1A", "FN1", "TOP2A", "PECAM1"), ncol = 3)
+```
+
+```{r, eval = FALSE}
+saveRDS(iPS_integrated, 
+        here::here(output_dir_data, "iPS_integrated.rds"))
 ```
 
 
