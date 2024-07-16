@@ -74,7 +74,7 @@ if (window.hljs) {
 
 
 
-<link rel="stylesheet" href="assets/css/custom.css" type="text/css" />
+<link rel="stylesheet" href="analysis/custom.css" type="text/css" />
 
 
 
@@ -523,15 +523,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree97758616c5b8f300765b1c4b13892c0b692af67atargetblank9775861a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree80c4acdb299b36ee87125cdbd7de84b29c822cd5targetblank80c4acda">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/GinoBonazza/iPS_organoids/tree/97758616c5b8f300765b1c4b13892c0b692af67a" target="_blank">9775861</a>
+<a href="https://github.com/GinoBonazza/iPS_organoids/tree/80c4acdb299b36ee87125cdbd7de84b29c822cd5" target="_blank">80c4acd</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree97758616c5b8f300765b1c4b13892c0b692af67atargetblank9775861a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree80c4acdb299b36ee87125cdbd7de84b29c822cd5targetblank80c4acda"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -541,7 +541,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/GinoBonazza/iPS_organoids/tree/97758616c5b8f300765b1c4b13892c0b692af67a" target="_blank">9775861</a>.
+<a href="https://github.com/GinoBonazza/iPS_organoids/tree/80c4acdb299b36ee87125cdbd7de84b29c822cd5" target="_blank">80c4acd</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -558,11 +558,10 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-    Ignored:    analysis/figure/
     Ignored:    output/Test2/
 
 Untracked files:
-    Untracked:  analysis/css.css
+    Untracked:  analysis/custom.css
     Untracked:  code/QC_integration_annotation_fail.Rmd
     Untracked:  code/create_CSS.R
     Untracked:  data/Cellbender_output/
@@ -621,6 +620,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/80c4acdb299b36ee87125cdbd7de84b29c822cd5/analysis/Differential_expression.Rmd" target="_blank">80c4acd</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-16
+</td>
+<td>
+wflow_publish("analysis/Differential_expression.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/GinoBonazza/iPS_organoids/3a84714274849ba7c6e0b6e1ae5f1dc490af7de1/docs/Differential_expression.html" target="_blank">3a84714</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -891,14 +924,199 @@ names(volcano)[4] &lt;- &quot;DMD1&quot;</code></pre>
 <pre class="r"><code>combined_plots &lt;- (volcano[[1]] | volcano[[2]] | volcano[[3]] | volcano[[4]])
 print(combined_plots)</code></pre>
 <p><img src="figure/Differential_expression.Rmd/Volcano_all_025-1.png" width="9600" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Volcano_all_025-1">
+Past versions of Volcano_all_025-1.png
+</button>
+</p>
+<div id="fig-Volcano_all_025-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/3a84714274849ba7c6e0b6e1ae5f1dc490af7de1/docs/figure/Differential_expression.Rmd/Volcano_all_025-1.png" target="_blank">3a84714</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>VlnPlot(CM, features = common_up, group.by = &quot;Condition&quot;, ncol = 5, pt.size = 0.01)</code></pre>
 <p><img src="figure/Differential_expression.Rmd/VlnPlot_DE_up_025-1.png" width="6000" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_DE_up_025-1">
+Past versions of VlnPlot_DE_up_025-1.png
+</button>
+</p>
+<div id="fig-VlnPlot_DE_up_025-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/3a84714274849ba7c6e0b6e1ae5f1dc490af7de1/docs/figure/Differential_expression.Rmd/VlnPlot_DE_up_025-1.png" target="_blank">3a84714</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>VlnPlot(CM, features = common_down, group.by = &quot;Condition&quot;, ncol = 7, pt.size = 0.01)</code></pre>
 <p><img src="figure/Differential_expression.Rmd/VlnPlot_DE_down_025-1.png" width="8400" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_DE_down_025-1">
+Past versions of VlnPlot_DE_down_025-1.png
+</button>
+</p>
+<div id="fig-VlnPlot_DE_down_025-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/3a84714274849ba7c6e0b6e1ae5f1dc490af7de1/docs/figure/Differential_expression.Rmd/VlnPlot_DE_down_025-1.png" target="_blank">3a84714</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>VlnPlot(CM, features = common_up, group.by = &quot;Cell_line&quot;, split.by = &quot;Condition&quot;, ncol = 5, pt.size = 0.01)</code></pre>
 <p><img src="figure/Differential_expression.Rmd/VlnPlot_DE_up_cell_line_025-1.png" width="9000" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_DE_up_cell_line_025-1">
+Past versions of VlnPlot_DE_up_cell_line_025-1.png
+</button>
+</p>
+<div id="fig-VlnPlot_DE_up_cell_line_025-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/3a84714274849ba7c6e0b6e1ae5f1dc490af7de1/docs/figure/Differential_expression.Rmd/VlnPlot_DE_up_cell_line_025-1.png" target="_blank">3a84714</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>VlnPlot(CM, features = common_down, group.by = &quot;Cell_line&quot;, split.by = &quot;Condition&quot;, ncol = 7, pt.size = 0.01)</code></pre>
 <p><img src="figure/Differential_expression.Rmd/VlnPlot_DE_down_cell_line_025-1.png" width="12600" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_DE_down_cell_line_025-1">
+Past versions of VlnPlot_DE_down_cell_line_025-1.png
+</button>
+</p>
+<div id="fig-VlnPlot_DE_down_cell_line_025-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/3a84714274849ba7c6e0b6e1ae5f1dc490af7de1/docs/figure/Differential_expression.Rmd/VlnPlot_DE_down_cell_line_025-1.png" target="_blank">3a84714</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="over-representation-analysis" class="section level2">
 <h2>Over-representation analysis</h2>
@@ -945,10 +1163,84 @@ p2 &lt;- dotplot(GO_down, showCategory = 10, title = paste0(&quot;Downregulated 
         axis.text.x = element_text(size = 10))
 print(p1 + p2)</code></pre>
 <p><img src="figure/Differential_expression.Rmd/GO-1.png" width="7200" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-GO-1">
+Past versions of GO-1.png
+</button>
+</p>
+<div id="fig-GO-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/3a84714274849ba7c6e0b6e1ae5f1dc490af7de1/docs/figure/Differential_expression.Rmd/GO-1.png" target="_blank">3a84714</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>p1 &lt;- cnetplot(GO_up, cex_label_category = 0.65, cex_label_gene = 0.9, showCategory = 10)
 p2 &lt;- cnetplot(GO_down, cex_label_category = 0.65, cex_label_gene = 0.9, showCategory = 10)
 print(p1 + p2)</code></pre>
 <p><img src="figure/Differential_expression.Rmd/cnetplot_GO-1.png" width="8400" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cnetplot_GO-1">
+Past versions of cnetplot_GO-1.png
+</button>
+</p>
+<div id="fig-cnetplot_GO-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/3a84714274849ba7c6e0b6e1ae5f1dc490af7de1/docs/figure/Differential_expression.Rmd/cnetplot_GO-1.png" target="_blank">3a84714</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="log2fc-treshold-at-0.5" class="section level2">
 <h2>log2FC treshold at 0.5</h2>
@@ -1091,19 +1383,241 @@ names(volcano)[4] &lt;- &quot;DMD1&quot;</code></pre>
 <pre class="r"><code>combined_plots &lt;- (volcano[[1]] | volcano[[2]] | volcano[[3]] | volcano[[4]])
 print(combined_plots)</code></pre>
 <p><img src="figure/Differential_expression.Rmd/Volcano_all_05-1.png" width="9600" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Volcano_all_05-1">
+Past versions of Volcano_all_05-1.png
+</button>
+</p>
+<div id="fig-Volcano_all_05-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/3a84714274849ba7c6e0b6e1ae5f1dc490af7de1/docs/figure/Differential_expression.Rmd/Volcano_all_05-1.png" target="_blank">3a84714</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>VlnPlot(CM, features = common_up, group.by = &quot;Condition&quot;, ncol = 1, pt.size = 0.01) + NoLegend()</code></pre>
 <p><img src="figure/Differential_expression.Rmd/VlnPlot_DE_up_05-1.png" width="1200" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_DE_up_05-1">
+Past versions of VlnPlot_DE_up_05-1.png
+</button>
+</p>
+<div id="fig-VlnPlot_DE_up_05-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/3a84714274849ba7c6e0b6e1ae5f1dc490af7de1/docs/figure/Differential_expression.Rmd/VlnPlot_DE_up_05-1.png" target="_blank">3a84714</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>VlnPlot(CM, features = common_down, group.by = &quot;Condition&quot;, ncol = 6, pt.size = 0.01)</code></pre>
 <p><img src="figure/Differential_expression.Rmd/VlnPlot_DE_down_05-1.png" width="7200" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_DE_down_05-1">
+Past versions of VlnPlot_DE_down_05-1.png
+</button>
+</p>
+<div id="fig-VlnPlot_DE_down_05-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/3a84714274849ba7c6e0b6e1ae5f1dc490af7de1/docs/figure/Differential_expression.Rmd/VlnPlot_DE_down_05-1.png" target="_blank">3a84714</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>VlnPlot(CM, features = common_up, group.by = &quot;Cell_line&quot;, split.by = &quot;Condition&quot;, ncol = 1, pt.size = 0.01) + NoLegend()</code></pre>
 <p><img src="figure/Differential_expression.Rmd/VlnPlot_DE_up_cell_line_05-1.png" width="1800" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_DE_up_cell_line_05-1">
+Past versions of VlnPlot_DE_up_cell_line_05-1.png
+</button>
+</p>
+<div id="fig-VlnPlot_DE_up_cell_line_05-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/3a84714274849ba7c6e0b6e1ae5f1dc490af7de1/docs/figure/Differential_expression.Rmd/VlnPlot_DE_up_cell_line_05-1.png" target="_blank">3a84714</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>VlnPlot(CM, features = common_down, group.by = &quot;Cell_line&quot;, split.by = &quot;Condition&quot;, ncol = 6, pt.size = 0.01)</code></pre>
 <p><img src="figure/Differential_expression.Rmd/VlnPlot_DE_down_cell_line_05-1.png" width="9000" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_DE_down_cell_line_05-1">
+Past versions of VlnPlot_DE_down_cell_line_05-1.png
+</button>
+</p>
+<div id="fig-VlnPlot_DE_down_cell_line_05-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/3a84714274849ba7c6e0b6e1ae5f1dc490af7de1/docs/figure/Differential_expression.Rmd/VlnPlot_DE_down_cell_line_05-1.png" target="_blank">3a84714</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p><a
 href="https://www.biorxiv.org/content/10.1101/2021.02.01.429136v2.full.pdf"
 class="uri">https://www.biorxiv.org/content/10.1101/2021.02.01.429136v2.full.pdf</a></p>
 <pre class="r"><code>FeaturePlot(CM, features = c(&quot;LINC01405&quot;, &quot;MYL2&quot;, &quot;MYH7&quot;), ncol=3)</code></pre>
 <p><img src="figure/Differential_expression.Rmd/FeaturePlot_LINC01405-1.png" width="5400" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-FeaturePlot_LINC01405-1">
+Past versions of FeaturePlot_LINC01405-1.png
+</button>
+</p>
+<div id="fig-FeaturePlot_LINC01405-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/3a84714274849ba7c6e0b6e1ae5f1dc490af7de1/docs/figure/Differential_expression.Rmd/FeaturePlot_LINC01405-1.png" target="_blank">3a84714</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">

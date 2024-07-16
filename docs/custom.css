@@ -1,0 +1,8 @@
+/* custom.css */
+
+/* Ensure figures keep their width and height as specified in the R chunk */
+figure {
+  max-width: none;
+  width: auto !important;
+  height: auto !important;
+}
