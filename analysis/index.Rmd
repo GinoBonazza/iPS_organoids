@@ -9,4 +9,3 @@ editor_options:
 ---
 
 Welcome to my research website.
-Click on this [link](QC_integration_annotation.html) to see the processing of the iPS-derived organoids dataset from quality control to the call type annotation.
