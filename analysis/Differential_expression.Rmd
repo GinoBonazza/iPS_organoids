@@ -2,9 +2,7 @@
 title: "Differential expression analysis"
 author: "GinoBonazza (ginoandrea.bonazza@usz.ch)"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: 
-  workflowr::wflow_html:
-   css: ["code/css/custom.css"]
+output: workflowr::wflow_html
 editor_options:
   chunk_output_type: inline
 ---
@@ -15,9 +13,7 @@ knitr::opts_chunk$set(
   message = FALSE,
   cache = FALSE,
   dpi = 600,
-  fig.align = "center",
-  out.width = "100%", 
-  out.height = "auto" 
+  fig.align = "center"
 )
 ```
 
