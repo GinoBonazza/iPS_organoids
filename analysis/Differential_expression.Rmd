@@ -1,0 +1,517 @@
+---
+title: "Differential expression analysis"
+author: "GinoBonazza (ginoandrea.bonazza@usz.ch)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  workflowr::wflow_html:
+   css: ["assets/css/custom.css"]
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r knitr config, include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(warning = FALSE)
+
+knitr::opts_chunk$set(message = FALSE)
+
+knitr::opts_chunk$set(cache = FALSE)
+
+knitr::opts_chunk$set(dpi = 600, fig.align = "center")
+```
+
+## Setup
+
+```{r setup, class.source = "fold-hide"}
+# Get current file name to make folder
+current_file <- "Differential_expression"
+
+# Load libraries
+library(here)
+library(readr)
+library(readxl)
+library(xlsx)
+library(Seurat)
+library(DropletUtils)
+library(Matrix)
+library(scDblFinder)
+library(scCustomize)
+library(dplyr)
+library(ggplot2)
+library(magrittr)
+library(tidyverse)
+library(reshape2)
+library(S4Vectors)
+library(SingleCellExperiment)
+library(pheatmap)
+library(png)
+library(gridExtra)
+library(knitr)
+library(scales)
+library(RColorBrewer)
+library(scater)
+library(patchwork)
+library(limma)
+library(gridExtra)
+library(knitr)
+library(scales)
+library(clusterProfiler)
+library(org.Hs.eg.db)
+library(AnnotationHub)
+library(ReactomePA)
+library(EnhancedVolcano)
+library(RColorBrewer)
+library(Matrix.utils)
+library(DESeq2)
+library(tibble)
+library(speckle)
+library(limma)
+library(ggplot2)
+library(scater)
+library(patchwork)
+library(statmod)
+
+#Output paths
+output_dir_data <- here::here("output", current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data)
+
+if (!dir.exists(here::here("docs", "figure"))) dir.create(here::here("docs", "figure"))
+
+output_dir_figs <- here::here("docs", "figure", paste0(current_file, ".Rmd"))
+if (!dir.exists(output_dir_figs)) dir.create(output_dir_figs)
+```
+
+```{r}
+iPS_integrated <- readRDS(here::here("output", "QC_integration_annotation", "iPS_integrated.rds"))
+```
+
+```{r}
+table(iPS_integrated$cell_type)
+CM <- subset(iPS_integrated, subset = cell_type %in% c("Atrial Cardiomyocytes", "Ventricular Cardiomyocytes"))
+table(CM$cell_type)
+Idents(CM) <- CM$Condition
+DefaultAssay(CM) <- "RNA"
+CM <- NormalizeData(CM)
+CM <- ScaleData(CM)
+```
+
+## Run differential expression
+
+```{r, eval=FALSE}
+DE_all <- FindMarkers(CM, test.use = "MAST", ident.1 = "DMD", ident.2 = "Ctr", min.pct = 0.05, logfc.threshold = 0.1, assay = "RNA")
+DE_all$gene <- rownames(DE_all)
+write.csv(DE_all, file = here::here(output_dir_data, "DE_all.csv"), quote=F, row.names = F)
+
+DE_JDR <- FindMarkers(subset(CM, subset = Cell_line == "JDR"), test.use = "MAST", ident.1 = "DMD", ident.2 = "Ctr", min.pct = 0.05, logfc.threshold = 0.1, assay = "RNA")
+DE_JDR$gene <- rownames(DE_JDR)
+write.csv(DE_JDR, file = here::here(output_dir_data, "DE_JDR.csv"), quote=F, row.names = F)
+
+
+DE_JD6 <- FindMarkers(subset(CM, subset = Cell_line == "JD6"), test.use = "MAST", ident.1 = "DMD", ident.2 = "Ctr", min.pct = 0.05, logfc.threshold = 0.1, assay = "RNA")
+DE_JD6$gene <- rownames(DE_JD6)
+write.csv(DE_JD6, file = here::here(output_dir_data, "DE_JD6.csv"), quote=F, row.names = F)
+
+
+DE_DMD1 <- FindMarkers(subset(CM, subset = Cell_line == "DMD1"), test.use = "MAST", ident.1 = "DMD", ident.2 = "Ctr", min.pct = 0.05, logfc.threshold = 0.1, assay = "RNA")
+DE_DMD1$gene <- rownames(DE_DMD1)
+write.csv(DE_DMD1, file = here::here(output_dir_data, "DE_DMD1.csv"), quote=F, row.names = F)
+```
+
+```{r}
+DE_all <- read.csv(file = here::here(output_dir_data, "DE_all.csv"))
+DE_JDR <- read.csv(file = here::here(output_dir_data, "DE_JDR.csv"))
+DE_JD6 <- read.csv(file = here::here(output_dir_data, "DE_JD6.csv"))
+DE_DMD1 <- read.csv(file = here::here(output_dir_data, "DE_DMD1.csv"))
+```
+
+## log2FC treshold at 0.25
+
+```{r}
+signif_JDR <- filter(DE_JDR, abs(avg_log2FC) > 0.25 & p_val_adj < 0.05)
+
+signif_JD6 <- filter(DE_JD6, abs(avg_log2FC) > 0.25 & p_val_adj < 0.05)
+
+signif_DMD1 <- filter(DE_DMD1, abs(avg_log2FC) > 0.25 & p_val_adj < 0.05)
+
+signif_all <- filter(DE_all, abs(avg_log2FC) > 0.25 & p_val_adj < 0.05)
+
+common_up <- Reduce(intersect, list(filter(signif_JDR, avg_log2FC > 0.25)$gene,
+                                    filter(signif_JD6, avg_log2FC > 0.25)$gene,
+                                    filter(signif_DMD1, avg_log2FC > 0.25)$gene,
+                                    filter(signif_all, avg_log2FC > 0.25)$gene))
+
+common_down <- Reduce(intersect, list(filter(signif_JDR, avg_log2FC < -0.25)$gene,
+                                      filter(signif_JD6, avg_log2FC < -0.25)$gene,
+                                      filter(signif_DMD1, avg_log2FC < -0.25)$gene,
+                                      filter(signif_all, avg_log2FC < 0.25)$gene))
+
+common_genes <- union(common_up, common_down)
+
+common_FC <- data.frame(
+  gene = common_genes,
+  avg_logFC_all = signif_all %>%
+    filter(gene %in% common_genes) %>%
+    arrange(gene) %>%
+    pull(avg_log2FC),
+  avg_logFC_JDR = signif_JDR %>%
+    filter(gene %in% common_genes) %>%
+    arrange(gene) %>%
+    pull(avg_log2FC),
+  avg_logFC_JD6 = signif_JD6 %>%
+    filter(gene %in% common_genes) %>%
+    arrange(gene) %>%
+    pull(avg_log2FC),
+  avg_logFC_DMD1 = signif_DMD1 %>%
+    filter(gene %in% common_genes) %>%
+    arrange(gene) %>%
+    pull(avg_log2FC)
+) %>%
+  arrange(avg_logFC_all)
+```
+
+```{r fig.height=5, fig.width=4}
+volcano <- list()
+volcano[[1]] <- EnhancedVolcano(DE_all,
+                  lab = DE_all$gene,
+                  x = "avg_log2FC",
+                  y = "p_val_adj",
+                  labSize = 3.5,
+                  titleLabSize = 16,
+                  subtitleLabSize = 14,
+                  axisLabSize = 12,
+                  captionLabSize = 9,
+                  pointSize = 0.5,
+                  FCcutoff = 0.25,
+                  pCutoff  = 0.05,
+                  col = c("black", "black", "black", "red"),
+                  colAlpha = 1,
+                  drawConnectors = TRUE,
+                  widthConnectors = 0.1,
+                  boxedLabels = TRUE,
+                  subtitle = NULL,
+                  maxoverlapsConnectors = 15,
+                  max.overlaps = 15,
+                  title = "All Cardiomyocytes"
+  ) + theme(legend.position = "none")
+names(volcano)[1] <- "All"
+
+volcano[[2]] <- EnhancedVolcano(DE_JDR,
+                  lab = DE_JDR$gene,
+                  x = "avg_log2FC",
+                  y = "p_val_adj",
+                  labSize = 3.5,
+                  titleLabSize = 16,
+                  subtitleLabSize = 14,
+                  axisLabSize = 12,
+                  captionLabSize = 9,
+                  pointSize = 0.5,
+                  FCcutoff = 0.25,
+                  pCutoff  = 0.05,
+                  col = c("black", "black", "black", "red"),
+                  colAlpha = 1,
+                  drawConnectors = TRUE,
+                  widthConnectors = 0.1,
+                  boxedLabels = TRUE,
+                  subtitle = NULL,
+                  maxoverlapsConnectors = 15,
+                  max.overlaps = 15,
+                  title = "JDR Cardiomyocytes"
+  ) + theme(legend.position = "none")
+names(volcano)[2] <- "JDR"
+
+volcano[[3]] <- EnhancedVolcano(DE_JD6,
+                  lab = DE_JD6$gene,
+                  x = "avg_log2FC",
+                  y = "p_val_adj",
+                  labSize = 3.5,
+                  titleLabSize = 16,
+                  subtitleLabSize = 14,
+                  axisLabSize = 12,
+                  captionLabSize = 9,
+                  pointSize = 0.5,
+                  FCcutoff = 0.25,
+                  pCutoff  = 0.05,
+                  col = c("black", "black", "black", "red"),
+                  colAlpha = 1,
+                  drawConnectors = TRUE,
+                  widthConnectors = 0.1,
+                  boxedLabels = TRUE,
+                  subtitle = NULL,
+                  maxoverlapsConnectors = 15,
+                  max.overlaps = 15,
+                  title = "JD6 Cardiomyocytes"
+  ) + theme(legend.position = "none")
+names(volcano)[3] <- "JD6"
+
+volcano[[4]] <- EnhancedVolcano(DE_DMD1,
+                  lab = DE_DMD1$gene,
+                  x = "avg_log2FC",
+                  y = "p_val_adj",
+                  labSize = 3.5,
+                  titleLabSize = 16,
+                  subtitleLabSize = 14,
+                  axisLabSize = 12,
+                  captionLabSize = 9,
+                  pointSize = 0.5,
+                  FCcutoff = 0.25,
+                  pCutoff  = 0.05,
+                  col = c("black", "black", "black", "red"),
+                  colAlpha = 1,
+                  drawConnectors = TRUE,
+                  widthConnectors = 0.1,
+                  boxedLabels = TRUE,
+                  subtitle = NULL,
+                  maxoverlapsConnectors = 15,
+                  max.overlaps = 15,
+                  title = "DMD1 Cardiomyocytes"
+  ) + theme(legend.position = "none")
+names(volcano)[4] <- "DMD1"
+```
+
+```{r Volcano_all_025, fig.height=5, fig.width=16}
+combined_plots <- (volcano[[1]] | volcano[[2]] | volcano[[3]] | volcano[[4]])
+print(combined_plots)
+```
+
+```{r VlnPlot_DE_up_025, fig.width=10, fig.height=8}
+VlnPlot(CM, features = common_up, group.by = "Condition", ncol = 5, pt.size = 0.01)
+```
+
+```{r VlnPlot_DE_down_025, fig.width=14, fig.height=8}
+VlnPlot(CM, features = common_down, group.by = "Condition", ncol = 7, pt.size = 0.01)
+```
+
+```{r VlnPlot_DE_up_cell_line_025, fig.width=15, fig.height=8}
+VlnPlot(CM, features = common_up, group.by = "Cell_line", split.by = "Condition", ncol = 5, pt.size = 0.01)
+```
+
+```{r VlnPlot_DE_down_cell_line_025, fig.width=21, fig.height=8}
+VlnPlot(CM, features = common_down, group.by = "Cell_line", split.by = "Condition", ncol = 7, pt.size = 0.01)
+```
+
+
+## Over-representation analysis
+
+```{r}
+up_genes <- bitr(common_up, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Hs.eg.db")$ENTREZID
+down_genes <- bitr(common_down, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Hs.eg.db")$ENTREZID
+
+# Calculate gene counts across cells
+gene_counts <- rowSums(CM@assays$RNA@counts > 0)
+
+# Filter genes to include only those expressed in at least 3 cells
+universe_genes <- names(gene_counts[gene_counts >= 3])
+
+# Convert universe gene symbols to Entrez IDs
+universe_entrez <- bitr(universe_genes, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = org.Hs.eg.db)$ENTREZID
+```
+
+```{r GO, fig.height=8, fig.width=12}
+GO_up <- enrichGO(up_genes, OrgDb = "org.Hs.eg.db", universe = universe_entrez, ont = "all", readable = TRUE)
+GO_up <- gsfilter(GO_up, by = 'Count', min = 2)
+GO_up <- simplify(
+  GO_up,
+  cutoff = 0.5,
+  by = "pvalue",
+  select_fun = min,
+  measure = "Wang",
+  semData = NULL
+)
+
+GO_down <- enrichGO(down_genes, OrgDb = "org.Hs.eg.db", universe = universe_entrez, ont = "all", readable = TRUE)
+GO_down <- gsfilter(GO_down, by = 'Count', min = 2)
+GO_down <- simplify(
+  GO_down,
+  cutoff = 0.5,
+  by = "pvalue",
+  select_fun = min,
+  measure = "Wang",
+  semData = NULL
+)
+
+p1 <- dotplot(GO_up, showCategory = 10, title = paste0("Upregulated genes"), label_format = 27, font.size = 15) +
+  theme(plot.title = element_text( face = "bold", size = 18, hjust = 0.5),
+        axis.text.y = element_text(face = "bold"),
+        axis.text.x = element_text(size = 10))
+p2 <- dotplot(GO_down, showCategory = 10, title = paste0("Downregulated genes"), label_format = 27, font.size = 15) +
+  theme(plot.title = element_text( face = "bold", size = 18, hjust = 0.5),
+        axis.text.y = element_text(face = "bold"),
+        axis.text.x = element_text(size = 10))
+print(p1 + p2)
+```
+
+```{r cnetplot_GO, fig.height=4, fig.width=14}
+p1 <- cnetplot(GO_up, cex_label_category = 0.65, cex_label_gene = 0.9, showCategory = 10)
+p2 <- cnetplot(GO_down, cex_label_category = 0.65, cex_label_gene = 0.9, showCategory = 10)
+print(p1 + p2)
+```
+
+## log2FC treshold at 0.5
+
+```{r}
+signif_JDR <- filter(DE_JDR, abs(avg_log2FC) > 0.5 & p_val_adj < 0.05)
+
+signif_JD6 <- filter(DE_JD6, abs(avg_log2FC) > 0.5 & p_val_adj < 0.05)
+
+signif_DMD1 <- filter(DE_DMD1, abs(avg_log2FC) > 0.5 & p_val_adj < 0.05)
+
+signif_all <- filter(DE_all, abs(avg_log2FC) > 0.5 & p_val_adj < 0.05)
+
+common_up <- Reduce(intersect, list(filter(signif_JDR, avg_log2FC > 0.5)$gene,
+                                    filter(signif_JD6, avg_log2FC > 0.5)$gene,
+                                    filter(signif_DMD1, avg_log2FC > 0.5)$gene,
+                                    filter(signif_all, avg_log2FC > 0.5)$gene))
+
+common_down <- Reduce(intersect, list(filter(signif_JDR, avg_log2FC < -0.5)$gene,
+                                      filter(signif_JD6, avg_log2FC < -0.5)$gene,
+                                      filter(signif_DMD1, avg_log2FC < -0.5)$gene,
+                                      filter(signif_all, avg_log2FC < 0.5)$gene))
+
+common_genes <- union(common_up, common_down)
+
+common_FC <- data.frame(
+  gene = common_genes,
+  avg_logFC_all = signif_all %>%
+    filter(gene %in% common_genes) %>%
+    arrange(gene) %>%
+    pull(avg_log2FC),
+  avg_logFC_JDR = signif_JDR %>%
+    filter(gene %in% common_genes) %>%
+    arrange(gene) %>%
+    pull(avg_log2FC),
+  avg_logFC_JD6 = signif_JD6 %>%
+    filter(gene %in% common_genes) %>%
+    arrange(gene) %>%
+    pull(avg_log2FC),
+  avg_logFC_DMD1 = signif_DMD1 %>%
+    filter(gene %in% common_genes) %>%
+    arrange(gene) %>%
+    pull(avg_log2FC)
+) %>%
+  arrange(avg_logFC_all)
+```
+
+```{r fig.height=5, fig.width=4}
+volcano <- list()
+volcano[[1]] <- EnhancedVolcano(DE_all,
+                  lab = DE_all$gene,
+                  x = "avg_log2FC",
+                  y = "p_val_adj",
+                  labSize = 3.5,
+                  titleLabSize = 16,
+                  subtitleLabSize = 14,
+                  axisLabSize = 12,
+                  captionLabSize = 9,
+                  pointSize = 0.5,
+                  FCcutoff = 0.5,
+                  pCutoff  = 0.05,
+                  col = c("black", "black", "black", "red"),
+                  colAlpha = 1,
+                  drawConnectors = TRUE,
+                  widthConnectors = 0.1,
+                  boxedLabels = TRUE,
+                  subtitle = NULL,
+                  maxoverlapsConnectors = 15,
+                  max.overlaps = 15,
+                  title = "All Cardiomyocytes"
+  ) + theme(legend.position = "none")
+names(volcano)[1] <- "All"
+
+volcano[[2]] <- EnhancedVolcano(DE_JDR,
+                  lab = DE_JDR$gene,
+                  x = "avg_log2FC",
+                  y = "p_val_adj",
+                  labSize = 3.5,
+                  titleLabSize = 16,
+                  subtitleLabSize = 14,
+                  axisLabSize = 12,
+                  captionLabSize = 9,
+                  pointSize = 0.5,
+                  FCcutoff = 0.5,
+                  pCutoff  = 0.05,
+                  col = c("black", "black", "black", "red"),
+                  colAlpha = 1,
+                  drawConnectors = TRUE,
+                  widthConnectors = 0.1,
+                  boxedLabels = TRUE,
+                  subtitle = NULL,
+                  maxoverlapsConnectors = 15,
+                  max.overlaps = 15,
+                  title = "JDR Cardiomyocytes"
+  ) + theme(legend.position = "none")
+names(volcano)[2] <- "JDR"
+
+volcano[[3]] <- EnhancedVolcano(DE_JD6,
+                  lab = DE_JD6$gene,
+                  x = "avg_log2FC",
+                  y = "p_val_adj",
+                  labSize = 3.5,
+                  titleLabSize = 16,
+                  subtitleLabSize = 14,
+                  axisLabSize = 12,
+                  captionLabSize = 9,
+                  pointSize = 0.5,
+                  FCcutoff = 0.5,
+                  pCutoff  = 0.05,
+                  col = c("black", "black", "black", "red"),
+                  colAlpha = 1,
+                  drawConnectors = TRUE,
+                  widthConnectors = 0.1,
+                  boxedLabels = TRUE,
+                  subtitle = NULL,
+                  maxoverlapsConnectors = 15,
+                  max.overlaps = 15,
+                  title = "JD6 Cardiomyocytes"
+  ) + theme(legend.position = "none")
+names(volcano)[3] <- "JD6"
+
+volcano[[4]] <- EnhancedVolcano(DE_DMD1,
+                  lab = DE_DMD1$gene,
+                  x = "avg_log2FC",
+                  y = "p_val_adj",
+                  labSize = 3.5,
+                  titleLabSize = 16,
+                  subtitleLabSize = 14,
+                  axisLabSize = 12,
+                  captionLabSize = 9,
+                  pointSize = 0.5,
+                  FCcutoff = 0.5,
+                  pCutoff  = 0.05,
+                  col = c("black", "black", "black", "red"),
+                  colAlpha = 1,
+                  drawConnectors = TRUE,
+                  widthConnectors = 0.1,
+                  boxedLabels = TRUE,
+                  subtitle = NULL,
+                  maxoverlapsConnectors = 15,
+                  max.overlaps = 15,
+                  title = "DMD1 Cardiomyocytes"
+  ) + theme(legend.position = "none")
+names(volcano)[4] <- "DMD1"
+```
+
+```{r Volcano_all_05, fig.height=5, fig.width=16}
+combined_plots <- (volcano[[1]] | volcano[[2]] | volcano[[3]] | volcano[[4]])
+print(combined_plots)
+```
+
+```{r VlnPlot_DE_up_05, fig.width=2, fig.height=4}
+VlnPlot(CM, features = common_up, group.by = "Condition", ncol = 1, pt.size = 0.01) + NoLegend()
+```
+
+```{r VlnPlot_DE_down_05, fig.width=12, fig.height=4}
+VlnPlot(CM, features = common_down, group.by = "Condition", ncol = 6, pt.size = 0.01)
+```
+
+```{r VlnPlot_DE_up_cell_line_05, fig.width=3, fig.height=4}
+VlnPlot(CM, features = common_up, group.by = "Cell_line", split.by = "Condition", ncol = 1, pt.size = 0.01) + NoLegend()
+```
+
+```{r VlnPlot_DE_down_cell_line_05, fig.width=15, fig.height=4}
+VlnPlot(CM, features = common_down, group.by = "Cell_line", split.by = "Condition", ncol = 6, pt.size = 0.01)
+```
+
+https://www.biorxiv.org/content/10.1101/2021.02.01.429136v2.full.pdf
+
+```{r FeaturePlot_LINC01405, fig.width=9, fig.height=3}
+FeaturePlot(CM, features = c("LINC01405", "MYL2", "MYH7"), ncol=3)
+```
