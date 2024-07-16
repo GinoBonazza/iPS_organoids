@@ -10,13 +10,15 @@ editor_options:
 ---
 
 ```{r knitr config, include=FALSE, cache=FALSE}
-knitr::opts_chunk$set(warning = FALSE)
-
-knitr::opts_chunk$set(message = FALSE)
-
-knitr::opts_chunk$set(cache = FALSE)
-
-knitr::opts_chunk$set(dpi = 600, fig.align = "center")
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  dpi = 600,
+  fig.align = "center",
+  out.width = "100%", 
+  out.height = "auto" 
+)
 ```
 
 ## Setup
