@@ -4,7 +4,7 @@ author: "GinoBonazza (ginoandrea.bonazza@usz.ch)"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   workflowr::wflow_html:
-   css: ["assets/css/custom.css"]
+   css: ["analysis/custom.css"]
 editor_options:
   chunk_output_type: inline
 ---
