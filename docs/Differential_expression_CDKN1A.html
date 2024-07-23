@@ -349,6 +349,9 @@ div.tocify {
     <li>
       <a href="Differential_expression.html">Differential expression</a>
     </li>
+    <li>
+      <a href="Differential_expression_CDKN1A.html">Differential expression_CDKN1A</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -540,15 +543,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstreed4b9085e150a9906fffdb4546ce366a4b5543c56targetblankd4b9085a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree16965dad69a2b100727a2bd55503db0f93b24851targetblank16965daa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/GinoBonazza/iPS_organoids/tree/d4b9085e150a9906fffdb4546ce366a4b5543c56" target="_blank">d4b9085</a>
+<a href="https://github.com/GinoBonazza/iPS_organoids/tree/16965dad69a2b100727a2bd55503db0f93b24851" target="_blank">16965da</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstreed4b9085e150a9906fffdb4546ce366a4b5543c56targetblankd4b9085a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree16965dad69a2b100727a2bd55503db0f93b24851targetblank16965daa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -558,7 +561,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/GinoBonazza/iPS_organoids/tree/d4b9085e150a9906fffdb4546ce366a4b5543c56" target="_blank">d4b9085</a>.
+<a href="https://github.com/GinoBonazza/iPS_organoids/tree/16965dad69a2b100727a2bd55503db0f93b24851" target="_blank">16965da</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -578,7 +581,6 @@ Ignored files:
     Ignored:    output/Test2/
 
 Untracked files:
-    Untracked:  analysis/custom.css
     Untracked:  code/DE_CDKN1A_temp.Rmd
     Untracked:  code/QC_backup.Rmd
     Untracked:  code/QC_integration_annotation_fail.Rmd
@@ -592,6 +594,9 @@ Untracked files:
     Untracked:  output/Differential_expression_CDKN1A/
     Untracked:  output/QC_integration_annotation/
     Untracked:  output/Test/
+
+Unstaged changes:
+    Modified:   analysis/_site.yml
 
 </code></pre>
 <p>
@@ -638,6 +643,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/GinoBonazza/iPS_organoids/16965dad69a2b100727a2bd55503db0f93b24851/docs/Differential_expression_CDKN1A.html" target="_blank">16965da</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-23
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -908,10 +930,121 @@ names(volcano)[4] &lt;- &quot;DMD1&quot;</code></pre>
 <pre class="r"><code>combined_plots &lt;- (volcano[[1]] | volcano[[2]] | volcano[[3]] | volcano[[4]])
 print(combined_plots)</code></pre>
 <p><img src="figure/Differential_expression_CDKN1A.Rmd/Volcano_all_025-1.png" width="9600" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Volcano_all_025-1">
+Past versions of Volcano_all_025-1.png
+</button>
+</p>
+<div id="fig-Volcano_all_025-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/16965dad69a2b100727a2bd55503db0f93b24851/docs/figure/Differential_expression_CDKN1A.Rmd/Volcano_all_025-1.png" target="_blank">16965da</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>VlnPlot(CM, features = common_up, group.by = &quot;Condition&quot;, ncol = 1, pt.size = 0.01) + NoLegend()</code></pre>
 <p><img src="figure/Differential_expression_CDKN1A.Rmd/VlnPlot_DE_up_025-1.png" width="1200" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_DE_up_025-1">
+Past versions of VlnPlot_DE_up_025-1.png
+</button>
+</p>
+<div id="fig-VlnPlot_DE_up_025-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/16965dad69a2b100727a2bd55503db0f93b24851/docs/figure/Differential_expression_CDKN1A.Rmd/VlnPlot_DE_up_025-1.png" target="_blank">16965da</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>VlnPlot(CM, features = common_up, group.by = &quot;Cell_line&quot;, split.by = &quot;Condition&quot;, ncol = 1, pt.size = 0.01) + NoLegend()</code></pre>
 <p><img src="figure/Differential_expression_CDKN1A.Rmd/VlnPlot_DE_up_cell_line_025-1.png" width="1800" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_DE_up_cell_line_025-1">
+Past versions of VlnPlot_DE_up_cell_line_025-1.png
+</button>
+</p>
+<div id="fig-VlnPlot_DE_up_cell_line_025-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/16965dad69a2b100727a2bd55503db0f93b24851/docs/figure/Differential_expression_CDKN1A.Rmd/VlnPlot_DE_up_cell_line_025-1.png" target="_blank">16965da</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
