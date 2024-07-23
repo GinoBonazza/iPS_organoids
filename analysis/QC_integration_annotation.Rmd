@@ -54,6 +54,15 @@ library(patchwork)
 library(statmod)
 library(ArchR)
 library(clustree)
+library(speckle)
+library(ggplot2)
+library(scater)
+library(gprofiler2)
+library(clusterProfiler)
+library(org.Hs.eg.db)
+library(AnnotationHub)
+library(ReactomePA)
+library(speckle)
 
 #Output paths
 output_dir_data <- here::here("output", current_file)
@@ -68,449 +77,36 @@ if (!dir.exists(output_dir_figs)) dir.create(output_dir_figs)
 
 ## Quality Control
 
-Load and merge cellranger output
-
-```{r echo = TRUE, results= "hide"}
-JD6_Ctr <- Read10X_h5(filename = here::here("data", "Cellranger_output", "JD6_Ctr_filtered_feature_bc_matrix.h5"))
-JD6_Ctr <- CreateSeuratObject(JD6_Ctr, project = "JD6_Ctr")
-JD6_DMD <- Read10X_h5(filename = here::here("data", "Cellranger_output", "JD6_DMD_filtered_feature_bc_matrix.h5"))
-JD6_DMD <- CreateSeuratObject(JD6_DMD, project = "JD6_DMD")
-DMD1_Ctr <- Read10X_h5(filename = here::here("data", "Cellranger_output", "DMD1_Ctr_filtered_feature_bc_matrix.h5"))
-DMD1_Ctr <- CreateSeuratObject(DMD1_Ctr, project = "DMD1_Ctr")
-DMD1 <- Read10X_h5(filename = here::here("data", "Cellranger_output", "DMD1_filtered_feature_bc_matrix.h5"))
-DMD1 <- CreateSeuratObject(DMD1, project = "DMD1")
-JDR_Ctr <- Read10X_h5(filename = here::here("data", "Cellranger_output", "JDR_Ctr_filtered_feature_bc_matrix.h5"))
-JDR_Ctr <- CreateSeuratObject(JDR_Ctr, project = "JDR_Ctr")
-JDR_DMD <- Read10X_h5(filename = here::here("data", "Cellranger_output", "JDR_DMD_filtered_feature_bc_matrix.h5"))
-JDR_DMD <- CreateSeuratObject(JDR_DMD, project = "JDR_DMD")
-
-iPS_preQC <- merge(JD6_Ctr, y = c(JD6_DMD, DMD1_Ctr, DMD1, JDR_Ctr, JDR_DMD), 
-                   add.cell.ids = c("JD6_Ctr", "JD6_DMD", "DMD1_Ctr", "DMD1", "JDR_Ctr", "JDR_DMD"))
-rm(JD6_Ctr, JD6_DMD, DMD1_Ctr, DMD1, JDR_Ctr, JDR_DMD)
-```
-
-Add metadata: percentage of mitochondrial and ribosomal genes, cell line, condition
-
-```{r}
-iPS_preQC[["percent.mt"]] <- PercentageFeatureSet(iPS_preQC, pattern = "^MT-")
-iPS_preQC[["percent.rp"]] <- PercentageFeatureSet(iPS_preQC, pattern = "^RP[SL]")
-iPS_preQC$Sample <- iPS_preQC$orig.ident
-Organoids_metadata <- read_excel(here::here("data", "Organoids_metadata.xlsx"))
-add_metadata <- left_join(iPS_preQC[["Sample"]], Organoids_metadata)
-row.names(add_metadata) <- row.names(iPS_preQC[[]])
-iPS_preQC <- AddMetaData(iPS_preQC, metadata = add_metadata)
-rm(add_metadata, Organoids_metadata)
-metadata <- unique(subset(iPS_preQC@meta.data, select = c(orig.ident, Sample:length(iPS_preQC@meta.data))))
-rownames(metadata) <- metadata$orig.ident
-metadata
-```
-
-Check quality control parameters
-
-```{r QC_pre_VlnPlots, fig.height=6, fig.width=8}
-p1 <- VlnPlot(iPS_preQC, features = "nCount_RNA", group.by = "Sample", pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p2 <- VlnPlot(iPS_preQC, features = "nFeature_RNA", group.by = "Sample", pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p3 <- VlnPlot(iPS_preQC, features = "percent.mt", group.by = "Sample", pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p4 <- VlnPlot(iPS_preQC, features = "percent.rp", group.by = "Sample", pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-QC_pre_VlnPlots <- p1 + p2 + p3 + p4 + plot_layout(ncol = 2)
-
-QC_pre_VlnPlots
-```
-
-```{r QC_pre_VlnPlots_zoom, fig.height=10, fig.width=8}
-p1 <- VlnPlot(iPS_preQC, features = "nCount_RNA", group.by = "Sample", pt.size = 0, y.max = 10000) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p2 <- VlnPlot(iPS_preQC, features = "nFeature_RNA", group.by = "Sample", pt.size = 0, y.max = 6000) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p3 <- VlnPlot(iPS_preQC, features = "percent.mt", group.by = "Sample", pt.size = 0, y.max = 25) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p4 <- VlnPlot(iPS_preQC, features = "percent.rp", group.by = "Sample", pt.size = 0, y.max = 20) + theme(axis.title.x = element_blank()) + NoLegend()
-
-QC_pre_VlnPlots_zoom <- p1 + p2 + p3 + p4 + plot_layout(ncol = 2)
-
-QC_pre_VlnPlots_zoom
-```
-
-Doublets detection
-
-```{r}
-iPS_preQC_sce <- as.SingleCellExperiment(iPS_preQC)
-iPS_preQC_sce <- scDblFinder(iPS_preQC_sce, samples="Sample", clusters = TRUE)
-table(iPS_preQC_sce@colData$scDblFinder.class)
-iPS_preQC <- as.Seurat(iPS_preQC_sce, counts = "counts", data = "logcounts")
-rm(iPS_preQC_sce)
-iPS_preQC@meta.data[iPS_preQC@meta.data$scDblFinder.class %in% "singlet", "scDblFinder.n"] = paste0("Singlets (n=", table(iPS_preQC$scDblFinder.class)[1], ")")
-iPS_preQC@meta.data[iPS_preQC@meta.data$scDblFinder.class %in% "doublet", "scDblFinder.n"] = paste0("Doublets (n=", table(iPS_preQC$scDblFinder.class)[2], ")")
-iPS_preQC$scDblFinder.n <- factor(x = iPS_preQC$scDblFinder.n, levels = c(rownames(table(iPS_preQC$scDblFinder.n))[2], rownames(table(iPS_preQC$scDblFinder.n))[1])) 
-```
-
-```{r QC_pre_Doublets, fig.height=3, fig.width=8}
-p1 <- VlnPlot(iPS_preQC, features = c("nCount_RNA"), split.by = "scDblFinder.n", group.by = "Sample", pt.size = 0, y.max = 50000) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p2 <- VlnPlot(iPS_preQC, features = c("nFeature_RNA"), split.by = "scDblFinder.n", group.by = "Sample", pt.size = 0, y.max = 10000) + theme(axis.title.x = element_blank()) 
-
-QC_pre_Doublets <- p1 + p2 + plot_layout(ncol = 2)
-
-QC_pre_Doublets
-```
-
-```{r eval=FALSE}
-saveRDS(iPS_preQC, 
-        here::here(output_dir_data, "iPS_preQC.rds"))
-```
-
-Remove doublets
-
-```{r iPS_preQC_no_doublets}
-iPS_preQC_no_doublets <- subset(x = iPS_preQC, subset = scDblFinder.class == "singlet")
-table(iPS_preQC_no_doublets@meta.data$scDblFinder.class)
-rm(iPS_preQC)
-```
-
-Check quality control parameters after removing doublets
-
-```{r QC_pre_no_doublets_VlnPlots, fig.height=6, fig.width=8}
-p1 <- VlnPlot(iPS_preQC_no_doublets, features = "nCount_RNA", group.by = "Sample", pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p2 <- VlnPlot(iPS_preQC_no_doublets, features = "nFeature_RNA", group.by = "Sample", pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p3 <- VlnPlot(iPS_preQC_no_doublets, features = "percent.mt", group.by = "Sample", pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p4 <- VlnPlot(iPS_preQC_no_doublets, features = "percent.rp", group.by = "Sample", pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-QC_pre_no_doublets_VlnPlots <- p1 + p2 + p3 + p4 + plot_layout(ncol = 2)
-
-QC_pre_no_doublets_VlnPlots
-```
-
-```{r QC_pre_no_doublets_VlnPlots_zoom, fig.height=10, fig.width=8}
-p1 <- VlnPlot(iPS_preQC_no_doublets, features = "nCount_RNA", group.by = "Sample", pt.size = 0, y.max = 10000) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p2 <- VlnPlot(iPS_preQC_no_doublets, features = "nFeature_RNA", group.by = "Sample", pt.size = 0, y.max = 6000) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p3 <- VlnPlot(iPS_preQC_no_doublets, features = "percent.mt", group.by = "Sample", pt.size = 0, y.max = 25) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p4 <- VlnPlot(iPS_preQC_no_doublets, features = "percent.rp", group.by = "Sample", pt.size = 0, y.max = 20) + theme(axis.title.x = element_blank()) + NoLegend()
-
-QC_pre_no_doublets_VlnPlots_zoom <- p1 + p2 + p3 + p4 + plot_layout(ncol = 2)
-
-QC_pre_no_doublets_VlnPlots_zoom
-```
-
-Filter based on number of counts, features and percentage of mitochondrial genes
-
-```{r}
-iPS <- subset(iPS_preQC_no_doublets, subset = 
-                nFeature_RNA > 600 &
-                percent.mt < 20 &
-                nCount_RNA > 1000)
-
-table(iPS$Sample)
-```
-
-Check quality control parameters
-
-```{r QC_post_VlnPlots, fig.height=6, fig.width=8}
-p1 <- VlnPlot(iPS, features = "nCount_RNA", group.by = "Sample", pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p2 <- VlnPlot(iPS, features = "nFeature_RNA", group.by = "Sample", pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p3 <- VlnPlot(iPS, features = "percent.mt", group.by = "Sample", pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p4 <- VlnPlot(iPS, features = "percent.rp", group.by = "Sample", pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-QC_post_VlnPlots <- p1 + p2 + p3 + p4 + plot_layout(ncol = 2)
-
-QC_post_VlnPlots
-```
-
-```{r QC_post_VlnPlots_zoom, fig.height=10, fig.width=8}
-p1 <- VlnPlot(iPS, features = "nCount_RNA", group.by = "Sample", pt.size = 0, y.max = 10000) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p2 <- VlnPlot(iPS, features = "nFeature_RNA", group.by = "Sample", pt.size = 0, y.max = 6000) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p3 <- VlnPlot(iPS, features = "percent.mt", group.by = "Sample", pt.size = 0, y.max = 25) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p4 <- VlnPlot(iPS, features = "percent.rp", group.by = "Sample", pt.size = 0, y.max = 20) + theme(axis.title.x = element_blank()) + NoLegend()
-
-QC_post_VlnPlots_zoom <- p1 + p2 + p3 + p4 + plot_layout(ncol = 2)
-
-QC_post_VlnPlots_zoom
-```
-
-
-## Integration and clustering
-
-Normalization and scaling using SCTransform.
-
-```{r eval=FALSE}
-DefaultAssay(iPS) <- "RNA"
-iPS.list <- SplitObject(iPS, split.by = "Sample")
-for (i in 1:length(iPS.list)) {
-  iPS.list[[i]] <- SCTransform(iPS.list[[i]], vst.flavor = "v2", vars.to.regress = c("percent.mt", "percent.rp"))
-}
-```
-
-PCA without integration
-
-```{r, eval=FALSE}
-features <- SelectIntegrationFeatures(object.list = iPS.list, nfeatures = 2000)
-iPS_not_integrated <- Merge_Seurat_List(iPS.list)
-VariableFeatures(iPS_not_integrated) <- features
-iPS_not_integrated <- RunPCA(iPS_not_integrated)
-```
-
-```{r eval=FALSE}
-saveRDS(iPS_not_integrated, 
-        here::here(output_dir_data, "iPS_not_integrated.rds"))
-```
-
-```{r}
-iPS_not_integrated <- readRDS(here::here(output_dir_data, "iPS_not_integrated.rds"))
-```
-
-
-```{r Elbow_not_integrated, fig.width=4, fig.height=4}
-ElbowPlot(iPS_not_integrated, ndims = 50)
-```
-
-Clustering without integration
-
-```{r eval=FALSE}
-iPS_not_integrated <- RunUMAP(iPS_not_integrated, dims = 1:40)
-iPS_not_integrated <- FindNeighbors(iPS_not_integrated, dims = 1:40)
-iPS_not_integrated <- FindClusters(iPS_not_integrated, resolution = seq(0.1, 0.8, by=0.1))
-```
-
-```{r Clustree_not_integrated, fig.width=6, fig.height=9}
-clustree::clustree(iPS_not_integrated@meta.data[,grep("SCT_snn_res", colnames(iPS_not_integrated@meta.data))],
-                   prefix = "SCT_snn_res.")
-```
-
-```{r UMAPs_not_integrated, fig.width=12, fig.height=10}
-DimPlot(iPS_not_integrated, reduction = "umap", shuffle = T,
-        group.by = c("SCT_snn_res.0.3", "Sample", "Condition", "Cell_line"), ncol = 2)
-```
-
-```{r eval=FALSE}
-saveRDS(iPS_not_integrated, 
-        here::here(output_dir_data, "iPS_not_integrated.rds"))
-```
-
-Integrate the samples
-
-```{r eval=FALSE}
-iPS.list <- PrepSCTIntegration(object.list = iPS.list, anchor.features = features)
-iPS.anchors <- FindIntegrationAnchors(object.list = iPS.list, normalization.method = "SCT",
-                                      anchor.features = features)
-iPS_integrated <- IntegrateData(anchorset = iPS.anchors, normalization.method = "SCT")
-```
-
-PCA after integration
-
-```{r eval=FALSE}
-iPS_integrated <- RunPCA(iPS_integrated)
-```
-
-```{r, eval=FALSE}
-saveRDS(iPS_integrated, 
-        here::here(output_dir_data, "iPS_integrated_low_quality.rds"))
-```
-
-```{r}
-iPS_integrated <- readRDS(here::here(output_dir_data, "iPS_integrated_low_quality.rds"))
-```
-
-```{r Elbow_integrated_low_quality, fig.width=4, fig.height=4}
-ElbowPlot(iPS_integrated, ndims = 50)
-```
-
-Clustering after integration
-
-```{r eval=FALSE}
-DefaultAssay(iPS_integrated) <- "integrated"
-iPS_integrated <- RunUMAP(iPS_integrated, dims = 1:30, reduction = "pca")
-iPS_integrated <- FindNeighbors(iPS_integrated, dims = 1:30, reduction = "pca")
-iPS_integrated <- FindClusters(iPS_integrated, resolution = seq(0.1, 0.8, by=0.1))
-```
-
-```{r Clustree_integrated_low_quality, fig.width=6, fig.height=9}
-clustree::clustree(iPS_integrated@meta.data[,grep("integrated_snn_res", colnames(iPS_integrated@meta.data))],
-                   prefix = "integrated_snn_res.")
-```
-
-```{r UMAPs_integrated_low_quality, fig.width=12, fig.height=10}
-DimPlot(iPS_integrated, reduction = "umap", shuffle = T,
-        group.by = c("integrated_snn_res.0.2", "Sample", "Condition", "Cell_line"), ncol = 2)
-```
-
-```{r, eval=FALSE}
-saveRDS(iPS_integrated, 
-        here::here(output_dir_data, "iPS_integrated_low_quality.rds"))
-```
-
-Find the markers that characterize each cell population
-
-```{r}
-DefaultAssay(iPS_integrated) <- "SCT"
-iPS_integrated <- PrepSCTFindMarkers(iPS_integrated)
-Idents(iPS_integrated) <- "integrated_snn_res.0.2"
-Markers <- FindAllMarkers(iPS_integrated, only.pos = TRUE, min.pct = 0.5, logfc.threshold = 0.5)
-write.csv(Markers, here::here(output_dir_data, "iPS_Markers_all_low_quality.csv"))
-Markers_top10 <- as.data.frame(Markers %>% group_by(cluster) %>% top_n(n = 10, wt = avg_log2FC))
-write.csv(Markers_top10, here::here(output_dir_data, "iPS_Markers_top10_low_quality.csv"))
-Markers_top3 <- as.data.frame(Markers %>% group_by(cluster) %>% top_n(n = 3, wt = avg_log2FC))
-write.csv(Markers_top3, here::here(output_dir_data, "iPS_Markers_top3_low_quality.csv"))
-```
-
-```{r Heatmap_low_quality, fig.width=12, fig.height=10}
-DefaultAssay(iPS_integrated) <- "RNA"
-iPS_integrated <- NormalizeData(iPS_integrated)
-iPS_integrated <- ScaleData(iPS_integrated)
-mapal <- colorRampPalette(RColorBrewer::brewer.pal(9,"RdBu"))(256)
-mapal <- rev(mapal[1:256])
-Heatmap <- DoHeatmap(iPS_integrated, draw.line = F, features = Markers_top10$gene) +
-  guides(colour=FALSE) +
-  scale_fill_gradientn(colours = mapal) +
-  theme(text = element_text(size = 15), axis.text.y = element_text(size = 8)) +
-  theme(plot.margin = unit(c(0.1, 0, 0, 0), 
-                           "inches"))
-Heatmap
-```
-
-Check QC parameters in each cluster
-
-```{r QC_VlnPlots_low_quality, fig.width=8, fig.height=6}
-VlnPlot(iPS_integrated, features = c("nCount_RNA", "nFeature_RNA", "percent.mt", "percent.rp"), ncol = 2) + theme(axis.title.x = element_blank())
-```
-
-Remove low quality cells (clusters with low number of features)
-```{r}
-iPS_integrated <- subset(iPS_integrated, subset = integrated_snn_res.0.2 != "3" & integrated_snn_res.0.2 != "5")
-```
-
-Recluster
-
-```{r eval=FALSE}
-DefaultAssay(iPS_integrated) <- "integrated"
-iPS_integrated <- RunPCA(iPS_integrated)
-```
-
-```{r eval=FALSE}
-saveRDS(iPS_integrated, 
-        here::here(output_dir_data, "iPS_integrated.rds"))
-```
 
 ```{r}
 iPS_integrated <- readRDS(here::here(output_dir_data, "iPS_integrated.rds"))
 ```
 
-```{r Elbow_integrated, fig.width=4, fig.height=4}
-ElbowPlot(iPS_integrated, ndims = 50)
+
+```{r Cell_type_sample_table, fig.height=3, fig.width=8, message=FALSE, warning=FALSE}
+# Extract metadata
+metadata <- iPS_integrated@meta.data
+
+# Create a contingency table with cell types as rows and samples as columns
+cell_type_sample_table <- table(metadata$cell_type, metadata$Sample)
+
+# Convert the table to a data frame for easier manipulation
+cell_type_sample_df <- as.data.frame.matrix(cell_type_sample_table)
+
+# Add the totals per sample (column-wise sum) as the last row
+cell_type_sample_df["Total", ] <- colSums(cell_type_sample_df)
+
+# Add the totals per cell type (row-wise sum) as the last column
+cell_type_sample_df$Total <- rowSums(cell_type_sample_df)
+
+table_plot <- tableGrob(cell_type_sample_df)
+
+ggsave(here::here(output_dir_data, "cell_type_sample_table.png"), plot = table_plot, dpi = 600, width = 8, height = 3)
+
+# Include the image in the markdown document
+knitr::include_graphics(here::here(output_dir_data, "cell_type_sample_table.png"), error = FALSE)
 ```
 
-```{r eval=FALSE}
-DefaultAssay(iPS_integrated) <- "integrated"
-iPS_integrated <- RunUMAP(iPS_integrated, dims = 1:30, reduction = "pca")
-iPS_integrated <- FindNeighbors(iPS_integrated, dims = 1:30, reduction = "pca")
-iPS_integrated <- FindClusters(iPS_integrated, resolution = seq(0.1, 0.8, by=0.1))
-```
-
-```{r Clustree_integrated, fig.width=6, fig.height=9}
-clustree::clustree(iPS_integrated@meta.data[,grep("integrated_snn_res", colnames(iPS_integrated@meta.data))],
-                   prefix = "integrated_snn_res.")
-```
-
-```{r UMAPs_integrated, fig.width=12, fig.height=10}
-DimPlot(iPS_integrated, reduction = "umap", shuffle = T,
-        group.by = c("integrated_snn_res.0.2", "Sample", "Condition", "Cell_line"), ncol = 2)
-```
-
-Find the markers that characterize each cell population
-
-```{r}
-DefaultAssay(iPS_integrated) <- "SCT"
-iPS_integrated <- PrepSCTFindMarkers(iPS_integrated)
-Idents(iPS_integrated) <- "integrated_snn_res.0.2"
-Markers <- FindAllMarkers(iPS_integrated, only.pos = TRUE, min.pct = 0.5, logfc.threshold = 0.5, recorrect_umi = FALSE)
-write.csv(Markers, here::here(output_dir_data, "iPS_Markers_all.csv"))
-Markers_top10 <- as.data.frame(Markers %>% group_by(cluster) %>% top_n(n = 10, wt = avg_log2FC))
-write.csv(Markers_top10, here::here(output_dir_data, "iPS_Markers_top10.csv"))
-Markers_top3 <- as.data.frame(Markers %>% group_by(cluster) %>% top_n(n = 3, wt = avg_log2FC))
-write.csv(Markers_top3, here::here(output_dir_data, "iPS_Markers_top3.csv"))
-```
-
-Check cell cycle genes
-```{r Cell_cycle_UMAP, fig.width=5, fig.height=4}
-DefaultAssay(iPS_integrated) <- "RNA"
-s.genes <- cc.genes$s.genes
-g2m.genes <- cc.genes$g2m.genes
-iPS_integrated <- CellCycleScoring(iPS_integrated, s.features = s.genes, g2m.features = g2m.genes)
-DimPlot(iPS_integrated, reduction = "umap", shuffle = T,
-        group.by = "Phase")
-```
-
-
-## Cell type annotation
-
-Annotate the clusters based on the characteristic markers
-
-```{r}
-iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("0"), "cell_type"] = "Atrial Cardiomyocytes"
-iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("1"), "cell_type"] = "Ventricular Cardiomyocytes"
-iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("2"), "cell_type"] = "CDKN1A+ Cardiomyocytes"
-iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("3"), "cell_type"] = "Fibroblasts"
-iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("4"), "cell_type"] = "Progenitor cells"
-iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("5"), "cell_type"] = "Endothelial cells"
-iPS_integrated$cell_type <- factor(iPS_integrated$cell_type, levels = c("Atrial Cardiomyocytes", 
-                                                                        "Ventricular Cardiomyocytes",
-                                                                        "CDKN1A+ Cardiomyocytes",
-                                                                        "Fibroblasts",
-                                                                        "Progenitor cells",
-                                                                        "Endothelial cells"))
-Idents(iPS_integrated) <- iPS_integrated$cell_type
-```
-
-```{r Heatmap, fig.width=12, fig.height=10}
-DefaultAssay(iPS_integrated) <- "RNA"
-cluster_palette <- c("#24B700","#F8766D", "#D575FE", "#00ACFC", "#EA8331", "#FF65AC")
-Heatmap <- DoHeatmap(iPS_integrated, draw.line = F, features = Markers_top10$gene, group.colors = cluster_palette) +
-  guides(colour=FALSE) +
-  scale_fill_gradientn(colours = mapal) +
-  theme(text = element_text(size = 15), axis.text.y = element_text(size = 8)) +
-  theme(plot.margin = unit(c(0, 0, 0, 0), 
-                           "inches"))
-Heatmap
-```
-
-```{r UMAP_cell_type, fig.width=6.5, fig.height=6}
-p <- DimPlot(iPS_integrated, group.by = "cell_type", reduction = "umap", label = F, cols = cluster_palette) + 
-  NoLegend() + 
-  theme(axis.text=element_text(size=14, face = "bold"), axis.title = element_text(size = 18, face = "bold")) + 
-  theme(plot.title = element_blank())
-LabelClusters(p, id = "cell_type", fontface = "bold", size = 5.5, repel = T)
-```
-
-```{r DotPlot_markers, fig.width=6, fig.height=7}
-DotPlot(iPS_integrated, assay = "SCT", features = rev(Markers_top3$gene), dot.scale = 5, cluster.idents = FALSE) +
-  RotatedAxis() +
-  coord_flip() +
-  theme(axis.title = element_blank(), axis.text.x = element_text(size = 14), axis.text.y = element_text(size = 13), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
-                           "inches"))
-```
-
-```{r FeatPlot_markers, fig.width=13.5, fig.height=8}
-FeaturePlot(iPS_integrated, features = c("MYH6", "MYH7", "CDKN1A", "FN1", "TOP2A", "PECAM1"), ncol = 3)
-```
-
-```{r, eval = FALSE}
-saveRDS(iPS_integrated, 
-        here::here(output_dir_data, "iPS_integrated.rds"))
-```
 
 
 
