@@ -104,7 +104,7 @@ table_plot <- tableGrob(cell_type_sample_df)
 ggsave(here::here(output_dir_figs, "cell_type_sample_table.png"), plot = table_plot, dpi = 600, width = 8, height = 3)
 
 # Include the image in the markdown document
-knitr::include_graphics(here::here(output_dir_figs, "cell_type_sample_table.png"), error = FALSE)
+knitr::include_graphics(here::here(output_dir_figs, "cell_type_sample_table.png"), error = FALSE, dpi = 300)
 ```
 
 
