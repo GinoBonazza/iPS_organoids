@@ -334,6 +334,23 @@ div.tocify {
         <li>
   <a href="index.html">Home</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-navicon"></span>
+     
+    Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="QC_integration_annotation.html">QC, integration, annotation</a>
+    </li>
+    <li>
+      <a href="Differential_expression.html">Differential expression</a>
+    </li>
+  </ul>
+</li>
 <li>
   <a href="about.html">About</a>
 </li>
@@ -362,7 +379,7 @@ div.tocify {
 <h4 class="author">GinoBonazza (<a
 href="mailto:ginoandrea.bonazza@usz.ch"
 class="email">ginoandrea.bonazza@usz.ch</a>)</h4>
-<h4 class="date">17 June, 2024</h4>
+<h4 class="date">23 July, 2024</h4>
 
 </div>
 
@@ -391,7 +408,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-06-17
+<strong>Last updated:</strong> 2024-07-23
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -522,15 +539,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstreea069222dc3f05eb057fb966d891dc8b1fcd47f4atargetblanka069222a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstreeb7c75123e89cb90d09de024aecfde88c970e5d4btargetblankb7c7512a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/GinoBonazza/iPS_organoids/tree/a069222dc3f05eb057fb966d891dc8b1fcd47f4a" target="_blank">a069222</a>
+<a href="https://github.com/GinoBonazza/iPS_organoids/tree/b7c75123e89cb90d09de024aecfde88c970e5d4b" target="_blank">b7c7512</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstreea069222dc3f05eb057fb966d891dc8b1fcd47f4atargetblanka069222a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstreeb7c75123e89cb90d09de024aecfde88c970e5d4btargetblankb7c7512a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -540,7 +557,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/GinoBonazza/iPS_organoids/tree/a069222dc3f05eb057fb966d891dc8b1fcd47f4a" target="_blank">a069222</a>.
+<a href="https://github.com/GinoBonazza/iPS_organoids/tree/b7c75123e89cb90d09de024aecfde88c970e5d4b" target="_blank">b7c7512</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -557,15 +574,21 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    analysis/figure/
     Ignored:    output/Test2/
 
 Untracked files:
-    Untracked:  analysis/Test.Rmd
-    Untracked:  analysis/Test2.Rmd
+    Untracked:  analysis/custom.css
+    Untracked:  code/DE_CDKN1A_temp.Rmd
+    Untracked:  code/QC_backup.Rmd
     Untracked:  code/QC_integration_annotation_fail.Rmd
+    Untracked:  code/create_CSS.R
+    Untracked:  code/css/
     Untracked:  data/Cellbender_output/
     Untracked:  data/Cellranger_output/
     Untracked:  data/Organoids_metadata.xlsx
+    Untracked:  omnipathr-log/
+    Untracked:  output/Differential_expression/
     Untracked:  output/QC_integration_annotation/
     Untracked:  output/Test/
 
@@ -614,6 +637,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/b7c75123e89cb90d09de024aecfde88c970e5d4b/analysis/QC_integration_annotation.Rmd" target="_blank">b7c7512</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-23
+</td>
+<td>
+wflow_publish("analysis/QC_integration_annotation.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/GinoBonazza/iPS_organoids/60c5232669f68f9722eb3eb73a131ed3ab3bd779/docs/QC_integration_annotation.html" target="_blank">60c5232</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-06-17
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -708,6 +765,15 @@ library(patchwork)
 library(statmod)
 library(ArchR)
 library(clustree)
+library(speckle)
+library(ggplot2)
+library(scater)
+library(gprofiler2)
+library(clusterProfiler)
+library(org.Hs.eg.db)
+library(AnnotationHub)
+library(ReactomePA)
+library(speckle)
 
 #Output paths
 output_dir_data &lt;- here::here(&quot;output&quot;, current_file)
@@ -720,1172 +786,29 @@ if (!dir.exists(output_dir_figs)) dir.create(output_dir_figs)</code></pre>
 </div>
 <div id="quality-control" class="section level2">
 <h2>Quality Control</h2>
-<p>Load and merge cellranger output</p>
-<pre class="r"><code>JD6_Ctr &lt;- Read10X_h5(filename = here::here(&quot;data&quot;, &quot;Cellranger_output&quot;, &quot;JD6_Ctr_filtered_feature_bc_matrix.h5&quot;))
-JD6_Ctr &lt;- CreateSeuratObject(JD6_Ctr, project = &quot;JD6_Ctr&quot;)
-JD6_DMD &lt;- Read10X_h5(filename = here::here(&quot;data&quot;, &quot;Cellranger_output&quot;, &quot;JD6_DMD_filtered_feature_bc_matrix.h5&quot;))
-JD6_DMD &lt;- CreateSeuratObject(JD6_DMD, project = &quot;JD6_DMD&quot;)
-DMD1_Ctr &lt;- Read10X_h5(filename = here::here(&quot;data&quot;, &quot;Cellranger_output&quot;, &quot;DMD1_Ctr_filtered_feature_bc_matrix.h5&quot;))
-DMD1_Ctr &lt;- CreateSeuratObject(DMD1_Ctr, project = &quot;DMD1_Ctr&quot;)
-DMD1 &lt;- Read10X_h5(filename = here::here(&quot;data&quot;, &quot;Cellranger_output&quot;, &quot;DMD1_filtered_feature_bc_matrix.h5&quot;))
-DMD1 &lt;- CreateSeuratObject(DMD1, project = &quot;DMD1&quot;)
-JDR_Ctr &lt;- Read10X_h5(filename = here::here(&quot;data&quot;, &quot;Cellranger_output&quot;, &quot;JDR_Ctr_filtered_feature_bc_matrix.h5&quot;))
-JDR_Ctr &lt;- CreateSeuratObject(JDR_Ctr, project = &quot;JDR_Ctr&quot;)
-JDR_DMD &lt;- Read10X_h5(filename = here::here(&quot;data&quot;, &quot;Cellranger_output&quot;, &quot;JDR_DMD_filtered_feature_bc_matrix.h5&quot;))
-JDR_DMD &lt;- CreateSeuratObject(JDR_DMD, project = &quot;JDR_DMD&quot;)
-
-iPS_preQC &lt;- merge(JD6_Ctr, y = c(JD6_DMD, DMD1_Ctr, DMD1, JDR_Ctr, JDR_DMD), 
-                   add.cell.ids = c(&quot;JD6_Ctr&quot;, &quot;JD6_DMD&quot;, &quot;DMD1_Ctr&quot;, &quot;DMD1&quot;, &quot;JDR_Ctr&quot;, &quot;JDR_DMD&quot;))
-rm(JD6_Ctr, JD6_DMD, DMD1_Ctr, DMD1, JDR_Ctr, JDR_DMD)</code></pre>
-<p>Add metadata: percentage of mitochondrial and ribosomal genes, cell
-line, condition</p>
-<pre class="r"><code>iPS_preQC[[&quot;percent.mt&quot;]] &lt;- PercentageFeatureSet(iPS_preQC, pattern = &quot;^MT-&quot;)
-iPS_preQC[[&quot;percent.rp&quot;]] &lt;- PercentageFeatureSet(iPS_preQC, pattern = &quot;^RP[SL]&quot;)
-iPS_preQC$Sample &lt;- iPS_preQC$orig.ident
-Organoids_metadata &lt;- read_excel(here::here(&quot;data&quot;, &quot;Organoids_metadata.xlsx&quot;))
-add_metadata &lt;- left_join(iPS_preQC[[&quot;Sample&quot;]], Organoids_metadata)
-row.names(add_metadata) &lt;- row.names(iPS_preQC[[]])
-iPS_preQC &lt;- AddMetaData(iPS_preQC, metadata = add_metadata)
-rm(add_metadata, Organoids_metadata)
-metadata &lt;- unique(subset(iPS_preQC@meta.data, select = c(orig.ident, Sample:length(iPS_preQC@meta.data))))
-rownames(metadata) &lt;- metadata$orig.ident
-metadata</code></pre>
-<pre><code>         orig.ident   Sample Cell_line Condition Library
-JD6_Ctr     JD6_Ctr  JD6_Ctr       JD6       Ctr    S214
-JD6_DMD     JD6_DMD  JD6_DMD       JD6       DMD    LIB2
-DMD1_Ctr   DMD1_Ctr DMD1_Ctr      DMD1       Ctr    LIB3
-DMD1           DMD1     DMD1      DMD1       DMD    LIB4
-JDR_Ctr     JDR_Ctr  JDR_Ctr       JDR       Ctr    S215
-JDR_DMD     JDR_DMD  JDR_DMD       JDR       DMD    &lt;NA&gt;</code></pre>
-<p>Check quality control parameters</p>
-<pre class="r"><code>p1 &lt;- VlnPlot(iPS_preQC, features = &quot;nCount_RNA&quot;, group.by = &quot;Sample&quot;, pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p2 &lt;- VlnPlot(iPS_preQC, features = &quot;nFeature_RNA&quot;, group.by = &quot;Sample&quot;, pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p3 &lt;- VlnPlot(iPS_preQC, features = &quot;percent.mt&quot;, group.by = &quot;Sample&quot;, pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p4 &lt;- VlnPlot(iPS_preQC, features = &quot;percent.rp&quot;, group.by = &quot;Sample&quot;, pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-QC_pre_VlnPlots &lt;- p1 + p2 + p3 + p4 + plot_layout(ncol = 2)
-
-QC_pre_VlnPlots</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/QC_pre_VlnPlots-1.png" width="4800" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_pre_VlnPlots-1">
-Past versions of QC_pre_VlnPlots-1.png
-</button>
-</p>
-<div id="fig-QC_pre_VlnPlots-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/QC_pre_VlnPlots-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>p1 &lt;- VlnPlot(iPS_preQC, features = &quot;nCount_RNA&quot;, group.by = &quot;Sample&quot;, pt.size = 0, y.max = 10000) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p2 &lt;- VlnPlot(iPS_preQC, features = &quot;nFeature_RNA&quot;, group.by = &quot;Sample&quot;, pt.size = 0, y.max = 6000) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p3 &lt;- VlnPlot(iPS_preQC, features = &quot;percent.mt&quot;, group.by = &quot;Sample&quot;, pt.size = 0, y.max = 25) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p4 &lt;- VlnPlot(iPS_preQC, features = &quot;percent.rp&quot;, group.by = &quot;Sample&quot;, pt.size = 0, y.max = 20) + theme(axis.title.x = element_blank()) + NoLegend()
-
-QC_pre_VlnPlots_zoom &lt;- p1 + p2 + p3 + p4 + plot_layout(ncol = 2)
-
-QC_pre_VlnPlots_zoom</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/QC_pre_VlnPlots_zoom-1.png" width="4800" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_pre_VlnPlots_zoom-1">
-Past versions of QC_pre_VlnPlots_zoom-1.png
-</button>
-</p>
-<div id="fig-QC_pre_VlnPlots_zoom-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/QC_pre_VlnPlots_zoom-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>Doublets detection</p>
-<pre class="r"><code>iPS_preQC_sce &lt;- as.SingleCellExperiment(iPS_preQC)
-iPS_preQC_sce &lt;- scDblFinder(iPS_preQC_sce, samples=&quot;Sample&quot;, clusters = TRUE)
-table(iPS_preQC_sce@colData$scDblFinder.class)</code></pre>
-<pre><code>
-singlet doublet 
-  14487    1091 </code></pre>
-<pre class="r"><code>iPS_preQC &lt;- as.Seurat(iPS_preQC_sce, counts = &quot;counts&quot;, data = &quot;logcounts&quot;)
-rm(iPS_preQC_sce)
-iPS_preQC@meta.data[iPS_preQC@meta.data$scDblFinder.class %in% &quot;singlet&quot;, &quot;scDblFinder.n&quot;] = paste0(&quot;Singlets (n=&quot;, table(iPS_preQC$scDblFinder.class)[1], &quot;)&quot;)
-iPS_preQC@meta.data[iPS_preQC@meta.data$scDblFinder.class %in% &quot;doublet&quot;, &quot;scDblFinder.n&quot;] = paste0(&quot;Doublets (n=&quot;, table(iPS_preQC$scDblFinder.class)[2], &quot;)&quot;)
-iPS_preQC$scDblFinder.n &lt;- factor(x = iPS_preQC$scDblFinder.n, levels = c(rownames(table(iPS_preQC$scDblFinder.n))[2], rownames(table(iPS_preQC$scDblFinder.n))[1])) </code></pre>
-<pre class="r"><code>p1 &lt;- VlnPlot(iPS_preQC, features = c(&quot;nCount_RNA&quot;), split.by = &quot;scDblFinder.n&quot;, group.by = &quot;Sample&quot;, pt.size = 0, y.max = 50000) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p2 &lt;- VlnPlot(iPS_preQC, features = c(&quot;nFeature_RNA&quot;), split.by = &quot;scDblFinder.n&quot;, group.by = &quot;Sample&quot;, pt.size = 0, y.max = 10000) + theme(axis.title.x = element_blank()) 
-
-QC_pre_Doublets &lt;- p1 + p2 + plot_layout(ncol = 2)
-
-QC_pre_Doublets</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/QC_pre_Doublets-1.png" width="4800" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_pre_Doublets-1">
-Past versions of QC_pre_Doublets-1.png
-</button>
-</p>
-<div id="fig-QC_pre_Doublets-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/QC_pre_Doublets-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>saveRDS(iPS_preQC, 
-        here::here(output_dir_data, &quot;iPS_preQC.rds&quot;))</code></pre>
-<p>Remove doublets</p>
-<pre class="r"><code>iPS_preQC_no_doublets &lt;- subset(x = iPS_preQC, subset = scDblFinder.class == &quot;singlet&quot;)
-table(iPS_preQC_no_doublets@meta.data$scDblFinder.class)</code></pre>
-<pre><code>
-singlet doublet 
-  14487       0 </code></pre>
-<pre class="r"><code>rm(iPS_preQC)</code></pre>
-<p>Check quality control parameters after removing doublets</p>
-<pre class="r"><code>p1 &lt;- VlnPlot(iPS_preQC_no_doublets, features = &quot;nCount_RNA&quot;, group.by = &quot;Sample&quot;, pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p2 &lt;- VlnPlot(iPS_preQC_no_doublets, features = &quot;nFeature_RNA&quot;, group.by = &quot;Sample&quot;, pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p3 &lt;- VlnPlot(iPS_preQC_no_doublets, features = &quot;percent.mt&quot;, group.by = &quot;Sample&quot;, pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p4 &lt;- VlnPlot(iPS_preQC_no_doublets, features = &quot;percent.rp&quot;, group.by = &quot;Sample&quot;, pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-QC_pre_no_doublets_VlnPlots &lt;- p1 + p2 + p3 + p4 + plot_layout(ncol = 2)
-
-QC_pre_no_doublets_VlnPlots</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/QC_pre_no_doublets_VlnPlots-1.png" width="4800" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_pre_no_doublets_VlnPlots-1">
-Past versions of QC_pre_no_doublets_VlnPlots-1.png
-</button>
-</p>
-<div id="fig-QC_pre_no_doublets_VlnPlots-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/QC_pre_no_doublets_VlnPlots-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>p1 &lt;- VlnPlot(iPS_preQC_no_doublets, features = &quot;nCount_RNA&quot;, group.by = &quot;Sample&quot;, pt.size = 0, y.max = 10000) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p2 &lt;- VlnPlot(iPS_preQC_no_doublets, features = &quot;nFeature_RNA&quot;, group.by = &quot;Sample&quot;, pt.size = 0, y.max = 6000) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p3 &lt;- VlnPlot(iPS_preQC_no_doublets, features = &quot;percent.mt&quot;, group.by = &quot;Sample&quot;, pt.size = 0, y.max = 25) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p4 &lt;- VlnPlot(iPS_preQC_no_doublets, features = &quot;percent.rp&quot;, group.by = &quot;Sample&quot;, pt.size = 0, y.max = 20) + theme(axis.title.x = element_blank()) + NoLegend()
-
-QC_pre_no_doublets_VlnPlots_zoom &lt;- p1 + p2 + p3 + p4 + plot_layout(ncol = 2)
-
-QC_pre_no_doublets_VlnPlots_zoom</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/QC_pre_no_doublets_VlnPlots_zoom-1.png" width="4800" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_pre_no_doublets_VlnPlots_zoom-1">
-Past versions of QC_pre_no_doublets_VlnPlots_zoom-1.png
-</button>
-</p>
-<div id="fig-QC_pre_no_doublets_VlnPlots_zoom-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/QC_pre_no_doublets_VlnPlots_zoom-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>Filter based on number of counts, features and percentage of
-mitochondrial genes</p>
-<pre class="r"><code>iPS &lt;- subset(iPS_preQC_no_doublets, subset = 
-                nFeature_RNA &gt; 600 &amp;
-                percent.mt &lt; 20 &amp;
-                nCount_RNA &gt; 1000)
-
-table(iPS$Sample)</code></pre>
-<pre><code>
-    DMD1 DMD1_Ctr  JD6_Ctr  JD6_DMD  JDR_Ctr  JDR_DMD 
-    2440     1070      470     1127     3777      654 </code></pre>
-<p>Check quality control parameters</p>
-<pre class="r"><code>p1 &lt;- VlnPlot(iPS, features = &quot;nCount_RNA&quot;, group.by = &quot;Sample&quot;, pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p2 &lt;- VlnPlot(iPS, features = &quot;nFeature_RNA&quot;, group.by = &quot;Sample&quot;, pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p3 &lt;- VlnPlot(iPS, features = &quot;percent.mt&quot;, group.by = &quot;Sample&quot;, pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p4 &lt;- VlnPlot(iPS, features = &quot;percent.rp&quot;, group.by = &quot;Sample&quot;, pt.size = 0) + theme(axis.title.x = element_blank()) + NoLegend()
-
-QC_post_VlnPlots &lt;- p1 + p2 + p3 + p4 + plot_layout(ncol = 2)
-
-QC_post_VlnPlots</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/QC_post_VlnPlots-1.png" width="4800" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_post_VlnPlots-1">
-Past versions of QC_post_VlnPlots-1.png
-</button>
-</p>
-<div id="fig-QC_post_VlnPlots-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/QC_post_VlnPlots-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>p1 &lt;- VlnPlot(iPS, features = &quot;nCount_RNA&quot;, group.by = &quot;Sample&quot;, pt.size = 0, y.max = 10000) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p2 &lt;- VlnPlot(iPS, features = &quot;nFeature_RNA&quot;, group.by = &quot;Sample&quot;, pt.size = 0, y.max = 6000) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p3 &lt;- VlnPlot(iPS, features = &quot;percent.mt&quot;, group.by = &quot;Sample&quot;, pt.size = 0, y.max = 25) + theme(axis.title.x = element_blank()) + NoLegend()
-
-p4 &lt;- VlnPlot(iPS, features = &quot;percent.rp&quot;, group.by = &quot;Sample&quot;, pt.size = 0, y.max = 20) + theme(axis.title.x = element_blank()) + NoLegend()
-
-QC_post_VlnPlots_zoom &lt;- p1 + p2 + p3 + p4 + plot_layout(ncol = 2)
-
-QC_post_VlnPlots_zoom</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/QC_post_VlnPlots_zoom-1.png" width="4800" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_post_VlnPlots_zoom-1">
-Past versions of QC_post_VlnPlots_zoom-1.png
-</button>
-</p>
-<div id="fig-QC_post_VlnPlots_zoom-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/QC_post_VlnPlots_zoom-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="integration-and-clustering" class="section level2">
-<h2>Integration and clustering</h2>
-<p>Normalization and scaling using SCTransform.</p>
-<pre class="r"><code>DefaultAssay(iPS) &lt;- &quot;RNA&quot;
-iPS.list &lt;- SplitObject(iPS, split.by = &quot;Sample&quot;)
-for (i in 1:length(iPS.list)) {
-  iPS.list[[i]] &lt;- SCTransform(iPS.list[[i]], vst.flavor = &quot;v2&quot;, vars.to.regress = c(&quot;percent.mt&quot;, &quot;percent.rp&quot;))
-}</code></pre>
-<p>PCA without integration</p>
-<pre class="r"><code>features &lt;- SelectIntegrationFeatures(object.list = iPS.list, nfeatures = 2000)
-iPS_not_integrated &lt;- Merge_Seurat_List(iPS.list)
-VariableFeatures(iPS_not_integrated) &lt;- features
-iPS_not_integrated &lt;- RunPCA(iPS_not_integrated)</code></pre>
-<pre class="r"><code>saveRDS(iPS_not_integrated, 
-        here::here(output_dir_data, &quot;iPS_not_integrated.rds&quot;))</code></pre>
-<pre class="r"><code>iPS_not_integrated &lt;- readRDS(here::here(output_dir_data, &quot;iPS_not_integrated.rds&quot;))</code></pre>
-<pre class="r"><code>ElbowPlot(iPS_not_integrated, ndims = 50)</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/Elbow_not_integrated-1.png" width="2400" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Elbow_not_integrated-1">
-Past versions of Elbow_not_integrated-1.png
-</button>
-</p>
-<div id="fig-Elbow_not_integrated-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/Elbow_not_integrated-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>Clustering without integration</p>
-<pre class="r"><code>iPS_not_integrated &lt;- RunUMAP(iPS_not_integrated, dims = 1:40)
-iPS_not_integrated &lt;- FindNeighbors(iPS_not_integrated, dims = 1:40)
-iPS_not_integrated &lt;- FindClusters(iPS_not_integrated, resolution = seq(0.1, 0.8, by=0.1))</code></pre>
-<pre class="r"><code>clustree::clustree(iPS_not_integrated@meta.data[,grep(&quot;SCT_snn_res&quot;, colnames(iPS_not_integrated@meta.data))],
-                   prefix = &quot;SCT_snn_res.&quot;)</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/Clustree_not_integrated-1.png" width="3600" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Clustree_not_integrated-1">
-Past versions of Clustree_not_integrated-1.png
-</button>
-</p>
-<div id="fig-Clustree_not_integrated-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/Clustree_not_integrated-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>DimPlot(iPS_not_integrated, reduction = &quot;umap&quot;, shuffle = T,
-        group.by = c(&quot;SCT_snn_res.0.3&quot;, &quot;Sample&quot;, &quot;Condition&quot;, &quot;Cell_line&quot;), ncol = 2)</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/UMAPs_not_integrated-1.png" width="7200" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-UMAPs_not_integrated-1">
-Past versions of UMAPs_not_integrated-1.png
-</button>
-</p>
-<div id="fig-UMAPs_not_integrated-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/UMAPs_not_integrated-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>saveRDS(iPS_not_integrated, 
-        here::here(output_dir_data, &quot;iPS_not_integrated.rds&quot;))</code></pre>
-<p>Integrate the samples</p>
-<pre class="r"><code>iPS.list &lt;- PrepSCTIntegration(object.list = iPS.list, anchor.features = features)
-iPS.anchors &lt;- FindIntegrationAnchors(object.list = iPS.list, normalization.method = &quot;SCT&quot;,
-                                      anchor.features = features)
-iPS_integrated &lt;- IntegrateData(anchorset = iPS.anchors, normalization.method = &quot;SCT&quot;)</code></pre>
-<p>PCA after integration</p>
-<pre class="r"><code>iPS_integrated &lt;- RunPCA(iPS_integrated)</code></pre>
-<pre class="r"><code>saveRDS(iPS_integrated, 
-        here::here(output_dir_data, &quot;iPS_integrated_low_quality.rds&quot;))</code></pre>
-<pre class="r"><code>iPS_integrated &lt;- readRDS(here::here(output_dir_data, &quot;iPS_integrated_low_quality.rds&quot;))</code></pre>
-<pre class="r"><code>ElbowPlot(iPS_integrated, ndims = 50)</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/Elbow_integrated_low_quality-1.png" width="2400" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Elbow_integrated_low_quality-1">
-Past versions of Elbow_integrated_low_quality-1.png
-</button>
-</p>
-<div id="fig-Elbow_integrated_low_quality-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/Elbow_integrated_low_quality-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>Clustering after integration</p>
-<pre class="r"><code>DefaultAssay(iPS_integrated) &lt;- &quot;integrated&quot;
-iPS_integrated &lt;- RunUMAP(iPS_integrated, dims = 1:30, reduction = &quot;pca&quot;)
-iPS_integrated &lt;- FindNeighbors(iPS_integrated, dims = 1:30, reduction = &quot;pca&quot;)
-iPS_integrated &lt;- FindClusters(iPS_integrated, resolution = seq(0.1, 0.8, by=0.1))</code></pre>
-<pre class="r"><code>clustree::clustree(iPS_integrated@meta.data[,grep(&quot;integrated_snn_res&quot;, colnames(iPS_integrated@meta.data))],
-                   prefix = &quot;integrated_snn_res.&quot;)</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/Clustree_integrated_low_quality-1.png" width="3600" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Clustree_integrated_low_quality-1">
-Past versions of Clustree_integrated_low_quality-1.png
-</button>
-</p>
-<div id="fig-Clustree_integrated_low_quality-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/Clustree_integrated_low_quality-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>DimPlot(iPS_integrated, reduction = &quot;umap&quot;, shuffle = T,
-        group.by = c(&quot;integrated_snn_res.0.2&quot;, &quot;Sample&quot;, &quot;Condition&quot;, &quot;Cell_line&quot;), ncol = 2)</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/UMAPs_integrated_low_quality-1.png" width="7200" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-UMAPs_integrated_low_quality-1">
-Past versions of UMAPs_integrated_low_quality-1.png
-</button>
-</p>
-<div id="fig-UMAPs_integrated_low_quality-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/UMAPs_integrated_low_quality-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>saveRDS(iPS_integrated, 
-        here::here(output_dir_data, &quot;iPS_integrated_low_quality.rds&quot;))</code></pre>
-<p>Find the markers that characterize each cell population</p>
-<pre class="r"><code>DefaultAssay(iPS_integrated) &lt;- &quot;SCT&quot;
-iPS_integrated &lt;- PrepSCTFindMarkers(iPS_integrated)
-Idents(iPS_integrated) &lt;- &quot;integrated_snn_res.0.2&quot;
-Markers &lt;- FindAllMarkers(iPS_integrated, only.pos = TRUE, min.pct = 0.5, logfc.threshold = 0.5)
-write.csv(Markers, here::here(output_dir_data, &quot;iPS_Markers_all_low_quality.csv&quot;))
-Markers_top10 &lt;- as.data.frame(Markers %&gt;% group_by(cluster) %&gt;% top_n(n = 10, wt = avg_log2FC))
-write.csv(Markers_top10, here::here(output_dir_data, &quot;iPS_Markers_top10_low_quality.csv&quot;))
-Markers_top3 &lt;- as.data.frame(Markers %&gt;% group_by(cluster) %&gt;% top_n(n = 3, wt = avg_log2FC))
-write.csv(Markers_top3, here::here(output_dir_data, &quot;iPS_Markers_top3_low_quality.csv&quot;))</code></pre>
-<pre class="r"><code>DefaultAssay(iPS_integrated) &lt;- &quot;RNA&quot;
-iPS_integrated &lt;- NormalizeData(iPS_integrated)
-iPS_integrated &lt;- ScaleData(iPS_integrated)
-mapal &lt;- colorRampPalette(RColorBrewer::brewer.pal(9,&quot;RdBu&quot;))(256)
-mapal &lt;- rev(mapal[1:256])
-Heatmap &lt;- DoHeatmap(iPS_integrated, draw.line = F, features = Markers_top10$gene) +
-  guides(colour=FALSE) +
-  scale_fill_gradientn(colours = mapal) +
-  theme(text = element_text(size = 15), axis.text.y = element_text(size = 8)) +
-  theme(plot.margin = unit(c(0.1, 0, 0, 0), 
-                           &quot;inches&quot;))
-Heatmap</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/Heatmap_low_quality-1.png" width="7200" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Heatmap_low_quality-1">
-Past versions of Heatmap_low_quality-1.png
-</button>
-</p>
-<div id="fig-Heatmap_low_quality-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/Heatmap_low_quality-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>Check QC parameters in each cluster</p>
-<pre class="r"><code>VlnPlot(iPS_integrated, features = c(&quot;nCount_RNA&quot;, &quot;nFeature_RNA&quot;, &quot;percent.mt&quot;, &quot;percent.rp&quot;), ncol = 2) + theme(axis.title.x = element_blank())</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/QC_VlnPlots_low_quality-1.png" width="4800" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_VlnPlots_low_quality-1">
-Past versions of QC_VlnPlots_low_quality-1.png
-</button>
-</p>
-<div id="fig-QC_VlnPlots_low_quality-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/QC_VlnPlots_low_quality-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>Remove low quality cells (clusters with low number of features)</p>
-<pre class="r"><code>iPS_integrated &lt;- subset(iPS_integrated, subset = integrated_snn_res.0.2 != &quot;3&quot; &amp; integrated_snn_res.0.2 != &quot;5&quot;)</code></pre>
-<p>Recluster</p>
-<pre class="r"><code>DefaultAssay(iPS_integrated) &lt;- &quot;integrated&quot;
-iPS_integrated &lt;- RunPCA(iPS_integrated)</code></pre>
-<pre class="r"><code>saveRDS(iPS_integrated, 
-        here::here(output_dir_data, &quot;iPS_integrated.rds&quot;))</code></pre>
 <pre class="r"><code>iPS_integrated &lt;- readRDS(here::here(output_dir_data, &quot;iPS_integrated.rds&quot;))</code></pre>
-<pre class="r"><code>ElbowPlot(iPS_integrated, ndims = 50)</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/Elbow_integrated-1.png" width="2400" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Elbow_integrated-1">
-Past versions of Elbow_integrated-1.png
-</button>
-</p>
-<div id="fig-Elbow_integrated-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/Elbow_integrated-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>DefaultAssay(iPS_integrated) &lt;- &quot;integrated&quot;
-iPS_integrated &lt;- RunUMAP(iPS_integrated, dims = 1:30, reduction = &quot;pca&quot;)
-iPS_integrated &lt;- FindNeighbors(iPS_integrated, dims = 1:30, reduction = &quot;pca&quot;)
-iPS_integrated &lt;- FindClusters(iPS_integrated, resolution = seq(0.1, 0.8, by=0.1))</code></pre>
-<pre class="r"><code>clustree::clustree(iPS_integrated@meta.data[,grep(&quot;integrated_snn_res&quot;, colnames(iPS_integrated@meta.data))],
-                   prefix = &quot;integrated_snn_res.&quot;)</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/Clustree_integrated-1.png" width="3600" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Clustree_integrated-1">
-Past versions of Clustree_integrated-1.png
-</button>
-</p>
-<div id="fig-Clustree_integrated-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/Clustree_integrated-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>DimPlot(iPS_integrated, reduction = &quot;umap&quot;, shuffle = T,
-        group.by = c(&quot;integrated_snn_res.0.2&quot;, &quot;Sample&quot;, &quot;Condition&quot;, &quot;Cell_line&quot;), ncol = 2)</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/UMAPs_integrated-1.png" width="7200" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-UMAPs_integrated-1">
-Past versions of UMAPs_integrated-1.png
-</button>
-</p>
-<div id="fig-UMAPs_integrated-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/UMAPs_integrated-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>Find the markers that characterize each cell population</p>
-<pre class="r"><code>DefaultAssay(iPS_integrated) &lt;- &quot;SCT&quot;
-iPS_integrated &lt;- PrepSCTFindMarkers(iPS_integrated)
-Idents(iPS_integrated) &lt;- &quot;integrated_snn_res.0.2&quot;
-Markers &lt;- FindAllMarkers(iPS_integrated, only.pos = TRUE, min.pct = 0.5, logfc.threshold = 0.5, recorrect_umi = FALSE)
-write.csv(Markers, here::here(output_dir_data, &quot;iPS_Markers_all.csv&quot;))
-Markers_top10 &lt;- as.data.frame(Markers %&gt;% group_by(cluster) %&gt;% top_n(n = 10, wt = avg_log2FC))
-write.csv(Markers_top10, here::here(output_dir_data, &quot;iPS_Markers_top10.csv&quot;))
-Markers_top3 &lt;- as.data.frame(Markers %&gt;% group_by(cluster) %&gt;% top_n(n = 3, wt = avg_log2FC))
-write.csv(Markers_top3, here::here(output_dir_data, &quot;iPS_Markers_top3.csv&quot;))</code></pre>
-<p>Check cell cycle genes</p>
-<pre class="r"><code>DefaultAssay(iPS_integrated) &lt;- &quot;RNA&quot;
-s.genes &lt;- cc.genes$s.genes
-g2m.genes &lt;- cc.genes$g2m.genes
-iPS_integrated &lt;- CellCycleScoring(iPS_integrated, s.features = s.genes, g2m.features = g2m.genes)
-DimPlot(iPS_integrated, reduction = &quot;umap&quot;, shuffle = T,
-        group.by = &quot;Phase&quot;)</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/Cell_cycle_UMAP-1.png" width="3000" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Cell_cycle_UMAP-1">
-Past versions of Cell_cycle_UMAP-1.png
-</button>
-</p>
-<div id="fig-Cell_cycle_UMAP-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/Cell_cycle_UMAP-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="cell-type-annotation" class="section level2">
-<h2>Cell type annotation</h2>
-<p>Annotate the clusters based on the characteristic markers</p>
-<pre class="r"><code>iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c(&quot;0&quot;), &quot;cell_type&quot;] = &quot;Atrial Cardiomyocytes&quot;
-iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c(&quot;1&quot;), &quot;cell_type&quot;] = &quot;Ventricular Cardiomyocytes&quot;
-iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c(&quot;2&quot;), &quot;cell_type&quot;] = &quot;CDKN1A+ Cardiomyocytes&quot;
-iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c(&quot;3&quot;), &quot;cell_type&quot;] = &quot;Fibroblasts&quot;
-iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c(&quot;4&quot;), &quot;cell_type&quot;] = &quot;Progenitor cells&quot;
-iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c(&quot;5&quot;), &quot;cell_type&quot;] = &quot;Endothelial cells&quot;
-iPS_integrated$cell_type &lt;- factor(iPS_integrated$cell_type, levels = c(&quot;Atrial Cardiomyocytes&quot;, 
-                                                                        &quot;Ventricular Cardiomyocytes&quot;,
-                                                                        &quot;CDKN1A+ Cardiomyocytes&quot;,
-                                                                        &quot;Fibroblasts&quot;,
-                                                                        &quot;Progenitor cells&quot;,
-                                                                        &quot;Endothelial cells&quot;))
-Idents(iPS_integrated) &lt;- iPS_integrated$cell_type</code></pre>
-<pre class="r"><code>DefaultAssay(iPS_integrated) &lt;- &quot;RNA&quot;
-cluster_palette &lt;- c(&quot;#24B700&quot;,&quot;#F8766D&quot;, &quot;#D575FE&quot;, &quot;#00ACFC&quot;, &quot;#EA8331&quot;, &quot;#FF65AC&quot;)
-Heatmap &lt;- DoHeatmap(iPS_integrated, draw.line = F, features = Markers_top10$gene, group.colors = cluster_palette) +
-  guides(colour=FALSE) +
-  scale_fill_gradientn(colours = mapal) +
-  theme(text = element_text(size = 15), axis.text.y = element_text(size = 8)) +
-  theme(plot.margin = unit(c(0, 0, 0, 0), 
-                           &quot;inches&quot;))
-Heatmap</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/Heatmap-1.png" width="7200" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Heatmap-1">
-Past versions of Heatmap-1.png
-</button>
-</p>
-<div id="fig-Heatmap-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/Heatmap-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>p &lt;- DimPlot(iPS_integrated, group.by = &quot;cell_type&quot;, reduction = &quot;umap&quot;, label = F, cols = cluster_palette) + 
-  NoLegend() + 
-  theme(axis.text=element_text(size=14, face = &quot;bold&quot;), axis.title = element_text(size = 18, face = &quot;bold&quot;)) + 
-  theme(plot.title = element_blank())
-LabelClusters(p, id = &quot;cell_type&quot;, fontface = &quot;bold&quot;, size = 5.5, repel = T)</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/UMAP_cell_type-1.png" width="3900" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-UMAP_cell_type-1">
-Past versions of UMAP_cell_type-1.png
-</button>
-</p>
-<div id="fig-UMAP_cell_type-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/UMAP_cell_type-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>DotPlot(iPS_integrated, assay = &quot;SCT&quot;, features = rev(Markers_top3$gene), dot.scale = 5, cluster.idents = FALSE) +
-  RotatedAxis() +
-  coord_flip() +
-  theme(axis.title = element_blank(), axis.text.x = element_text(size = 14), axis.text.y = element_text(size = 13), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
-                           &quot;inches&quot;))</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/DotPlot_markers-1.png" width="3600" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-DotPlot_markers-1">
-Past versions of DotPlot_markers-1.png
-</button>
-</p>
-<div id="fig-DotPlot_markers-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/DotPlot_markers-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>FeaturePlot(iPS_integrated, features = c(&quot;MYH6&quot;, &quot;MYH7&quot;, &quot;CDKN1A&quot;, &quot;FN1&quot;, &quot;TOP2A&quot;, &quot;PECAM1&quot;), ncol = 3)</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/FeatPlot_markers-1.png" width="8100" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-FeatPlot_markers-1">
-Past versions of FeatPlot_markers-1.png
-</button>
-</p>
-<div id="fig-FeatPlot_markers-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/199e76c46e96a475ea70a487c316df217aba6e69/docs/figure/QC_integration_annotation.Rmd/FeatPlot_markers-1.png" target="_blank">199e76c</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2024-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>saveRDS(iPS_integrated, 
-        here::here(output_dir_data, &quot;iPS_integrated.rds&quot;))</code></pre>
+<pre class="r"><code># Extract metadata
+metadata &lt;- iPS_integrated@meta.data
+
+# Create a contingency table with cell types as rows and samples as columns
+cell_type_sample_table &lt;- table(metadata$cell_type, metadata$Sample)
+
+# Convert the table to a data frame for easier manipulation
+cell_type_sample_df &lt;- as.data.frame.matrix(cell_type_sample_table)
+
+# Add the totals per sample (column-wise sum) as the last row
+cell_type_sample_df[&quot;Total&quot;, ] &lt;- colSums(cell_type_sample_df)
+
+# Add the totals per cell type (row-wise sum) as the last column
+cell_type_sample_df$Total &lt;- rowSums(cell_type_sample_df)
+
+table_plot &lt;- tableGrob(cell_type_sample_df)
+
+ggsave(here::here(output_dir_data, &quot;cell_type_sample_table.png&quot;), plot = table_plot, dpi = 600, width = 8, height = 3)
+
+# Include the image in the markdown document
+knitr::include_graphics(here::here(output_dir_data, &quot;cell_type_sample_table.png&quot;), error = FALSE)</code></pre>
+<p><img src="../output/QC_integration_annotation/cell_type_sample_table.png" width="384" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1919,119 +842,139 @@ attached base packages:
 [8] methods   base     
 
 other attached packages:
- [1] clustree_0.5.1              ggraph_2.2.1               
- [3] rhdf5_2.46.1                Rcpp_1.0.12                
- [5] data.table_1.15.2           plyr_1.8.9                 
- [7] gtable_0.3.4                gtools_3.9.5               
- [9] ArchR_1.0.2                 statmod_1.5.0              
-[11] patchwork_1.2.0             scater_1.30.1              
-[13] scuttle_1.12.0              Matrix.utils_0.9.7         
-[15] RColorBrewer_1.1-3          scales_1.3.0               
-[17] knitr_1.45                  gridExtra_2.3              
-[19] png_0.1-8                   pheatmap_1.0.12            
-[21] reshape2_1.4.4              lubridate_1.9.3            
-[23] forcats_1.0.0               stringr_1.5.1              
-[25] purrr_1.0.2                 tidyr_1.3.1                
-[27] tibble_3.2.1                tidyverse_2.0.0            
-[29] magrittr_2.0.3              ggplot2_3.5.0              
-[31] dplyr_1.1.4                 scCustomize_2.1.2          
-[33] scDblFinder_1.16.0          Matrix_1.6-5               
-[35] DropletUtils_1.22.0         SingleCellExperiment_1.24.0
-[37] SummarizedExperiment_1.32.0 Biobase_2.62.0             
-[39] GenomicRanges_1.54.1        GenomeInfoDb_1.38.7        
-[41] IRanges_2.36.0              S4Vectors_0.40.2           
-[43] BiocGenerics_0.48.1         MatrixGenerics_1.14.0      
-[45] matrixStats_1.2.0           SeuratObject_5.0.2         
-[47] Seurat_4.4.0                xlsx_0.6.5                 
-[49] readxl_1.4.3                readr_2.1.5                
-[51] here_1.0.1                 
+ [1] ReactomePA_1.46.0           AnnotationHub_3.10.0       
+ [3] BiocFileCache_2.10.1        dbplyr_2.4.0               
+ [5] org.Hs.eg.db_3.18.0         AnnotationDbi_1.64.1       
+ [7] clusterProfiler_4.10.1      gprofiler2_0.2.3           
+ [9] speckle_1.2.0               clustree_0.5.1             
+[11] ggraph_2.2.1                rhdf5_2.46.1               
+[13] Rcpp_1.0.12                 data.table_1.15.2          
+[15] plyr_1.8.9                  gtable_0.3.4               
+[17] gtools_3.9.5                ArchR_1.0.2                
+[19] statmod_1.5.0               patchwork_1.2.0            
+[21] scater_1.30.1               scuttle_1.12.0             
+[23] Matrix.utils_0.9.7          RColorBrewer_1.1-3         
+[25] scales_1.3.0                knitr_1.45                 
+[27] gridExtra_2.3               png_0.1-8                  
+[29] pheatmap_1.0.12             reshape2_1.4.4             
+[31] lubridate_1.9.3             forcats_1.0.0              
+[33] stringr_1.5.1               purrr_1.0.2                
+[35] tidyr_1.3.1                 tibble_3.2.1               
+[37] tidyverse_2.0.0             magrittr_2.0.3             
+[39] ggplot2_3.5.0               dplyr_1.1.4                
+[41] scCustomize_2.1.2           scDblFinder_1.16.0         
+[43] Matrix_1.6-5                DropletUtils_1.22.0        
+[45] SingleCellExperiment_1.24.0 SummarizedExperiment_1.32.0
+[47] Biobase_2.62.0              GenomicRanges_1.54.1       
+[49] GenomeInfoDb_1.38.7         IRanges_2.36.0             
+[51] S4Vectors_0.40.2            BiocGenerics_0.48.1        
+[53] MatrixGenerics_1.14.0       matrixStats_1.2.0          
+[55] SeuratObject_5.0.2          Seurat_4.4.0               
+[57] xlsx_0.6.5                  readxl_1.4.3               
+[59] readr_2.1.5                 here_1.0.1                 
 
 loaded via a namespace (and not attached):
-  [1] fs_1.6.3                  spatstat.sparse_3.0-3    
-  [3] bitops_1.0-7              httr_1.4.7               
-  [5] backports_1.4.1           tools_4.3.1              
-  [7] sctransform_0.4.1         utf8_1.2.4               
-  [9] R6_2.5.1                  HDF5Array_1.30.1         
- [11] lazyeval_0.2.2            uwot_0.1.16              
- [13] rhdf5filters_1.14.1       withr_3.0.0              
- [15] sp_2.1-3                  progressr_0.14.0         
- [17] cli_3.6.2                 spatstat.explore_3.2-6   
- [19] labeling_0.4.3            sass_0.4.9               
- [21] spatstat.data_3.0-4       ggridges_0.5.6           
- [23] pbapply_1.7-2             Rsamtools_2.18.0         
- [25] R.utils_2.12.3            parallelly_1.37.1        
- [27] limma_3.58.1              rstudioapi_0.15.0        
- [29] generics_0.1.3            shape_1.4.6.1            
- [31] BiocIO_1.12.0             ica_1.0-3                
- [33] spatstat.random_3.2-3     ggbeeswarm_0.7.2         
- [35] fansi_1.0.6               abind_1.4-5              
- [37] R.methodsS3_1.8.2         lifecycle_1.0.4          
- [39] whisker_0.4.1             yaml_2.3.8               
- [41] edgeR_4.0.16              snakecase_0.11.1         
- [43] SparseArray_1.2.4         Rtsne_0.17               
- [45] paletteer_1.6.0           promises_1.2.1           
- [47] dqrng_0.3.2               crayon_1.5.2             
- [49] miniUI_0.1.1.1            lattice_0.22-5           
- [51] beachmat_2.18.1           cowplot_1.1.3            
- [53] xlsxjars_0.6.1            pillar_1.9.0             
- [55] metapod_1.10.1            rjson_0.2.21             
- [57] xgboost_1.7.7.1           future.apply_1.11.1      
- [59] codetools_0.2-19          leiden_0.4.3.1           
- [61] glue_1.7.0                vctrs_0.6.5              
- [63] spam_2.10-0               cellranger_1.1.0         
- [65] rematch2_2.1.2            cachem_1.0.8             
- [67] xfun_0.42                 S4Arrays_1.2.1           
- [69] mime_0.12                 tidygraph_1.3.1          
- [71] survival_3.5-8            rJava_1.0-11             
- [73] bluster_1.12.0            ellipsis_0.3.2           
- [75] fitdistrplus_1.1-11       ROCR_1.0-11              
- [77] nlme_3.1-164              bit64_4.0.5              
- [79] RcppAnnoy_0.0.22          rprojroot_2.0.4          
- [81] bslib_0.6.1               irlba_2.3.5.1            
- [83] vipor_0.4.7               KernSmooth_2.23-22       
- [85] colorspace_2.1-0          ggrastr_1.0.2            
- [87] tidyselect_1.2.1          bit_4.0.5                
- [89] compiler_4.3.1            git2r_0.33.0             
- [91] BiocNeighbors_1.20.2      hdf5r_1.3.10             
- [93] DelayedArray_0.28.0       plotly_4.10.4            
- [95] rtracklayer_1.62.0        checkmate_2.3.1          
- [97] lmtest_0.9-40             digest_0.6.35            
- [99] goftest_1.2-3             spatstat.utils_3.0-4     
-[101] rmarkdown_2.26            XVector_0.42.0           
-[103] htmltools_0.5.8.1         pkgconfig_2.0.3          
-[105] sparseMatrixStats_1.14.0  highr_0.10               
-[107] fastmap_1.1.1             rlang_1.1.4              
-[109] GlobalOptions_0.1.2       htmlwidgets_1.6.4        
-[111] shiny_1.8.0               DelayedMatrixStats_1.24.0
-[113] farver_2.1.1              jquerylib_0.1.4          
-[115] zoo_1.8-12                jsonlite_1.8.8           
-[117] BiocParallel_1.36.0       R.oo_1.26.0              
-[119] BiocSingular_1.18.0       RCurl_1.98-1.14          
-[121] GenomeInfoDbData_1.2.11   dotCall64_1.1-1          
-[123] Rhdf5lib_1.24.2           munsell_0.5.0            
-[125] viridis_0.6.5             reticulate_1.35.0        
-[127] stringi_1.8.3             zlibbioc_1.48.0          
-[129] MASS_7.3-60.0.1           parallel_4.3.1           
-[131] listenv_0.9.1             ggrepel_0.9.5            
-[133] deldir_2.0-4              graphlayouts_1.1.1       
-[135] Biostrings_2.70.2         splines_4.3.1            
-[137] tensor_1.5                hms_1.1.3                
-[139] circlize_0.4.16           locfit_1.5-9.9           
-[141] igraph_2.0.3              spatstat.geom_3.2-9      
-[143] ScaledMatrix_1.10.0       XML_3.99-0.16.1          
-[145] evaluate_0.23             scran_1.30.2             
-[147] ggprism_1.0.4             tweenr_2.0.3             
-[149] tzdb_0.4.0                httpuv_1.6.14            
-[151] grr_0.9.5                 RANN_2.6.1               
-[153] polyclip_1.10-6           future_1.33.1            
-[155] scattermore_1.2           ggforce_0.4.2            
-[157] janitor_2.2.0             rsvd_1.0.5               
-[159] xtable_1.8-4              restfulr_0.0.15          
-[161] later_1.3.2               viridisLite_0.4.2        
-[163] memoise_2.0.1             beeswarm_0.4.0           
-[165] GenomicAlignments_1.38.2  cluster_2.1.6            
-[167] workflowr_1.7.1           timechange_0.3.0         
-[169] globals_0.16.3           </code></pre>
+  [1] R.methodsS3_1.8.2             goftest_1.2-3                
+  [3] Biostrings_2.70.2             HDF5Array_1.30.1             
+  [5] vctrs_0.6.5                   spatstat.random_3.2-3        
+  [7] digest_0.6.35                 shape_1.4.6.1                
+  [9] git2r_0.33.0                  ggrepel_0.9.5                
+ [11] deldir_2.0-4                  parallelly_1.37.1            
+ [13] MASS_7.3-60.0.1               httpuv_1.6.14                
+ [15] qvalue_2.34.0                 withr_3.0.0                  
+ [17] ggrastr_1.0.2                 ggfun_0.1.4                  
+ [19] xfun_0.42                     ellipsis_0.3.2               
+ [21] survival_3.5-8                memoise_2.0.1                
+ [23] ggbeeswarm_0.7.2              gson_0.1.0                   
+ [25] janitor_2.2.0                 systemfonts_1.0.6            
+ [27] ragg_1.2.7                    tidytree_0.4.6               
+ [29] zoo_1.8-12                    GlobalOptions_0.1.2          
+ [31] pbapply_1.7-2                 R.oo_1.26.0                  
+ [33] rematch2_2.1.2                KEGGREST_1.42.0              
+ [35] promises_1.2.1                httr_1.4.7                   
+ [37] restfulr_0.0.15               globals_0.16.3               
+ [39] fitdistrplus_1.1-11           rhdf5filters_1.14.1          
+ [41] rstudioapi_0.15.0             miniUI_0.1.1.1               
+ [43] generics_0.1.3                DOSE_3.28.2                  
+ [45] reactome.db_1.86.2            curl_5.2.1                   
+ [47] zlibbioc_1.48.0               ScaledMatrix_1.10.0          
+ [49] polyclip_1.10-6               GenomeInfoDbData_1.2.11      
+ [51] SparseArray_1.2.4             interactiveDisplayBase_1.40.0
+ [53] xtable_1.8-4                  evaluate_0.23                
+ [55] S4Arrays_1.2.1                hms_1.1.3                    
+ [57] irlba_2.3.5.1                 filelock_1.0.3               
+ [59] colorspace_2.1-0              ROCR_1.0-11                  
+ [61] reticulate_1.35.0             spatstat.data_3.0-4          
+ [63] lmtest_0.9-40                 snakecase_0.11.1             
+ [65] ggtree_3.10.1                 later_1.3.2                  
+ [67] viridis_0.6.5                 lattice_0.22-5               
+ [69] spatstat.geom_3.2-9           future.apply_1.11.1          
+ [71] shadowtext_0.1.3              scattermore_1.2              
+ [73] XML_3.99-0.16.1               cowplot_1.1.3                
+ [75] RcppAnnoy_0.0.22              pillar_1.9.0                 
+ [77] nlme_3.1-164                  compiler_4.3.1               
+ [79] beachmat_2.18.1               stringi_1.8.3                
+ [81] tensor_1.5                    GenomicAlignments_1.38.2     
+ [83] crayon_1.5.2                  abind_1.4-5                  
+ [85] BiocIO_1.12.0                 gridGraphics_0.5-1           
+ [87] locfit_1.5-9.9                sp_2.1-3                     
+ [89] graphlayouts_1.1.1            bit_4.0.5                    
+ [91] fastmatch_1.1-4               whisker_0.4.1                
+ [93] textshaping_0.3.7             codetools_0.2-19             
+ [95] BiocSingular_1.18.0           bslib_0.6.1                  
+ [97] paletteer_1.6.0               plotly_4.10.4                
+ [99] mime_0.12                     splines_4.3.1                
+[101] circlize_0.4.16               sparseMatrixStats_1.14.0     
+[103] HDO.db_0.99.1                 cellranger_1.1.0             
+[105] grr_0.9.5                     blob_1.2.4                   
+[107] utf8_1.2.4                    BiocVersion_3.18.1           
+[109] fs_1.6.3                      listenv_0.9.1                
+[111] DelayedMatrixStats_1.24.0     ggplotify_0.1.2              
+[113] tzdb_0.4.0                    tweenr_2.0.3                 
+[115] pkgconfig_2.0.3               tools_4.3.1                  
+[117] cachem_1.0.8                  RSQLite_2.3.5                
+[119] viridisLite_0.4.2             DBI_1.2.2                    
+[121] graphite_1.48.0               fastmap_1.1.1                
+[123] rmarkdown_2.26                ica_1.0-3                    
+[125] Rsamtools_2.18.0              sass_0.4.9                   
+[127] BiocManager_1.30.22           ggprism_1.0.4                
+[129] dotCall64_1.1-1               graph_1.80.0                 
+[131] RANN_2.6.1                    farver_2.1.1                 
+[133] scatterpie_0.2.1              tidygraph_1.3.1              
+[135] yaml_2.3.8                    workflowr_1.7.1              
+[137] rtracklayer_1.62.0            cli_3.6.2                    
+[139] leiden_0.4.3.1                lifecycle_1.0.4              
+[141] uwot_0.1.16                   bluster_1.12.0               
+[143] BiocParallel_1.36.0           timechange_0.3.0             
+[145] rjson_0.2.21                  ggridges_0.5.6               
+[147] progressr_0.14.0              ape_5.7-1                    
+[149] parallel_4.3.1                limma_3.58.1                 
+[151] jsonlite_1.8.8                edgeR_4.0.16                 
+[153] bitops_1.0-7                  bit64_4.0.5                  
+[155] xgboost_1.7.7.1               Rtsne_0.17                   
+[157] yulab.utils_0.1.4             spatstat.utils_3.0-4         
+[159] BiocNeighbors_1.20.2          highr_0.10                   
+[161] jquerylib_0.1.4               metapod_1.10.1               
+[163] GOSemSim_2.28.1               dqrng_0.3.2                  
+[165] R.utils_2.12.3                lazyeval_0.2.2               
+[167] shiny_1.8.0                   enrichplot_1.22.0            
+[169] htmltools_0.5.8.1             rJava_1.0-11                 
+[171] GO.db_3.18.0                  sctransform_0.4.1            
+[173] rappdirs_0.3.3                glue_1.7.0                   
+[175] spam_2.10-0                   XVector_0.42.0               
+[177] RCurl_1.98-1.14               treeio_1.26.0                
+[179] rprojroot_2.0.4               scran_1.30.2                 
+[181] igraph_2.0.3                  R6_2.5.1                     
+[183] xlsxjars_0.6.1                cluster_2.1.6                
+[185] Rhdf5lib_1.24.2               aplot_0.2.2                  
+[187] DelayedArray_0.28.0           tidyselect_1.2.1             
+[189] vipor_0.4.7                   ggforce_0.4.2                
+[191] future_1.33.1                 rsvd_1.0.5                   
+[193] munsell_0.5.0                 KernSmooth_2.23-22           
+[195] htmlwidgets_1.6.4             fgsea_1.28.0                 
+[197] rlang_1.1.4                   spatstat.sparse_3.0-3        
+[199] spatstat.explore_3.2-6        fansi_1.0.6                  
+[201] beeswarm_0.4.0               </code></pre>
 </div>
 </div>
 
