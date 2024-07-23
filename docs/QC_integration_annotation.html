@@ -539,15 +539,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstreeb7c75123e89cb90d09de024aecfde88c970e5d4btargetblankb7c7512a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree53cb5f8ae6ce8ce9089fbb8d5fdb021e8dfd1629targetblank53cb5f8a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/GinoBonazza/iPS_organoids/tree/b7c75123e89cb90d09de024aecfde88c970e5d4b" target="_blank">b7c7512</a>
+<a href="https://github.com/GinoBonazza/iPS_organoids/tree/53cb5f8ae6ce8ce9089fbb8d5fdb021e8dfd1629" target="_blank">53cb5f8</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstreeb7c75123e89cb90d09de024aecfde88c970e5d4btargetblankb7c7512a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree53cb5f8ae6ce8ce9089fbb8d5fdb021e8dfd1629targetblank53cb5f8a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -557,7 +557,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/GinoBonazza/iPS_organoids/tree/b7c75123e89cb90d09de024aecfde88c970e5d4b" target="_blank">b7c7512</a>.
+<a href="https://github.com/GinoBonazza/iPS_organoids/tree/53cb5f8ae6ce8ce9089fbb8d5fdb021e8dfd1629" target="_blank">53cb5f8</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -574,7 +574,6 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-    Ignored:    analysis/figure/
     Ignored:    output/Test2/
 
 Untracked files:
@@ -637,6 +636,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/53cb5f8ae6ce8ce9089fbb8d5fdb021e8dfd1629/analysis/QC_integration_annotation.Rmd" target="_blank">53cb5f8</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-23
+</td>
+<td>
+wflow_publish("analysis/QC_integration_annotation.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/GinoBonazza/iPS_organoids/a91694e96ec499e5bf2c329e18778ff5481a9d6b/docs/QC_integration_annotation.html" target="_blank">a91694e</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-23
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -804,11 +837,11 @@ cell_type_sample_df$Total &lt;- rowSums(cell_type_sample_df)
 
 table_plot &lt;- tableGrob(cell_type_sample_df)
 
-ggsave(here::here(output_dir_data, &quot;cell_type_sample_table.png&quot;), plot = table_plot, dpi = 600, width = 8, height = 3)
+ggsave(here::here(output_dir_figs, &quot;cell_type_sample_table.png&quot;), plot = table_plot, dpi = 600, width = 8, height = 3)
 
 # Include the image in the markdown document
-knitr::include_graphics(here::here(output_dir_data, &quot;cell_type_sample_table.png&quot;), error = FALSE)</code></pre>
-<p><img src="../output/QC_integration_annotation/cell_type_sample_table.png" width="384" style="display: block; margin: auto;" /></p>
+knitr::include_graphics(here::here(output_dir_figs, &quot;cell_type_sample_table.png&quot;), error = FALSE)</code></pre>
+<p><img src="../docs/figure/QC_integration_annotation.Rmd/cell_type_sample_table.png" width="384" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
