@@ -172,7 +172,7 @@ volcano[[1]] <- EnhancedVolcano(DE_all,
                   lab = DE_all$gene,
                   x = "avg_log2FC",
                   y = "p_val_adj",
-                  labSize = 3.5,
+                  labSize = 0,
                   titleLabSize = 16,
                   subtitleLabSize = 14,
                   axisLabSize = 12,
@@ -182,12 +182,9 @@ volcano[[1]] <- EnhancedVolcano(DE_all,
                   pCutoff  = 0.05,
                   col = c("black", "black", "black", "red"),
                   colAlpha = 1,
-                  drawConnectors = TRUE,
-                  widthConnectors = 0.1,
-                  boxedLabels = TRUE,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
                   subtitle = NULL,
-                  maxoverlapsConnectors = 15,
-                  max.overlaps = 15,
                   title = "All Cardiomyocytes"
   ) + theme(legend.position = "none")
 names(volcano)[1] <- "All"
@@ -196,7 +193,7 @@ volcano[[2]] <- EnhancedVolcano(DE_JDR,
                   lab = DE_JDR$gene,
                   x = "avg_log2FC",
                   y = "p_val_adj",
-                  labSize = 3.5,
+                  labSize = 0,
                   titleLabSize = 16,
                   subtitleLabSize = 14,
                   axisLabSize = 12,
@@ -206,12 +203,9 @@ volcano[[2]] <- EnhancedVolcano(DE_JDR,
                   pCutoff  = 0.05,
                   col = c("black", "black", "black", "red"),
                   colAlpha = 1,
-                  drawConnectors = TRUE,
-                  widthConnectors = 0.1,
-                  boxedLabels = TRUE,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
                   subtitle = NULL,
-                  maxoverlapsConnectors = 15,
-                  max.overlaps = 15,
                   title = "JDR Cardiomyocytes"
   ) + theme(legend.position = "none")
 names(volcano)[2] <- "JDR"
@@ -220,7 +214,7 @@ volcano[[3]] <- EnhancedVolcano(DE_JD6,
                   lab = DE_JD6$gene,
                   x = "avg_log2FC",
                   y = "p_val_adj",
-                  labSize = 3.5,
+                  labSize = 0,
                   titleLabSize = 16,
                   subtitleLabSize = 14,
                   axisLabSize = 12,
@@ -230,9 +224,8 @@ volcano[[3]] <- EnhancedVolcano(DE_JD6,
                   pCutoff  = 0.05,
                   col = c("black", "black", "black", "red"),
                   colAlpha = 1,
-                  drawConnectors = TRUE,
-                  widthConnectors = 0.1,
-                  boxedLabels = TRUE,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
                   subtitle = NULL,
                   maxoverlapsConnectors = 15,
                   max.overlaps = 15,
@@ -244,7 +237,7 @@ volcano[[4]] <- EnhancedVolcano(DE_DMD1,
                   lab = DE_DMD1$gene,
                   x = "avg_log2FC",
                   y = "p_val_adj",
-                  labSize = 3.5,
+                  labSize = 0,
                   titleLabSize = 16,
                   subtitleLabSize = 14,
                   axisLabSize = 12,
@@ -254,9 +247,8 @@ volcano[[4]] <- EnhancedVolcano(DE_DMD1,
                   pCutoff  = 0.05,
                   col = c("black", "black", "black", "red"),
                   colAlpha = 1,
-                  drawConnectors = TRUE,
-                  widthConnectors = 0.1,
-                  boxedLabels = TRUE,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
                   subtitle = NULL,
                   maxoverlapsConnectors = 15,
                   max.overlaps = 15,
@@ -394,7 +386,7 @@ volcano[[1]] <- EnhancedVolcano(DE_all,
                   lab = DE_all$gene,
                   x = "avg_log2FC",
                   y = "p_val_adj",
-                  labSize = 3.5,
+                  labSize = 0,
                   titleLabSize = 16,
                   subtitleLabSize = 14,
                   axisLabSize = 12,
@@ -404,12 +396,9 @@ volcano[[1]] <- EnhancedVolcano(DE_all,
                   pCutoff  = 0.05,
                   col = c("black", "black", "black", "red"),
                   colAlpha = 1,
-                  drawConnectors = TRUE,
-                  widthConnectors = 0.1,
-                  boxedLabels = TRUE,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
                   subtitle = NULL,
-                  maxoverlapsConnectors = 15,
-                  max.overlaps = 15,
                   title = "All Cardiomyocytes"
   ) + theme(legend.position = "none")
 names(volcano)[1] <- "All"
@@ -418,7 +407,7 @@ volcano[[2]] <- EnhancedVolcano(DE_JDR,
                   lab = DE_JDR$gene,
                   x = "avg_log2FC",
                   y = "p_val_adj",
-                  labSize = 3.5,
+                  labSize = 0,
                   titleLabSize = 16,
                   subtitleLabSize = 14,
                   axisLabSize = 12,
@@ -428,12 +417,9 @@ volcano[[2]] <- EnhancedVolcano(DE_JDR,
                   pCutoff  = 0.05,
                   col = c("black", "black", "black", "red"),
                   colAlpha = 1,
-                  drawConnectors = TRUE,
-                  widthConnectors = 0.1,
-                  boxedLabels = TRUE,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
                   subtitle = NULL,
-                  maxoverlapsConnectors = 15,
-                  max.overlaps = 15,
                   title = "JDR Cardiomyocytes"
   ) + theme(legend.position = "none")
 names(volcano)[2] <- "JDR"
@@ -442,7 +428,7 @@ volcano[[3]] <- EnhancedVolcano(DE_JD6,
                   lab = DE_JD6$gene,
                   x = "avg_log2FC",
                   y = "p_val_adj",
-                  labSize = 3.5,
+                  labSize = 0,
                   titleLabSize = 16,
                   subtitleLabSize = 14,
                   axisLabSize = 12,
@@ -452,12 +438,9 @@ volcano[[3]] <- EnhancedVolcano(DE_JD6,
                   pCutoff  = 0.05,
                   col = c("black", "black", "black", "red"),
                   colAlpha = 1,
-                  drawConnectors = TRUE,
-                  widthConnectors = 0.1,
-                  boxedLabels = TRUE,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
                   subtitle = NULL,
-                  maxoverlapsConnectors = 15,
-                  max.overlaps = 15,
                   title = "JD6 Cardiomyocytes"
   ) + theme(legend.position = "none")
 names(volcano)[3] <- "JD6"
@@ -466,7 +449,7 @@ volcano[[4]] <- EnhancedVolcano(DE_DMD1,
                   lab = DE_DMD1$gene,
                   x = "avg_log2FC",
                   y = "p_val_adj",
-                  labSize = 3.5,
+                  labSize = 0,
                   titleLabSize = 16,
                   subtitleLabSize = 14,
                   axisLabSize = 12,
@@ -476,12 +459,9 @@ volcano[[4]] <- EnhancedVolcano(DE_DMD1,
                   pCutoff  = 0.05,
                   col = c("black", "black", "black", "red"),
                   colAlpha = 1,
-                  drawConnectors = TRUE,
-                  widthConnectors = 0.1,
-                  boxedLabels = TRUE,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
                   subtitle = NULL,
-                  maxoverlapsConnectors = 15,
-                  max.overlaps = 15,
                   title = "DMD1 Cardiomyocytes"
   ) + theme(legend.position = "none")
 names(volcano)[4] <- "DMD1"
@@ -493,19 +473,19 @@ print(combined_plots)
 ```
 
 ```{r VlnPlot_DE_up_05, fig.width=2, fig.height=4}
-VlnPlot(CM, features = common_up, group.by = "Condition", ncol = 1, pt.size = 0.01) + NoLegend()
+VlnPlot(CM, features = common_up, group.by = "Condition", ncol = 1, pt.size = 0.01)
 ```
 
 ```{r VlnPlot_DE_down_05, fig.width=12, fig.height=4}
 VlnPlot(CM, features = common_down, group.by = "Condition", ncol = 6, pt.size = 0.01)
 ```
 
-```{r VlnPlot_DE_up_cell_line_05, fig.width=3, fig.height=4}
-VlnPlot(CM, features = common_up, group.by = "Cell_line", split.by = "Condition", ncol = 1, pt.size = 0.01) + NoLegend()
+```{r VlnPlot_DE_up_cell_line_05, fig.width=4, fig.height=4}
+VlnPlot(CM, features = common_up, group.by = "Cell_line", split.by = "Condition", ncol = 1, pt.size = 0.01)
 ```
 
-```{r VlnPlot_DE_down_cell_line_05, fig.width=15, fig.height=4}
-VlnPlot(CM, features = common_down, group.by = "Cell_line", split.by = "Condition", ncol = 6, pt.size = 0.01)
+```{r VlnPlot_DE_down_cell_line_05, fig.width=12, fig.height=8}
+VlnPlot(CM, features = common_down, group.by = "Cell_line", split.by = "Condition", ncol = 3, pt.size = 0.01)
 ```
 
 https://www.biorxiv.org/content/10.1101/2021.02.01.429136v2.full.pdf

@@ -661,7 +661,7 @@ saveRDS(iPS_integrated,
         here::here(output_dir_data, "iPS_integrated.rds"))
 ```
 
-```{r}
+```{r genes_of_interest}
 genes_of_interest <- c("DMD", "UTRN", "HMOX1", "CISD1", "TFRC", "SLC40A1", "FTH1", "HAMP", "TF", "NQO1", "NOX4", "NKX2-5", "CORIN", "TANC1", "PINK1", "PRKN", "PIEZO1", "PIEZO2")
 ```
 
@@ -669,7 +669,7 @@ genes_of_interest <- c("DMD", "UTRN", "HMOX1", "CISD1", "TFRC", "SLC40A1", "FTH1
 FeaturePlot(iPS_integrated, features = genes_of_interest, ncol = 6) + theme(axis.title.x = element_blank())
 ```
 
-```{r FeaturePlot_GOI_", fig.width=18, fig.height=8}
+```{r FeaturePlot_GOI_2", fig.width=18, fig.height=8}
 plot_list <- lapply(genes_of_interest, function(feature) {
   p <- FeaturePlot(iPS_integrated, features = feature, order = FALSE)
   p + scale_color_viridis(discrete = FALSE, option = "viridis")

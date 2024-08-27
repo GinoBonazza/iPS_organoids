@@ -251,7 +251,7 @@ QC_post_VlnPlots_zoom <- p1 + p2 + p3 + p4 + plot_layout(ncol = 2)
 QC_post_VlnPlots_zoom
 ```
 
-```{r QC_post_VlnPlots_zoom_2, fig.height=8, fig.width=12}
+```{r QC_post_VlnPlots_zoom_2, fig.height=4, fig.width=16}
 p1 <- VlnPlot(iPS, features = "nCount_RNA", group.by = "Sample", pt.size = 0, y.max = 80000) + theme(axis.title.x = element_blank()) + NoLegend()
 
 p2 <- VlnPlot(iPS, features = "nFeature_RNA", group.by = "Sample", pt.size = 0, y.max = 10000) + theme(axis.title.x = element_blank()) + NoLegend()
@@ -260,7 +260,7 @@ p3 <- VlnPlot(iPS, features = "percent.mt", group.by = "Sample", pt.size = 0, y.
 
 p4 <- VlnPlot(iPS, features = "percent.rp", group.by = "Sample", pt.size = 0, y.max = 60) + theme(axis.title.x = element_blank()) + NoLegend()
 
-QC_post_VlnPlots_zoom <- p1 + p2 + p3 + p4 + plot_layout(ncol = 2)
+QC_post_VlnPlots_zoom <- p1 + p2 + p3 + p4 + plot_layout(ncol = 4)
 
 QC_post_VlnPlots_zoom
 ```

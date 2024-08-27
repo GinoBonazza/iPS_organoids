@@ -268,7 +268,7 @@ names(volcano)[4] <- "DMD1"
 ```{r Volcano_all_025, fig.height=5, fig.width=16}
 combined_plots <- (volcano[[1]] | volcano[[2]] | volcano[[3]] | volcano[[4]])
 print(combined_plots)
-````
+```
 
 ```{r VlnPlot_DE_up_025, fig.width=2, fig.height=4}
 VlnPlot(CM, features = common_up, group.by = "Condition", ncol = 1, pt.size = 0.01) + NoLegend()
