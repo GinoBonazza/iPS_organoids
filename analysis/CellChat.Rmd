@@ -122,8 +122,9 @@ cellchat <- filterCommunication(cellchat, min.cells = 10)
 ```
 
 ```{r}
-df.net <- subsetCommunication(cellchat)
+df.net <- subsetCommunication(cellchat, slot.name = "net")
 ```
+
 
 ```{r}
 cellchat <- computeCommunProbPathway(cellchat)
@@ -133,6 +134,12 @@ cellchat <- computeCommunProbPathway(cellchat)
 cellchat <- aggregateNet(cellchat)
 ```
 
+```{r}
+df.pathways <- subsetCommunication(cellchat, slot.name = "netP", thresh = 0.05)
+```
+
+## Aggregated cell-cell communication network
+
 ```{r, fig.width=9, fig.height=3}
 groupSize <- as.numeric(table(cellchat@idents))
 par(mfrow = c(1,2), mar = c(0, 0, 2, 0), xpd=TRUE)
@@ -140,6 +147,7 @@ netVisual_circle(cellchat@net$count, vertex.weight = groupSize, weight.scale = T
 netVisual_circle(cellchat@net$weight, vertex.weight = groupSize, weight.scale = T, label.edge= F, title.name = "Interaction weights/strength")
 ```
 
+## Cell-cell communication network split by sender
 ```{r, fig.width=9, fig.height=5}
 mat <- cellchat@net$weight
 par(mfrow = c(2,3), mar = c(0, 4, 0, 4), xpd=TRUE)
@@ -150,9 +158,19 @@ for (i in 1:nrow(mat)) {
 }
 ```
 
-```{r, fig.height=6, fig.width=8}
-netVisual_chord_gene(cellchat, sources.use = 5, targets.use = c(1:2), lab.cex = 0.5,legend.pos.y = 30, thresh = 0.00001)
+
+## Interaction strength and number of interactions for each cell type pair
+
+```{r}
+netVisual_heatmap(cellchat, color.heatmap = "Reds", slot.name = "net", measure = "weight")
 ```
+
+```{r}
+netVisual_heatmap(cellchat, color.heatmap = "Reds", slot.name = "net", measure = "count")
+```
+
+
+## Dominant senders (sources) and receivers (targets)
 
 ```{r}
 # Run the analysis without parallel processing
@@ -162,7 +180,10 @@ gg1 <- netAnalysis_signalingRole_scatter(cellchat)
 gg1
 ```
 
-```{r, fig.height=13, fig.width=10}
+
+## Signals contributing the most to outgoing or incoming signaling
+
+```{r, fig.height=13, fig.width=11}
 # Signaling role analysis on the aggregated cell-cell communication network from all signaling pathways
 ht1 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "outgoing", width = 10,
   height = 25)
@@ -171,14 +192,71 @@ ht2 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "incoming", width =
 ht1 + ht2
 ```
 
-```{r, eval=FALSE}
-netVisual_chord_gene(cellchat, sources.use = c(5), targets.use = c(1:2), slot.name = "netP", legend.pos.x = 10, thresh = 0.00001)
+```{r, fig.height=6, fig.width=8}
+df <- rankNet(cellchat, mode = "single", stacked = T, return.data = T)$signaling.contribution %>%
+  arrange(desc(contribution))
+ht1 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "outgoing", width = 7,
+  height = 8, signaling = df[1:25,]$name)
+ht2 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "incoming", width = 7,
+  height = 8, signaling = df[1:25,]$name)
+ht1 + ht2
 ```
 
-```{r, eval = FALSE}
-# (1) show all the significant interactions (L-R pairs) from some cell groups (defined by 'sources.use') to other cell groups (defined by 'targets.use')
-netVisual_bubble(cellchat, sources.use = 5, targets.use = c(1:2), remove.isolate = FALSE)
-#> Comparing communications on a single object
+
+## Top interactions between all cell types
+
+```{r, fig.height=6, fig.width=6}
+net <- df.net %>%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, lab.cex = 1, legend.pos.y = 130, legend.pos.x = 5, slot.name = "net", net = net[1:25,])
+```
+
+```{r, fig.height=6, fig.width=6}
+net <- df.pathways %>%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, lab.cex = 0.65, legend.pos.y = 110, legend.pos.x = 5, slot.name = "netP", net = net[1:25,], small.gap = 2)
+```
+
+
+## Top interactions with endothelial cells as senders
+
+```{r, fig.height=6, fig.width=6}
+net <- df.net %>%
+  filter(source == "Endothelial cells") %>%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, lab.cex = 1, legend.pos.y = 130, legend.pos.x = 5, slot.name = "net", net = net[1:25,], sources.use = "Endothelial cells")
+```
+
+```{r, fig.height=8, fig.width=10}
+net <- df.pathways %>%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, sources.use = "Endothelial cells", lab.cex = 1,legend.pos.y = 150, slot.name = "netP", net = net[1:100,])
+```
+
+```{r}
+net <- df.net %>%
+  filter(source == "Endothelial cells") %>%
+  arrange(desc(prob))
+df <- as.data.frame(net[1:25,]$interaction_name)
+colnames(df) <- "interaction_name"
+netVisual_bubble(cellchat, remove.isolate = FALSE, pairLR.use = df, sources.use = "Endothelial cells", angle.x = 45)
+```
+
+
+## Top interactions with endothelial cells as senders and cardiomyocytes as receivers
+
+```{r, fig.height=6, fig.width=6}
+net <- df.net %>%
+  filter(source == "Endothelial cells") %>%
+  filter(target %in% c("Ventricular Cardiomyocytes", "Atrial Cardiomyocytes")) %>%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, lab.cex = 1, legend.pos.y = 135, legend.pos.x = 5, slot.name = "net", net = net[1:25,], sources.use = "Endothelial cells", targets.use = c("Ventricular Cardiomyocytes", "Atrial Cardiomyocytes"))
+```
+
+```{r}
+df <- as.data.frame(net[1:25,]$interaction_name)
+colnames(df) <- "interaction_name"
+netVisual_bubble(cellchat, remove.isolate = FALSE, pairLR.use = df, sources.use = "Endothelial cells", angle.x = 45, targets.use = c("Ventricular Cardiomyocytes", "Atrial Cardiomyocytes"))
 ```
 
 ```{r}
