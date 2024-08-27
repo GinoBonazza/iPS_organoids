@@ -352,6 +352,12 @@ div.tocify {
     <li>
       <a href="Differential_expression_CDKN1A.html">Differential expression_CDKN1A</a>
     </li>
+    <li>
+      <a href="QC_integration_annotation_Ctr.html">QC, integration, annotation (only Controls)</a>
+    </li>
+    <li>
+      <a href="CellChat.html">CellChat</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -382,7 +388,7 @@ div.tocify {
 <h4 class="author">GinoBonazza (<a
 href="mailto:ginoandrea.bonazza@usz.ch"
 class="email">ginoandrea.bonazza@usz.ch</a>)</h4>
-<h4 class="date">23 July, 2024</h4>
+<h4 class="date">27 August, 2024</h4>
 
 </div>
 
@@ -411,7 +417,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-07-23
+<strong>Last updated:</strong> 2024-08-27
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -542,15 +548,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree16965dad69a2b100727a2bd55503db0f93b24851targetblank16965daa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree2aaf1ced493fc4f8b334cd4e6fbb2f89d12d6f0ftargetblank2aaf1cea">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/GinoBonazza/iPS_organoids/tree/16965dad69a2b100727a2bd55503db0f93b24851" target="_blank">16965da</a>
+<a href="https://github.com/GinoBonazza/iPS_organoids/tree/2aaf1ced493fc4f8b334cd4e6fbb2f89d12d6f0f" target="_blank">2aaf1ce</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree16965dad69a2b100727a2bd55503db0f93b24851targetblank16965daa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree2aaf1ced493fc4f8b334cd4e6fbb2f89d12d6f0ftargetblank2aaf1cea"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -560,7 +566,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/GinoBonazza/iPS_organoids/tree/16965dad69a2b100727a2bd55503db0f93b24851" target="_blank">16965da</a>.
+<a href="https://github.com/GinoBonazza/iPS_organoids/tree/2aaf1ced493fc4f8b334cd4e6fbb2f89d12d6f0f" target="_blank">2aaf1ce</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -577,9 +583,11 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    output/Genes_of_interest/
     Ignored:    output/Test2/
 
 Untracked files:
+    Untracked:  analysis/Genes_of_interest.Rmd
     Untracked:  code/DE_CDKN1A_temp.Rmd
     Untracked:  code/QC_backup.Rmd
     Untracked:  code/QC_integration_annotation_fail.Rmd
@@ -589,13 +597,14 @@ Untracked files:
     Untracked:  data/Cellranger_output/
     Untracked:  data/Organoids_metadata.xlsx
     Untracked:  omnipathr-log/
+    Untracked:  output/CellChat/
     Untracked:  output/Differential_expression/
     Untracked:  output/Differential_expression_CDKN1A/
     Untracked:  output/QC_integration_annotation/
+    Untracked:  output/QC_integration_annotation_Ctr/
     Untracked:  output/Test/
 
 Unstaged changes:
-    Modified:   analysis/Differential_expression_CDKN1A.Rmd
     Modified:   analysis/_site.yml
 
 </code></pre>
@@ -643,6 +652,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/2aaf1ced493fc4f8b334cd4e6fbb2f89d12d6f0f/analysis/QC_integration_annotation.Rmd" target="_blank">2aaf1ce</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-08-27
+</td>
+<td>
+wflow_publish(c("analysis/Differential_expression_CDKN1A.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/GinoBonazza/iPS_organoids/a9b69266ad39c48f3ec719251908fee20ae7d14a/docs/QC_integration_annotation.html" target="_blank">a9b6926</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-23
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1484,10 +1527,10 @@ p3 &lt;- VlnPlot(iPS, features = &quot;percent.mt&quot;, group.by = &quot;Sample
 
 p4 &lt;- VlnPlot(iPS, features = &quot;percent.rp&quot;, group.by = &quot;Sample&quot;, pt.size = 0, y.max = 60) + theme(axis.title.x = element_blank()) + NoLegend()
 
-QC_post_VlnPlots_zoom &lt;- p1 + p2 + p3 + p4 + plot_layout(ncol = 2)
+QC_post_VlnPlots_zoom &lt;- p1 + p2 + p3 + p4 + plot_layout(ncol = 4)
 
 QC_post_VlnPlots_zoom</code></pre>
-<p><img src="figure/QC_integration_annotation.Rmd/QC_post_VlnPlots_zoom_2-1.png" width="7200" style="display: block; margin: auto;" /></p>
+<p><img src="figure/QC_integration_annotation.Rmd/QC_post_VlnPlots_zoom_2-1.png" width="9600" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_post_VlnPlots_zoom_2-1">
 Past versions of QC_post_VlnPlots_zoom_2-1.png

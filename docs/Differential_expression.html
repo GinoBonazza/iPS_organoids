@@ -352,6 +352,12 @@ div.tocify {
     <li>
       <a href="Differential_expression_CDKN1A.html">Differential expression_CDKN1A</a>
     </li>
+    <li>
+      <a href="QC_integration_annotation_Ctr.html">QC, integration, annotation (only Controls)</a>
+    </li>
+    <li>
+      <a href="CellChat.html">CellChat</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -382,7 +388,7 @@ div.tocify {
 <h4 class="author">GinoBonazza (<a
 href="mailto:ginoandrea.bonazza@usz.ch"
 class="email">ginoandrea.bonazza@usz.ch</a>)</h4>
-<h4 class="date">23 July, 2024</h4>
+<h4 class="date">27 August, 2024</h4>
 
 </div>
 
@@ -411,7 +417,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-07-23
+<strong>Last updated:</strong> 2024-08-27
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -542,15 +548,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree16965dad69a2b100727a2bd55503db0f93b24851targetblank16965daa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree2aaf1ced493fc4f8b334cd4e6fbb2f89d12d6f0ftargetblank2aaf1cea">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/GinoBonazza/iPS_organoids/tree/16965dad69a2b100727a2bd55503db0f93b24851" target="_blank">16965da</a>
+<a href="https://github.com/GinoBonazza/iPS_organoids/tree/2aaf1ced493fc4f8b334cd4e6fbb2f89d12d6f0f" target="_blank">2aaf1ce</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree16965dad69a2b100727a2bd55503db0f93b24851targetblank16965daa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree2aaf1ced493fc4f8b334cd4e6fbb2f89d12d6f0ftargetblank2aaf1cea"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -560,7 +566,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/GinoBonazza/iPS_organoids/tree/16965dad69a2b100727a2bd55503db0f93b24851" target="_blank">16965da</a>.
+<a href="https://github.com/GinoBonazza/iPS_organoids/tree/2aaf1ced493fc4f8b334cd4e6fbb2f89d12d6f0f" target="_blank">2aaf1ce</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -577,9 +583,11 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    output/Genes_of_interest/
     Ignored:    output/Test2/
 
 Untracked files:
+    Untracked:  analysis/Genes_of_interest.Rmd
     Untracked:  code/DE_CDKN1A_temp.Rmd
     Untracked:  code/QC_backup.Rmd
     Untracked:  code/QC_integration_annotation_fail.Rmd
@@ -589,9 +597,11 @@ Untracked files:
     Untracked:  data/Cellranger_output/
     Untracked:  data/Organoids_metadata.xlsx
     Untracked:  omnipathr-log/
+    Untracked:  output/CellChat/
     Untracked:  output/Differential_expression/
     Untracked:  output/Differential_expression_CDKN1A/
     Untracked:  output/QC_integration_annotation/
+    Untracked:  output/QC_integration_annotation_Ctr/
     Untracked:  output/Test/
 
 Unstaged changes:
@@ -642,6 +652,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/2aaf1ced493fc4f8b334cd4e6fbb2f89d12d6f0f/analysis/Differential_expression.Rmd" target="_blank">2aaf1ce</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-08-27
+</td>
+<td>
+wflow_publish(c("analysis/Differential_expression_CDKN1A.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/GinoBonazza/iPS_organoids/a9b69266ad39c48f3ec719251908fee20ae7d14a/docs/Differential_expression.html" target="_blank">a9b6926</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-23
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -988,7 +1032,7 @@ volcano[[1]] &lt;- EnhancedVolcano(DE_all,
                   lab = DE_all$gene,
                   x = &quot;avg_log2FC&quot;,
                   y = &quot;p_val_adj&quot;,
-                  labSize = 3.5,
+                  labSize = 0,
                   titleLabSize = 16,
                   subtitleLabSize = 14,
                   axisLabSize = 12,
@@ -998,12 +1042,9 @@ volcano[[1]] &lt;- EnhancedVolcano(DE_all,
                   pCutoff  = 0.05,
                   col = c(&quot;black&quot;, &quot;black&quot;, &quot;black&quot;, &quot;red&quot;),
                   colAlpha = 1,
-                  drawConnectors = TRUE,
-                  widthConnectors = 0.1,
-                  boxedLabels = TRUE,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
                   subtitle = NULL,
-                  maxoverlapsConnectors = 15,
-                  max.overlaps = 15,
                   title = &quot;All Cardiomyocytes&quot;
   ) + theme(legend.position = &quot;none&quot;)
 names(volcano)[1] &lt;- &quot;All&quot;
@@ -1012,7 +1053,7 @@ volcano[[2]] &lt;- EnhancedVolcano(DE_JDR,
                   lab = DE_JDR$gene,
                   x = &quot;avg_log2FC&quot;,
                   y = &quot;p_val_adj&quot;,
-                  labSize = 3.5,
+                  labSize = 0,
                   titleLabSize = 16,
                   subtitleLabSize = 14,
                   axisLabSize = 12,
@@ -1022,12 +1063,9 @@ volcano[[2]] &lt;- EnhancedVolcano(DE_JDR,
                   pCutoff  = 0.05,
                   col = c(&quot;black&quot;, &quot;black&quot;, &quot;black&quot;, &quot;red&quot;),
                   colAlpha = 1,
-                  drawConnectors = TRUE,
-                  widthConnectors = 0.1,
-                  boxedLabels = TRUE,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
                   subtitle = NULL,
-                  maxoverlapsConnectors = 15,
-                  max.overlaps = 15,
                   title = &quot;JDR Cardiomyocytes&quot;
   ) + theme(legend.position = &quot;none&quot;)
 names(volcano)[2] &lt;- &quot;JDR&quot;
@@ -1036,7 +1074,7 @@ volcano[[3]] &lt;- EnhancedVolcano(DE_JD6,
                   lab = DE_JD6$gene,
                   x = &quot;avg_log2FC&quot;,
                   y = &quot;p_val_adj&quot;,
-                  labSize = 3.5,
+                  labSize = 0,
                   titleLabSize = 16,
                   subtitleLabSize = 14,
                   axisLabSize = 12,
@@ -1046,9 +1084,8 @@ volcano[[3]] &lt;- EnhancedVolcano(DE_JD6,
                   pCutoff  = 0.05,
                   col = c(&quot;black&quot;, &quot;black&quot;, &quot;black&quot;, &quot;red&quot;),
                   colAlpha = 1,
-                  drawConnectors = TRUE,
-                  widthConnectors = 0.1,
-                  boxedLabels = TRUE,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
                   subtitle = NULL,
                   maxoverlapsConnectors = 15,
                   max.overlaps = 15,
@@ -1060,7 +1097,7 @@ volcano[[4]] &lt;- EnhancedVolcano(DE_DMD1,
                   lab = DE_DMD1$gene,
                   x = &quot;avg_log2FC&quot;,
                   y = &quot;p_val_adj&quot;,
-                  labSize = 3.5,
+                  labSize = 0,
                   titleLabSize = 16,
                   subtitleLabSize = 14,
                   axisLabSize = 12,
@@ -1070,9 +1107,8 @@ volcano[[4]] &lt;- EnhancedVolcano(DE_DMD1,
                   pCutoff  = 0.05,
                   col = c(&quot;black&quot;, &quot;black&quot;, &quot;black&quot;, &quot;red&quot;),
                   colAlpha = 1,
-                  drawConnectors = TRUE,
-                  widthConnectors = 0.1,
-                  boxedLabels = TRUE,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
                   subtitle = NULL,
                   maxoverlapsConnectors = 15,
                   max.overlaps = 15,
@@ -1104,6 +1140,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/a9b69266ad39c48f3ec719251908fee20ae7d14a/docs/figure/Differential_expression.Rmd/Volcano_all_025-1.png" target="_blank">a9b6926</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-07-23
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/GinoBonazza/iPS_organoids/blob/ae56bf366b0338c47288692803a3d7ded6f805ea/docs/figure/Differential_expression.Rmd/Volcano_all_025-1.png" target="_blank">ae56bf3</a>
@@ -1480,7 +1527,7 @@ volcano[[1]] &lt;- EnhancedVolcano(DE_all,
                   lab = DE_all$gene,
                   x = &quot;avg_log2FC&quot;,
                   y = &quot;p_val_adj&quot;,
-                  labSize = 3.5,
+                  labSize = 0,
                   titleLabSize = 16,
                   subtitleLabSize = 14,
                   axisLabSize = 12,
@@ -1490,12 +1537,9 @@ volcano[[1]] &lt;- EnhancedVolcano(DE_all,
                   pCutoff  = 0.05,
                   col = c(&quot;black&quot;, &quot;black&quot;, &quot;black&quot;, &quot;red&quot;),
                   colAlpha = 1,
-                  drawConnectors = TRUE,
-                  widthConnectors = 0.1,
-                  boxedLabels = TRUE,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
                   subtitle = NULL,
-                  maxoverlapsConnectors = 15,
-                  max.overlaps = 15,
                   title = &quot;All Cardiomyocytes&quot;
   ) + theme(legend.position = &quot;none&quot;)
 names(volcano)[1] &lt;- &quot;All&quot;
@@ -1504,7 +1548,7 @@ volcano[[2]] &lt;- EnhancedVolcano(DE_JDR,
                   lab = DE_JDR$gene,
                   x = &quot;avg_log2FC&quot;,
                   y = &quot;p_val_adj&quot;,
-                  labSize = 3.5,
+                  labSize = 0,
                   titleLabSize = 16,
                   subtitleLabSize = 14,
                   axisLabSize = 12,
@@ -1514,12 +1558,9 @@ volcano[[2]] &lt;- EnhancedVolcano(DE_JDR,
                   pCutoff  = 0.05,
                   col = c(&quot;black&quot;, &quot;black&quot;, &quot;black&quot;, &quot;red&quot;),
                   colAlpha = 1,
-                  drawConnectors = TRUE,
-                  widthConnectors = 0.1,
-                  boxedLabels = TRUE,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
                   subtitle = NULL,
-                  maxoverlapsConnectors = 15,
-                  max.overlaps = 15,
                   title = &quot;JDR Cardiomyocytes&quot;
   ) + theme(legend.position = &quot;none&quot;)
 names(volcano)[2] &lt;- &quot;JDR&quot;
@@ -1528,7 +1569,7 @@ volcano[[3]] &lt;- EnhancedVolcano(DE_JD6,
                   lab = DE_JD6$gene,
                   x = &quot;avg_log2FC&quot;,
                   y = &quot;p_val_adj&quot;,
-                  labSize = 3.5,
+                  labSize = 0,
                   titleLabSize = 16,
                   subtitleLabSize = 14,
                   axisLabSize = 12,
@@ -1538,12 +1579,9 @@ volcano[[3]] &lt;- EnhancedVolcano(DE_JD6,
                   pCutoff  = 0.05,
                   col = c(&quot;black&quot;, &quot;black&quot;, &quot;black&quot;, &quot;red&quot;),
                   colAlpha = 1,
-                  drawConnectors = TRUE,
-                  widthConnectors = 0.1,
-                  boxedLabels = TRUE,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
                   subtitle = NULL,
-                  maxoverlapsConnectors = 15,
-                  max.overlaps = 15,
                   title = &quot;JD6 Cardiomyocytes&quot;
   ) + theme(legend.position = &quot;none&quot;)
 names(volcano)[3] &lt;- &quot;JD6&quot;
@@ -1552,7 +1590,7 @@ volcano[[4]] &lt;- EnhancedVolcano(DE_DMD1,
                   lab = DE_DMD1$gene,
                   x = &quot;avg_log2FC&quot;,
                   y = &quot;p_val_adj&quot;,
-                  labSize = 3.5,
+                  labSize = 0,
                   titleLabSize = 16,
                   subtitleLabSize = 14,
                   axisLabSize = 12,
@@ -1562,12 +1600,9 @@ volcano[[4]] &lt;- EnhancedVolcano(DE_DMD1,
                   pCutoff  = 0.05,
                   col = c(&quot;black&quot;, &quot;black&quot;, &quot;black&quot;, &quot;red&quot;),
                   colAlpha = 1,
-                  drawConnectors = TRUE,
-                  widthConnectors = 0.1,
-                  boxedLabels = TRUE,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
                   subtitle = NULL,
-                  maxoverlapsConnectors = 15,
-                  max.overlaps = 15,
                   title = &quot;DMD1 Cardiomyocytes&quot;
   ) + theme(legend.position = &quot;none&quot;)
 names(volcano)[4] &lt;- &quot;DMD1&quot;</code></pre>
@@ -1611,7 +1646,7 @@ GinoBonazza
 </table>
 </div>
 </div>
-<pre class="r"><code>VlnPlot(CM, features = common_up, group.by = &quot;Condition&quot;, ncol = 1, pt.size = 0.01) + NoLegend()</code></pre>
+<pre class="r"><code>VlnPlot(CM, features = common_up, group.by = &quot;Condition&quot;, ncol = 1, pt.size = 0.01)</code></pre>
 <p><img src="figure/Differential_expression.Rmd/VlnPlot_DE_up_05-1.png" width="1200" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_DE_up_05-1">
@@ -1689,8 +1724,8 @@ GinoBonazza
 </table>
 </div>
 </div>
-<pre class="r"><code>VlnPlot(CM, features = common_up, group.by = &quot;Cell_line&quot;, split.by = &quot;Condition&quot;, ncol = 1, pt.size = 0.01) + NoLegend()</code></pre>
-<p><img src="figure/Differential_expression.Rmd/VlnPlot_DE_up_cell_line_05-1.png" width="1800" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>VlnPlot(CM, features = common_up, group.by = &quot;Cell_line&quot;, split.by = &quot;Condition&quot;, ncol = 1, pt.size = 0.01)</code></pre>
+<p><img src="figure/Differential_expression.Rmd/VlnPlot_DE_up_cell_line_05-1.png" width="2400" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_DE_up_cell_line_05-1">
 Past versions of VlnPlot_DE_up_cell_line_05-1.png
@@ -1728,8 +1763,8 @@ GinoBonazza
 </table>
 </div>
 </div>
-<pre class="r"><code>VlnPlot(CM, features = common_down, group.by = &quot;Cell_line&quot;, split.by = &quot;Condition&quot;, ncol = 6, pt.size = 0.01)</code></pre>
-<p><img src="figure/Differential_expression.Rmd/VlnPlot_DE_down_cell_line_05-1.png" width="9000" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>VlnPlot(CM, features = common_down, group.by = &quot;Cell_line&quot;, split.by = &quot;Condition&quot;, ncol = 3, pt.size = 0.01)</code></pre>
+<p><img src="figure/Differential_expression.Rmd/VlnPlot_DE_down_cell_line_05-1.png" width="7200" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_DE_down_cell_line_05-1">
 Past versions of VlnPlot_DE_down_cell_line_05-1.png
