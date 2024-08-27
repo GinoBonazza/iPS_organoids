@@ -548,15 +548,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree7e03e65fae2f8f10a7dd8d45df4b92cd9e65bae9targetblank7e03e65a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree484e13569e2f7fe1f9a270ae21462be66037b0fftargetblank484e135a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/GinoBonazza/iPS_organoids/tree/7e03e65fae2f8f10a7dd8d45df4b92cd9e65bae9" target="_blank">7e03e65</a>
+<a href="https://github.com/GinoBonazza/iPS_organoids/tree/484e13569e2f7fe1f9a270ae21462be66037b0ff" target="_blank">484e135</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree7e03e65fae2f8f10a7dd8d45df4b92cd9e65bae9targetblank7e03e65a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree484e13569e2f7fe1f9a270ae21462be66037b0fftargetblank484e135a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -566,7 +566,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/GinoBonazza/iPS_organoids/tree/7e03e65fae2f8f10a7dd8d45df4b92cd9e65bae9" target="_blank">7e03e65</a>.
+<a href="https://github.com/GinoBonazza/iPS_organoids/tree/484e13569e2f7fe1f9a270ae21462be66037b0ff" target="_blank">484e135</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -606,10 +606,6 @@ Untracked files:
     Untracked:  output/Test/
 
 Unstaged changes:
-    Modified:   analysis/Differential_expression.Rmd
-    Modified:   analysis/Differential_expression_CDKN1A.Rmd
-    Modified:   analysis/QC_integration_annotation.Rmd
-    Modified:   analysis/QC_integration_annotation_Ctr.Rmd
     Modified:   analysis/_site.yml
 
 </code></pre>
@@ -656,6 +652,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/484e13569e2f7fe1f9a270ae21462be66037b0ff/analysis/CellChat.Rmd" target="_blank">484e135</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-08-27
+</td>
+<td>
+wflow_publish("analysis/CellChat.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/GinoBonazza/iPS_organoids/5492d300c0dd4f7c71bb269255403270acf03467/docs/CellChat.html" target="_blank">5492d30</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-08-27
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -768,17 +798,63 @@ cellchat &lt;- identifyOverExpressedInteractions(cellchat)</code></pre>
 <pre class="r"><code>#&gt; The number of highly variable ligand-receptor pairs used for signaling inference is 692</code></pre>
 <pre class="r"><code>cellchat &lt;- computeCommunProb(cellchat, type = &quot;triMean&quot;)</code></pre>
 <pre><code>triMean is used for calculating the average gene expression per cell group. 
-[1] &quot;&gt;&gt;&gt; Run CellChat on sc/snRNA-seq data &lt;&lt;&lt; [2024-08-27 13:37:42.833433]&quot;
-[1] &quot;&gt;&gt;&gt; CellChat inference is done. Parameter values are stored in `object@options$parameter` &lt;&lt;&lt; [2024-08-27 13:41:45.987391]&quot;</code></pre>
+[1] &quot;&gt;&gt;&gt; Run CellChat on sc/snRNA-seq data &lt;&lt;&lt; [2024-08-27 16:58:26.030615]&quot;
+[1] &quot;&gt;&gt;&gt; CellChat inference is done. Parameter values are stored in `object@options$parameter` &lt;&lt;&lt; [2024-08-27 17:02:36.130259]&quot;</code></pre>
 <pre class="r"><code>cellchat &lt;- filterCommunication(cellchat, min.cells = 10)</code></pre>
-<pre class="r"><code>df.net &lt;- subsetCommunication(cellchat)</code></pre>
+<pre class="r"><code>df.net &lt;- subsetCommunication(cellchat, slot.name = &quot;net&quot;)</code></pre>
 <pre class="r"><code>cellchat &lt;- computeCommunProbPathway(cellchat)</code></pre>
 <pre class="r"><code>cellchat &lt;- aggregateNet(cellchat)</code></pre>
+<pre class="r"><code>df.pathways &lt;- subsetCommunication(cellchat, slot.name = &quot;netP&quot;, thresh = 0.05)</code></pre>
+</div>
+<div id="aggregated-cell-cell-communication-network"
+class="section level2">
+<h2>Aggregated cell-cell communication network</h2>
 <pre class="r"><code>groupSize &lt;- as.numeric(table(cellchat@idents))
 par(mfrow = c(1,2), mar = c(0, 0, 2, 0), xpd=TRUE)
 netVisual_circle(cellchat@net$count, vertex.weight = groupSize, weight.scale = T, label.edge= F, title.name = &quot;Number of interactions&quot;)
 netVisual_circle(cellchat@net$weight, vertex.weight = groupSize, weight.scale = T, label.edge= F, title.name = &quot;Interaction weights/strength&quot;)</code></pre>
-<p><img src="figure/CellChat.Rmd/unnamed-chunk-7-1.png" width="2700" style="display: block; margin: auto;" /></p>
+<p><img src="figure/CellChat.Rmd/unnamed-chunk-8-1.png" width="2700" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
+Past versions of unnamed-chunk-8-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/5492d300c0dd4f7c71bb269255403270acf03467/docs/figure/CellChat.Rmd/unnamed-chunk-8-1.png" target="_blank">5492d30</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-08-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="cell-cell-communication-network-split-by-sender"
+class="section level2">
+<h2>Cell-cell communication network split by sender</h2>
 <pre class="r"><code>mat &lt;- cellchat@net$weight
 par(mfrow = c(2,3), mar = c(0, 4, 0, 4), xpd=TRUE)
 for (i in 1:nrow(mat)) {
@@ -786,26 +862,206 @@ for (i in 1:nrow(mat)) {
   mat2[i, ] &lt;- mat[i, ]
   netVisual_circle(mat2, vertex.weight = groupSize, weight.scale = T, edge.weight.max = max(mat), title.name = rownames(mat)[i])
 }</code></pre>
-<p><img src="figure/CellChat.Rmd/unnamed-chunk-8-1.png" width="2700" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>netVisual_chord_gene(cellchat, sources.use = 5, targets.use = c(1:2), lab.cex = 0.5,legend.pos.y = 30, thresh = 0.00001)</code></pre>
-<p><img src="figure/CellChat.Rmd/unnamed-chunk-9-1.png" width="2400" style="display: block; margin: auto;" /></p>
+<p><img src="figure/CellChat.Rmd/unnamed-chunk-9-1.png" width="2700" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
+Past versions of unnamed-chunk-9-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/5492d300c0dd4f7c71bb269255403270acf03467/docs/figure/CellChat.Rmd/unnamed-chunk-9-1.png" target="_blank">5492d30</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-08-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div
+id="interaction-strength-and-number-of-interactions-for-each-cell-type-pair"
+class="section level2">
+<h2>Interaction strength and number of interactions for each cell type
+pair</h2>
+<pre class="r"><code>netVisual_heatmap(cellchat, color.heatmap = &quot;Reds&quot;, slot.name = &quot;net&quot;, measure = &quot;weight&quot;)</code></pre>
+<p><img src="figure/CellChat.Rmd/unnamed-chunk-10-1.png" width="2100" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/5492d300c0dd4f7c71bb269255403270acf03467/docs/figure/CellChat.Rmd/unnamed-chunk-10-1.png" target="_blank">5492d30</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-08-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>netVisual_heatmap(cellchat, color.heatmap = &quot;Reds&quot;, slot.name = &quot;net&quot;, measure = &quot;count&quot;)</code></pre>
+<p><img src="figure/CellChat.Rmd/unnamed-chunk-11-1.png" width="2100" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
+Past versions of unnamed-chunk-11-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/5492d300c0dd4f7c71bb269255403270acf03467/docs/figure/CellChat.Rmd/unnamed-chunk-11-1.png" target="_blank">5492d30</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-08-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="dominant-senders-sources-and-receivers-targets"
+class="section level2">
+<h2>Dominant senders (sources) and receivers (targets)</h2>
 <pre class="r"><code># Run the analysis without parallel processing
 cellchat &lt;- netAnalysis_computeCentrality(cellchat, slot.name = &quot;netP&quot;)
 
 gg1 &lt;- netAnalysis_signalingRole_scatter(cellchat)
 gg1</code></pre>
-<p><img src="figure/CellChat.Rmd/unnamed-chunk-10-1.png" width="2100" style="display: block; margin: auto;" /></p>
+<p><img src="figure/CellChat.Rmd/unnamed-chunk-12-1.png" width="2100" style="display: block; margin: auto;" /></p>
+</div>
+<div
+id="signals-contributing-the-most-to-outgoing-or-incoming-signaling"
+class="section level2">
+<h2>Signals contributing the most to outgoing or incoming signaling</h2>
 <pre class="r"><code># Signaling role analysis on the aggregated cell-cell communication network from all signaling pathways
 ht1 &lt;- netAnalysis_signalingRole_heatmap(cellchat, pattern = &quot;outgoing&quot;, width = 10,
   height = 25)
 ht2 &lt;- netAnalysis_signalingRole_heatmap(cellchat, pattern = &quot;incoming&quot;, width = 10,
   height = 25)
 ht1 + ht2</code></pre>
-<p><img src="figure/CellChat.Rmd/unnamed-chunk-11-1.png" width="3000" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>netVisual_chord_gene(cellchat, sources.use = c(5), targets.use = c(1:2), slot.name = &quot;netP&quot;, legend.pos.x = 10, thresh = 0.00001)</code></pre>
-<pre class="r"><code># (1) show all the significant interactions (L-R pairs) from some cell groups (defined by &#39;sources.use&#39;) to other cell groups (defined by &#39;targets.use&#39;)
-netVisual_bubble(cellchat, sources.use = 5, targets.use = c(1:2), remove.isolate = FALSE)
-#&gt; Comparing communications on a single object</code></pre>
+<p><img src="figure/CellChat.Rmd/unnamed-chunk-13-1.png" width="3300" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>df &lt;- rankNet(cellchat, mode = &quot;single&quot;, stacked = T, return.data = T)$signaling.contribution %&gt;%
+  arrange(desc(contribution))
+ht1 &lt;- netAnalysis_signalingRole_heatmap(cellchat, pattern = &quot;outgoing&quot;, width = 7,
+  height = 8, signaling = df[1:25,]$name)
+ht2 &lt;- netAnalysis_signalingRole_heatmap(cellchat, pattern = &quot;incoming&quot;, width = 7,
+  height = 8, signaling = df[1:25,]$name)
+ht1 + ht2</code></pre>
+<p><img src="figure/CellChat.Rmd/unnamed-chunk-14-1.png" width="2400" style="display: block; margin: auto;" /></p>
+</div>
+<div id="top-interactions-between-all-cell-types"
+class="section level2">
+<h2>Top interactions between all cell types</h2>
+<pre class="r"><code>net &lt;- df.net %&gt;%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, lab.cex = 1, legend.pos.y = 130, legend.pos.x = 5, slot.name = &quot;net&quot;, net = net[1:25,])</code></pre>
+<p><img src="figure/CellChat.Rmd/unnamed-chunk-15-1.png" width="1800" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>net &lt;- df.pathways %&gt;%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, lab.cex = 0.65, legend.pos.y = 110, legend.pos.x = 5, slot.name = &quot;netP&quot;, net = net[1:25,], small.gap = 2)</code></pre>
+<p><img src="figure/CellChat.Rmd/unnamed-chunk-16-1.png" width="1800" style="display: block; margin: auto;" /></p>
+</div>
+<div id="top-interactions-with-endothelial-cells-as-senders"
+class="section level2">
+<h2>Top interactions with endothelial cells as senders</h2>
+<pre class="r"><code>net &lt;- df.net %&gt;%
+  filter(source == &quot;Endothelial cells&quot;) %&gt;%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, lab.cex = 1, legend.pos.y = 130, legend.pos.x = 5, slot.name = &quot;net&quot;, net = net[1:25,], sources.use = &quot;Endothelial cells&quot;)</code></pre>
+<p><img src="figure/CellChat.Rmd/unnamed-chunk-17-1.png" width="1800" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>net &lt;- df.pathways %&gt;%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, sources.use = &quot;Endothelial cells&quot;, lab.cex = 1,legend.pos.y = 150, slot.name = &quot;netP&quot;, net = net[1:100,])</code></pre>
+<p><img src="figure/CellChat.Rmd/unnamed-chunk-18-1.png" width="3000" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>net &lt;- df.net %&gt;%
+  filter(source == &quot;Endothelial cells&quot;) %&gt;%
+  arrange(desc(prob))
+df &lt;- as.data.frame(net[1:25,]$interaction_name)
+colnames(df) &lt;- &quot;interaction_name&quot;
+netVisual_bubble(cellchat, remove.isolate = FALSE, pairLR.use = df, sources.use = &quot;Endothelial cells&quot;, angle.x = 45)</code></pre>
+<p><img src="figure/CellChat.Rmd/unnamed-chunk-19-1.png" width="2100" style="display: block; margin: auto;" /></p>
+</div>
+<div
+id="top-interactions-with-endothelial-cells-as-senders-and-cardiomyocytes-as-receivers"
+class="section level2">
+<h2>Top interactions with endothelial cells as senders and
+cardiomyocytes as receivers</h2>
+<pre class="r"><code>net &lt;- df.net %&gt;%
+  filter(source == &quot;Endothelial cells&quot;) %&gt;%
+  filter(target %in% c(&quot;Ventricular Cardiomyocytes&quot;, &quot;Atrial Cardiomyocytes&quot;)) %&gt;%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, lab.cex = 1, legend.pos.y = 135, legend.pos.x = 5, slot.name = &quot;net&quot;, net = net[1:25,], sources.use = &quot;Endothelial cells&quot;, targets.use = c(&quot;Ventricular Cardiomyocytes&quot;, &quot;Atrial Cardiomyocytes&quot;))</code></pre>
+<p><img src="figure/CellChat.Rmd/unnamed-chunk-20-1.png" width="1800" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>df &lt;- as.data.frame(net[1:25,]$interaction_name)
+colnames(df) &lt;- &quot;interaction_name&quot;
+netVisual_bubble(cellchat, remove.isolate = FALSE, pairLR.use = df, sources.use = &quot;Endothelial cells&quot;, angle.x = 45, targets.use = c(&quot;Ventricular Cardiomyocytes&quot;, &quot;Atrial Cardiomyocytes&quot;))</code></pre>
+<p><img src="figure/CellChat.Rmd/unnamed-chunk-21-1.png" width="2100" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>saveRDS(cellchat, 
         here::here(output_dir_data, &quot;iPS_cellchat.rds&quot;))</code></pre>
 <br>
