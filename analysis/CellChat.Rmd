@@ -107,6 +107,8 @@ CellChatDB <- CellChatDB.human
 cellchat@DB <- CellChatDB
 ```
 
+## Whole CellChat database
+
 ```{r}
 # subset the expression data of signaling genes for saving computation cost
 cellchat <- subsetData(cellchat) # This step is necessary even if using the whole database
@@ -138,7 +140,7 @@ cellchat <- aggregateNet(cellchat)
 df.pathways <- subsetCommunication(cellchat, slot.name = "netP", thresh = 0.05)
 ```
 
-## Aggregated cell-cell communication network
+### Aggregated cell-cell communication network
 
 ```{r, fig.width=9, fig.height=3}
 groupSize <- as.numeric(table(cellchat@idents))
@@ -147,7 +149,7 @@ netVisual_circle(cellchat@net$count, vertex.weight = groupSize, weight.scale = T
 netVisual_circle(cellchat@net$weight, vertex.weight = groupSize, weight.scale = T, label.edge= F, title.name = "Interaction weights/strength")
 ```
 
-## Cell-cell communication network split by sender
+### Cell-cell communication network split by sender
 ```{r, fig.width=9, fig.height=5}
 mat <- cellchat@net$weight
 par(mfrow = c(2,3), mar = c(0, 4, 0, 4), xpd=TRUE)
@@ -159,7 +161,7 @@ for (i in 1:nrow(mat)) {
 ```
 
 
-## Interaction strength and number of interactions for each cell type pair
+### Interaction strength and number of interactions for each cell type pair
 
 ```{r}
 netVisual_heatmap(cellchat, color.heatmap = "Reds", slot.name = "net", measure = "weight")
@@ -170,7 +172,7 @@ netVisual_heatmap(cellchat, color.heatmap = "Reds", slot.name = "net", measure =
 ```
 
 
-## Dominant senders (sources) and receivers (targets)
+### Dominant senders (sources) and receivers (targets)
 
 ```{r}
 # Run the analysis without parallel processing
@@ -181,7 +183,7 @@ gg1
 ```
 
 
-## Signals contributing the most to outgoing or incoming signaling
+### Signals contributing the most to outgoing or incoming signaling
 
 ```{r, fig.height=13, fig.width=11}
 # Signaling role analysis on the aggregated cell-cell communication network from all signaling pathways
@@ -203,7 +205,7 @@ ht1 + ht2
 ```
 
 
-## Top interactions between all cell types
+### Top interactions between all cell types
 
 ```{r, fig.height=6, fig.width=6}
 net <- df.net %>%
@@ -218,7 +220,7 @@ netVisual_chord_gene(cellchat, lab.cex = 0.65, legend.pos.y = 110, legend.pos.x 
 ```
 
 
-## Top interactions with endothelial cells as senders
+### Top interactions with endothelial cells as senders
 
 ```{r, fig.height=6, fig.width=6}
 net <- df.net %>%
@@ -243,7 +245,7 @@ netVisual_bubble(cellchat, remove.isolate = FALSE, pairLR.use = df, sources.use 
 ```
 
 
-## Top interactions with endothelial cells as senders and cardiomyocytes as receivers
+### Top interactions with endothelial cells as senders and cardiomyocytes as receivers
 
 ```{r, fig.height=6, fig.width=6}
 net <- df.net %>%
@@ -264,3 +266,519 @@ saveRDS(cellchat,
         here::here(output_dir_data, "iPS_cellchat.rds"))
 ```
 
+
+## Subset only Secreted signaling
+
+```{r}
+cellchat <- createCellChat(object = iPS_integrated, group.by = "ident", assay = "RNA")
+cellchat <- addMeta(cellchat, meta = meta)
+cellchat <- setIdent(cellchat, ident.use = "labels") # set "labels" as default cell identity
+levels(cellchat@idents) # show factor levels of the cell labels
+groupSize <- as.numeric(table(cellchat@idents)) # number of cells in each cell group
+groupSize
+```
+
+```{r}
+
+CellChatDB <- CellChatDB.human 
+cellchat@DB <- CellChatDB
+CellChatDB.use <- subsetDB(CellChatDB, search = "Secreted Signaling", key = "annotation") # use Secreted Signaling
+cellchat@DB <- CellChatDB.use
+```
+
+```{r}
+# subset the expression data of signaling genes for saving computation cost
+cellchat <- subsetData(cellchat, ) # This step is necessary even if using the whole database
+#future::plan("multisession", workers = 4) # do parallel
+cellchat <- identifyOverExpressedGenes(cellchat)
+cellchat <- identifyOverExpressedInteractions(cellchat)
+#> The number of highly variable ligand-receptor pairs used for signaling inference is 692
+```
+
+```{r}
+cellchat <- computeCommunProb(cellchat, type = "triMean")
+cellchat <- filterCommunication(cellchat, min.cells = 10)
+```
+
+```{r}
+df.net <- subsetCommunication(cellchat, slot.name = "net")
+```
+
+
+```{r}
+cellchat <- computeCommunProbPathway(cellchat)
+```
+
+```{r}
+cellchat <- aggregateNet(cellchat)
+```
+
+```{r}
+df.pathways <- subsetCommunication(cellchat, slot.name = "netP", thresh = 0.05)
+```
+
+### Aggregated cell-cell communication network
+
+```{r, fig.width=9, fig.height=3}
+groupSize <- as.numeric(table(cellchat@idents))
+par(mfrow = c(1,2), mar = c(0, 0, 2, 0), xpd=TRUE)
+netVisual_circle(cellchat@net$count, vertex.weight = groupSize, weight.scale = T, label.edge= F, title.name = "Number of interactions")
+netVisual_circle(cellchat@net$weight, vertex.weight = groupSize, weight.scale = T, label.edge= F, title.name = "Interaction weights/strength")
+```
+
+### Cell-cell communication network split by sender
+```{r, fig.width=9, fig.height=5}
+mat <- cellchat@net$weight
+par(mfrow = c(2,3), mar = c(0, 4, 0, 4), xpd=TRUE)
+for (i in 1:nrow(mat)) {
+  mat2 <- matrix(0, nrow = nrow(mat), ncol = ncol(mat), dimnames = dimnames(mat))
+  mat2[i, ] <- mat[i, ]
+  netVisual_circle(mat2, vertex.weight = groupSize, weight.scale = T, edge.weight.max = max(mat), title.name = rownames(mat)[i])
+}
+```
+
+
+### Interaction strength and number of interactions for each cell type pair
+
+```{r}
+netVisual_heatmap(cellchat, color.heatmap = "Reds", slot.name = "net", measure = "weight")
+```
+
+```{r}
+netVisual_heatmap(cellchat, color.heatmap = "Reds", slot.name = "net", measure = "count")
+```
+
+
+### Dominant senders (sources) and receivers (targets)
+
+```{r}
+# Run the analysis without parallel processing
+cellchat <- netAnalysis_computeCentrality(cellchat, slot.name = "netP")
+
+gg1 <- netAnalysis_signalingRole_scatter(cellchat)
+gg1
+```
+
+
+### Signals contributing the most to outgoing or incoming signaling
+
+```{r, fig.height=13, fig.width=11}
+# Signaling role analysis on the aggregated cell-cell communication network from all signaling pathways
+ht1 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "outgoing", width = 10,
+  height = 25)
+ht2 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "incoming", width = 10,
+  height = 25)
+ht1 + ht2
+```
+
+```{r, fig.height=6, fig.width=8}
+df <- rankNet(cellchat, mode = "single", stacked = T, return.data = T)$signaling.contribution %>%
+  arrange(desc(contribution))
+ht1 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "outgoing", width = 7,
+  height = 8, signaling = df[1:25,]$name)
+ht2 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "incoming", width = 7,
+  height = 8, signaling = df[1:25,]$name)
+ht1 + ht2
+```
+
+
+### Top interactions between all cell types
+
+```{r, fig.height=6, fig.width=6}
+net <- df.net %>%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, lab.cex = 1, legend.pos.y = 130, legend.pos.x = 5, slot.name = "net", net = net[1:25,])
+```
+
+```{r, fig.height=6, fig.width=6}
+net <- df.pathways %>%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, lab.cex = 0.65, legend.pos.y = 110, legend.pos.x = 5, slot.name = "netP", net = net[1:25,], small.gap = 2)
+```
+
+
+### Top interactions with endothelial cells as senders
+
+```{r, fig.height=6, fig.width=6}
+net <- df.net %>%
+  filter(source == "Endothelial cells") %>%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, lab.cex = 1, legend.pos.y = 130, legend.pos.x = 5, slot.name = "net", net = net[1:25,], sources.use = "Endothelial cells")
+```
+
+```{r, fig.height=8, fig.width=10}
+net <- df.pathways %>%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, sources.use = "Endothelial cells", lab.cex = 1,legend.pos.y = 150, slot.name = "netP", net = net[1:100,])
+```
+
+```{r}
+net <- df.net %>%
+  filter(source == "Endothelial cells") %>%
+  arrange(desc(prob))
+df <- as.data.frame(net[1:25,]$interaction_name)
+colnames(df) <- "interaction_name"
+netVisual_bubble(cellchat, remove.isolate = FALSE, pairLR.use = df, sources.use = "Endothelial cells", angle.x = 45)
+```
+
+
+### Top interactions with endothelial cells as senders and cardiomyocytes as receivers
+
+```{r, fig.height=6, fig.width=6}
+net <- df.net %>%
+  filter(source == "Endothelial cells") %>%
+  filter(target %in% c("Ventricular Cardiomyocytes", "Atrial Cardiomyocytes")) %>%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, lab.cex = 1, legend.pos.y = 135, legend.pos.x = 5, slot.name = "net", net = net[1:25,], sources.use = "Endothelial cells", targets.use = c("Ventricular Cardiomyocytes", "Atrial Cardiomyocytes"))
+```
+
+```{r}
+df <- as.data.frame(net[1:25,]$interaction_name)
+colnames(df) <- "interaction_name"
+netVisual_bubble(cellchat, remove.isolate = FALSE, pairLR.use = df, sources.use = "Endothelial cells", angle.x = 45, targets.use = c("Ventricular Cardiomyocytes", "Atrial Cardiomyocytes"))
+```
+
+## Subset only Cell-Cell Contact signals
+
+```{r}
+cellchat <- createCellChat(object = iPS_integrated, group.by = "ident", assay = "RNA")
+cellchat <- addMeta(cellchat, meta = meta)
+cellchat <- setIdent(cellchat, ident.use = "labels") # set "labels" as default cell identity
+levels(cellchat@idents) # show factor levels of the cell labels
+groupSize <- as.numeric(table(cellchat@idents)) # number of cells in each cell group
+groupSize
+```
+
+```{r}
+
+CellChatDB <- CellChatDB.human 
+cellchat@DB <- CellChatDB
+CellChatDB.use <- subsetDB(CellChatDB, search = "Cell-Cell Contact", key = "annotation") # use Secreted Signaling
+cellchat@DB <- CellChatDB.use
+```
+
+```{r}
+# subset the expression data of signaling genes for saving computation cost
+cellchat <- subsetData(cellchat, ) # This step is necessary even if using the whole database
+#future::plan("multisession", workers = 4) # do parallel
+cellchat <- identifyOverExpressedGenes(cellchat)
+cellchat <- identifyOverExpressedInteractions(cellchat)
+#> The number of highly variable ligand-receptor pairs used for signaling inference is 692
+```
+
+```{r}
+cellchat <- computeCommunProb(cellchat, type = "triMean")
+cellchat <- filterCommunication(cellchat, min.cells = 10)
+```
+
+```{r}
+df.net <- subsetCommunication(cellchat, slot.name = "net")
+```
+
+
+```{r}
+cellchat <- computeCommunProbPathway(cellchat)
+```
+
+```{r}
+cellchat <- aggregateNet(cellchat)
+```
+
+```{r}
+df.pathways <- subsetCommunication(cellchat, slot.name = "netP", thresh = 0.05)
+```
+
+### Aggregated cell-cell communication network
+
+```{r, fig.width=9, fig.height=3}
+groupSize <- as.numeric(table(cellchat@idents))
+par(mfrow = c(1,2), mar = c(0, 0, 2, 0), xpd=TRUE)
+netVisual_circle(cellchat@net$count, vertex.weight = groupSize, weight.scale = T, label.edge= F, title.name = "Number of interactions")
+netVisual_circle(cellchat@net$weight, vertex.weight = groupSize, weight.scale = T, label.edge= F, title.name = "Interaction weights/strength")
+```
+
+### Cell-cell communication network split by sender
+
+```{r, fig.width=9, fig.height=5}
+mat <- cellchat@net$weight
+par(mfrow = c(2,3), mar = c(0, 4, 0, 4), xpd=TRUE)
+for (i in 1:nrow(mat)) {
+  mat2 <- matrix(0, nrow = nrow(mat), ncol = ncol(mat), dimnames = dimnames(mat))
+  mat2[i, ] <- mat[i, ]
+  netVisual_circle(mat2, vertex.weight = groupSize, weight.scale = T, edge.weight.max = max(mat), title.name = rownames(mat)[i])
+}
+```
+
+
+### Interaction strength and number of interactions for each cell type pair
+
+```{r}
+netVisual_heatmap(cellchat, color.heatmap = "Reds", slot.name = "net", measure = "weight")
+```
+
+```{r}
+netVisual_heatmap(cellchat, color.heatmap = "Reds", slot.name = "net", measure = "count")
+```
+
+
+### Dominant senders (sources) and receivers (targets)
+
+```{r}
+# Run the analysis without parallel processing
+cellchat <- netAnalysis_computeCentrality(cellchat, slot.name = "netP")
+
+gg1 <- netAnalysis_signalingRole_scatter(cellchat)
+gg1
+```
+
+
+### Signals contributing the most to outgoing or incoming signaling
+
+```{r, fig.height=13, fig.width=11}
+# Signaling role analysis on the aggregated cell-cell communication network from all signaling pathways
+ht1 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "outgoing", width = 10,
+  height = 25)
+ht2 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "incoming", width = 10,
+  height = 25)
+ht1 + ht2
+```
+
+```{r, fig.height=6, fig.width=8}
+df <- rankNet(cellchat, mode = "single", stacked = T, return.data = T)$signaling.contribution %>%
+  arrange(desc(contribution))
+ht1 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "outgoing", width = 7,
+  height = 8, signaling = df[1:25,]$name)
+ht2 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "incoming", width = 7,
+  height = 8, signaling = df[1:25,]$name)
+ht1 + ht2
+```
+
+
+### Top interactions between all cell types
+
+```{r, fig.height=6, fig.width=6}
+net <- df.net %>%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, lab.cex = 1, legend.pos.y = 130, legend.pos.x = 5, slot.name = "net", net = net[1:25,])
+```
+
+```{r, fig.height=6, fig.width=6}
+net <- df.pathways %>%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, lab.cex = 0.65, legend.pos.y = 110, legend.pos.x = 5, slot.name = "netP", net = net[1:25,], small.gap = 2)
+```
+
+
+### Top interactions with endothelial cells as senders
+
+```{r, fig.height=6, fig.width=6}
+net <- df.net %>%
+  filter(source == "Endothelial cells") %>%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, lab.cex = 1, legend.pos.y = 130, legend.pos.x = 5, slot.name = "net", net = net[1:25,], sources.use = "Endothelial cells")
+```
+
+```{r, fig.height=8, fig.width=10}
+net <- df.pathways %>%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, sources.use = "Endothelial cells", lab.cex = 1,legend.pos.y = 150, slot.name = "netP", net = net[1:100,])
+```
+
+```{r}
+net <- df.net %>%
+  filter(source == "Endothelial cells") %>%
+  arrange(desc(prob))
+df <- as.data.frame(net[1:25,]$interaction_name)
+colnames(df) <- "interaction_name"
+netVisual_bubble(cellchat, remove.isolate = FALSE, pairLR.use = df, sources.use = "Endothelial cells", angle.x = 45)
+```
+
+
+### Top interactions with endothelial cells as senders and cardiomyocytes as receivers
+
+```{r, fig.height=6, fig.width=6}
+net <- df.net %>%
+  filter(source == "Endothelial cells") %>%
+  filter(target %in% c("Ventricular Cardiomyocytes", "Atrial Cardiomyocytes")) %>%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, lab.cex = 1, legend.pos.y = 135, legend.pos.x = 5, slot.name = "net", net = net[1:25,], sources.use = "Endothelial cells", targets.use = c("Ventricular Cardiomyocytes", "Atrial Cardiomyocytes"))
+```
+
+```{r}
+df <- as.data.frame(net[1:25,]$interaction_name)
+colnames(df) <- "interaction_name"
+netVisual_bubble(cellchat, remove.isolate = FALSE, pairLR.use = df, sources.use = "Endothelial cells", angle.x = 45, targets.use = c("Ventricular Cardiomyocytes", "Atrial Cardiomyocytes"))
+```
+
+
+## Subset only Non-protein Signaling
+
+```{r}
+cellchat <- createCellChat(object = iPS_integrated, group.by = "ident", assay = "RNA")
+cellchat <- addMeta(cellchat, meta = meta)
+cellchat <- setIdent(cellchat, ident.use = "labels") # set "labels" as default cell identity
+levels(cellchat@idents) # show factor levels of the cell labels
+groupSize <- as.numeric(table(cellchat@idents)) # number of cells in each cell group
+groupSize
+```
+
+```{r}
+
+CellChatDB <- CellChatDB.human 
+cellchat@DB <- CellChatDB
+CellChatDB.use <- subsetDB(CellChatDB, search = "Non-protein Signaling", key = "annotation") # use Secreted Signaling
+cellchat@DB <- CellChatDB.use
+```
+
+```{r}
+# subset the expression data of signaling genes for saving computation cost
+cellchat <- subsetData(cellchat, ) # This step is necessary even if using the whole database
+#future::plan("multisession", workers = 4) # do parallel
+cellchat <- identifyOverExpressedGenes(cellchat)
+cellchat <- identifyOverExpressedInteractions(cellchat)
+#> The number of highly variable ligand-receptor pairs used for signaling inference is 692
+```
+
+```{r}
+cellchat <- computeCommunProb(cellchat, type = "triMean")
+cellchat <- filterCommunication(cellchat, min.cells = 10)
+```
+
+```{r}
+df.net <- subsetCommunication(cellchat, slot.name = "net")
+```
+
+
+```{r}
+cellchat <- computeCommunProbPathway(cellchat)
+```
+
+```{r}
+cellchat <- aggregateNet(cellchat)
+```
+
+```{r}
+df.pathways <- subsetCommunication(cellchat, slot.name = "netP", thresh = 0.05)
+```
+
+### Aggregated cell-cell communication network
+
+```{r, fig.width=9, fig.height=3}
+groupSize <- as.numeric(table(cellchat@idents))
+par(mfrow = c(1,2), mar = c(0, 0, 2, 0), xpd=TRUE)
+netVisual_circle(cellchat@net$count, vertex.weight = groupSize, weight.scale = T, label.edge= F, title.name = "Number of interactions")
+netVisual_circle(cellchat@net$weight, vertex.weight = groupSize, weight.scale = T, label.edge= F, title.name = "Interaction weights/strength")
+```
+
+### Cell-cell communication network split by sender
+
+```{r, fig.width=9, fig.height=5}
+mat <- cellchat@net$weight
+par(mfrow = c(2,3), mar = c(0, 4, 0, 4), xpd=TRUE)
+for (i in 1:nrow(mat)) {
+  mat2 <- matrix(0, nrow = nrow(mat), ncol = ncol(mat), dimnames = dimnames(mat))
+  mat2[i, ] <- mat[i, ]
+  netVisual_circle(mat2, vertex.weight = groupSize, weight.scale = T, edge.weight.max = max(mat), title.name = rownames(mat)[i])
+}
+```
+
+
+### Interaction strength and number of interactions for each cell type pair
+
+```{r}
+netVisual_heatmap(cellchat, color.heatmap = "Reds", slot.name = "net", measure = "weight")
+```
+
+```{r}
+netVisual_heatmap(cellchat, color.heatmap = "Reds", slot.name = "net", measure = "count")
+```
+
+
+### Dominant senders (sources) and receivers (targets)
+
+```{r}
+# Run the analysis without parallel processing
+cellchat <- netAnalysis_computeCentrality(cellchat, slot.name = "netP")
+
+gg1 <- netAnalysis_signalingRole_scatter(cellchat)
+gg1
+```
+
+
+### Signals contributing the most to outgoing or incoming signaling
+
+```{r, fig.height=13, fig.width=11}
+# Signaling role analysis on the aggregated cell-cell communication network from all signaling pathways
+ht1 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "outgoing", width = 10,
+  height = 25)
+ht2 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "incoming", width = 10,
+  height = 25)
+ht1 + ht2
+```
+
+```{r, fig.height=6, fig.width=8}
+df <- rankNet(cellchat, mode = "single", stacked = T, return.data = T)$signaling.contribution %>%
+  arrange(desc(contribution))
+ht1 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "outgoing", width = 7,
+  height = 8, signaling = df[1:25,]$name)
+ht2 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "incoming", width = 7,
+  height = 8, signaling = df[1:25,]$name)
+ht1 + ht2
+```
+
+
+### Top interactions between all cell types
+
+```{r, fig.height=6, fig.width=6}
+net <- df.net %>%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, lab.cex = 1, legend.pos.y = 130, legend.pos.x = 5, slot.name = "net", net = net[1:25,])
+```
+
+```{r, fig.height=6, fig.width=6}
+net <- df.pathways %>%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, lab.cex = 0.65, legend.pos.y = 110, legend.pos.x = 5, slot.name = "netP", net = net[1:25,], small.gap = 2)
+```
+
+
+### Top interactions with endothelial cells as senders
+
+```{r, fig.height=6, fig.width=6}
+net <- df.net %>%
+  filter(source == "Endothelial cells") %>%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, lab.cex = 1, legend.pos.y = 130, legend.pos.x = 5, slot.name = "net", net = net[1:25,], sources.use = "Endothelial cells")
+```
+
+```{r, fig.height=8, fig.width=10}
+net <- df.pathways %>%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, sources.use = "Endothelial cells", lab.cex = 1,legend.pos.y = 150, slot.name = "netP", net = net[1:100,])
+```
+
+```{r}
+net <- df.net %>%
+  filter(source == "Endothelial cells") %>%
+  arrange(desc(prob))
+df <- as.data.frame(net[1:25,]$interaction_name)
+colnames(df) <- "interaction_name"
+netVisual_bubble(cellchat, remove.isolate = FALSE, pairLR.use = df, sources.use = "Endothelial cells", angle.x = 45)
+```
+
+
+### Top interactions with endothelial cells as senders and cardiomyocytes as receivers
+
+```{r, fig.height=6, fig.width=6}
+net <- df.net %>%
+  filter(source == "Endothelial cells") %>%
+  filter(target %in% c("Ventricular Cardiomyocytes", "Atrial Cardiomyocytes")) %>%
+  arrange(desc(prob))
+netVisual_chord_gene(cellchat, lab.cex = 1, legend.pos.y = 135, legend.pos.x = 5, slot.name = "net", net = net[1:25,], sources.use = "Endothelial cells", targets.use = c("Ventricular Cardiomyocytes", "Atrial Cardiomyocytes"))
+```
+
+```{r}
+df <- as.data.frame(net[1:25,]$interaction_name)
+colnames(df) <- "interaction_name"
+netVisual_bubble(cellchat, remove.isolate = FALSE, pairLR.use = df, sources.use = "Endothelial cells", angle.x = 45, targets.use = c("Ventricular Cardiomyocytes", "Atrial Cardiomyocytes"))
+```
