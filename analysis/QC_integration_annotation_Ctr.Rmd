@@ -480,13 +480,13 @@ Annotate the clusters based on the characteristic markers
 iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("0"), "cell_type"] = "Atrial Cardiomyocytes"
 iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("1"), "cell_type"] = "Ventricular Cardiomyocytes"
 iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("2"), "cell_type"] = "Fibroblasts"
-iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("3"), "cell_type"] = "CDKN1A+ Cardiomyocytes"
+iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("3"), "cell_type"] = "Unspecified cells"
 iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("4"), "cell_type"] = "Endothelial cells"
 iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("5"), "cell_type"] = "Progenitor cells"
 iPS_integrated$cell_type <- factor(iPS_integrated$cell_type, levels = c("Atrial Cardiomyocytes", 
                                                                         "Ventricular Cardiomyocytes",
                                                                         "Fibroblasts",
-                                                                        "CDKN1A+ Cardiomyocytes",
+                                                                        "Unspecified cells",
                                                                         "Endothelial cells",
                                                                         "Progenitor cells"))
 Idents(iPS_integrated) <- iPS_integrated$cell_type
@@ -555,7 +555,7 @@ length(dfsample)
 
 dfsample$`Atrial Cardiomyocytes` = bitr(dfsample$`Atrial Cardiomyocytes`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Hs.eg.db")
 dfsample$`Ventricular Cardiomyocytes` = bitr(dfsample$`Ventricular Cardiomyocytes`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Hs.eg.db")
-dfsample$`CDKN1A+ Cardiomyocytes` = bitr(dfsample$`CDKN1A+ Cardiomyocytes`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Hs.eg.db")
+dfsample$`Unspecified cells` = bitr(dfsample$`Unspecified cells`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Hs.eg.db")
 dfsample$Fibroblasts = bitr(dfsample$Fibroblasts, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Hs.eg.db")
 dfsample$`Progenitor cells` = bitr(dfsample$`Progenitor cells`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Hs.eg.db")
 dfsample$`Endothelial cells` = bitr(dfsample$`Endothelial cells`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Hs.eg.db")
@@ -563,7 +563,7 @@ dfsample$`Endothelial cells` = bitr(dfsample$`Endothelial cells`, fromType="SYMB
 #do the same here, a line like below for each cluster
 genelist <- list("Atrial Cardiomyocytes" = dfsample$`Atrial Cardiomyocytes`$ENTREZID, 
                  "Ventricular Cardiomyocytes" = dfsample$`Ventricular Cardiomyocytes`$ENTREZID,
-                 "CDKN1A+ Cardiomyocytes" = dfsample$`CDKN1A+ Cardiomyocytes`$ENTREZID,
+                 "Unspecified cells" = dfsample$`Unspecified cells`$ENTREZID,
                  "Fibroblasts" = dfsample$Fibroblasts$ENTREZID,
                  "Progenitor cells" = dfsample$`Progenitor cells`$ENTREZID,
                  "Endothelial cells" = dfsample$`Endothelial cells`$ENTREZID
@@ -602,14 +602,12 @@ reorder_GO_by_pvalue <- function(enrichGO_result) {
   return(enrichGO_result)
 }
 GO_MF_simplified <- reorder_GO_by_pvalue(GO_MF_simplified)
-dotplot(GO_MF_simplified, label_format = 40, title = "GO - Molecular Function") +
+dotplot(GO_MF_simplified, label_format = 40, title = "GO Over-representation analysis") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 ```{r Barplot_Sample, fig.height=6, fig.width=9, message=FALSE}
-color_palette_all <- c("#F8766D", "#00C1AB", "#24B700", "#E18A00", "#00ACFC", "#D575FE", "#BE9C00", "#00BE70", 
-                   "#8CAB00", "#00BBDA", "#FF65AC", "#8B93FF", "#EA8331")
-color_palette <- c("#F8766D", "#24B700", "#00ACFC", "#E18A00", "#D575FE", "#8B93FF")
+color_palette <- c("#24B700","#F8766D", "#D575FE", "#00ACFC", "#EA8331", "#FF65AC")
 
 props <- getTransformedProps(iPS_integrated$cell_type, iPS_integrated$Sample, transform="logit")
 
@@ -620,9 +618,7 @@ legend("topright", inset = c(-0.95, 0.13), legend = rownames(props$Proportions),
 ```
 
 ```{r Barplot_Condition, fig.height=5, fig.width=6, message=FALSE}
-color_palette_all <- c("#F8766D", "#00C1AB", "#24B700", "#E18A00", "#00ACFC", "#D575FE", "#BE9C00", "#00BE70", 
-                   "#8CAB00", "#00BBDA", "#FF65AC", "#8B93FF", "#EA8331")
-color_palette <- c("#F8766D", "#24B700", "#00ACFC", "#E18A00", "#D575FE", "#8B93FF")
+color_palette <- c("#24B700","#F8766D", "#D575FE", "#00ACFC", "#EA8331", "#FF65AC")
 
 props <- getTransformedProps(iPS_integrated$cell_type, iPS_integrated$Condition, transform="logit")
 
@@ -672,7 +668,7 @@ FeaturePlot(iPS_integrated, features = genes_of_interest, ncol = 6) + theme(axis
 ```{r FeaturePlot_GOI_2", fig.width=18, fig.height=8}
 plot_list <- lapply(genes_of_interest, function(feature) {
   p <- FeaturePlot(iPS_integrated, features = feature, order = FALSE)
-  p + scale_color_viridis(discrete = FALSE, option = "viridis")
+  p + scale_color_viridis(discrete = FALSE, option = "plasma")
 })
 
 CombinePlots(plots = plot_list, ncol = 6)
