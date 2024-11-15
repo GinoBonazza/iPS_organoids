@@ -1,0 +1,722 @@
+---
+title: "New figures 14-11-2024"
+author: "GinoBonazza (ginoandrea.bonazza@usz.ch)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r knitr config, include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  dpi = 300,
+  fig.align = "center"
+)
+```
+
+## Setup
+
+```{r setup, class.source = "fold-hide"}
+# Get current file name to make folder
+current_file <- "New_figures"
+
+# Load libraries
+library(here)
+library(readr)
+library(readxl)
+library(xlsx)
+library(Seurat)
+library(DropletUtils)
+library(Matrix)
+library(scDblFinder)
+library(scCustomize)
+library(dplyr)
+library(ggplot2)
+library(magrittr)
+library(tidyverse)
+library(reshape2)
+library(S4Vectors)
+library(SingleCellExperiment)
+library(pheatmap)
+library(png)
+library(gridExtra)
+library(knitr)
+library(scales)
+library(RColorBrewer)
+library(scater)
+library(patchwork)
+library(limma)
+library(gridExtra)
+library(knitr)
+library(scales)
+library(clusterProfiler)
+library(org.Hs.eg.db)
+library(AnnotationHub)
+library(ReactomePA)
+library(EnhancedVolcano)
+library(RColorBrewer)
+library(Matrix.utils)
+library(DESeq2)
+library(tibble)
+library(speckle)
+library(limma)
+library(ggplot2)
+library(scater)
+library(patchwork)
+library(statmod)
+library(edgeR)
+library(dplyr)
+library(ggplot2)
+
+#Output paths
+output_dir_data <- here::here("output", current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data)
+
+if (!dir.exists(here::here("docs", "figure"))) dir.create(here::here("docs", "figure"))
+
+output_dir_figs <- here::here("docs", "figure", paste0(current_file, ".Rmd"))
+if (!dir.exists(output_dir_figs)) dir.create(output_dir_figs)
+```
+
+```{r Load dataset}
+iPS_integrated <- readRDS(here::here("output", "QC_integration_annotation", "iPS_integrated.rds"))
+```
+
+```{r rename CDKN1A}
+iPS_integrated$cell_type <- factor(iPS_integrated$cell_type, levels = c("Atrial Cardiomyocytes", 
+                                                                        "Ventricular Cardiomyocytes",
+                                                                        "Fibroblasts",
+                                                                        "Unspecified cells",
+                                                                        "Endothelial cells",
+                                                                        "Progenitor cells"))
+iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("2"), "cell_type"] = "Unspecified cells"
+table(iPS_integrated$cell_type)
+```
+
+```{r pseudobulk}
+iPS_integrated$pseudobulk <- "Pseudobulk"
+pseudocounts_all <- Seurat2PB(iPS_integrated, sample="Sample", cluster = "pseudobulk")
+colnames(pseudocounts_all) <- pseudocounts_all$samples$sample
+```
+
+```{r metadata}
+metadata <- iPS_integrated@meta.data %>%
+  dplyr::select(Sample, Condition, Cell_line) %>%
+  unique()
+rownames(metadata) <- metadata$Sample
+```
+
+```{r mds_plots}
+mds_plots <- list()
+```
+
+```{r mds_plots_all, fig.width=12, fig.height=3}
+mds <- limma::plotMDS(pseudocounts_all, plot = FALSE)
+    
+mds_df <- data.frame(mds[c("x", "y")],
+                    sample_id = metadata$Sample,
+                    group_id = metadata$Condition,
+                    cell_id = metadata$Cell_line
+                    )
+  
+mds_all_sample <- ggplot(mds_df, aes(x, y, col = sample_id)) + 
+  geom_point(size = 3, alpha = 0.8) +
+  labs(x = "MDS dim. 1", y = "MDS dim. 2") + 
+  ggtitle("All cells - Sample") + 
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        plot.title = element_text(hjust = 0.5)) +
+  coord_fixed() + 
+  guides(color = guide_legend(ncol = 1, title = "Sample"))
+
+mds_all_cell_line <- ggplot(mds_df, aes(x, y, col = cell_id)) + 
+  geom_point(size = 3, alpha = 0.8) +
+  labs(x = "MDS dim. 1", y = "MDS dim. 2") + 
+  ggtitle("All cells - Cell line") + 
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        plot.title = element_text(hjust = 0.5)) +
+  coord_fixed() + 
+  guides(color = guide_legend(ncol = 1, title = "Cell line"))
+
+mds_all_group <- ggplot(mds_df, aes(x, y, col = group_id)) + 
+  geom_point(size = 3, alpha = 0.8) +
+  labs(x = "MDS dim. 1", y = "MDS dim. 2") + 
+  ggtitle("All cells - Group") + 
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        plot.title = element_text(hjust = 0.5)) +
+  coord_fixed() + 
+  guides(color = guide_legend(ncol = 1, title = "Group"))
+
+mds_all_sample + mds_all_cell_line + mds_all_group
+```
+
+```{r cluster_names}
+cluster_names <- levels(iPS_integrated$cell_type)
+```
+
+```{r plots}
+for (cluster in cluster_names) {
+  pseudocounts <- Seurat2PB(subset(iPS_integrated, cell_type == cluster), sample="Sample", cluster = "cell_type")
+  colnames(pseudocounts) <- pseudocounts$samples$sample
+  
+  metadata_subset <- metadata %>%
+    dplyr::filter(Sample %in% colnames(pseudocounts))
+  
+  mds <- limma::plotMDS(pseudocounts, plot = FALSE)
+    
+  mds_df <- data.frame(mds[c("x", "y")],
+                      sample_id = metadata_subset$Sample,
+                      group_id = metadata_subset$Condition,
+                      cell_id = metadata_subset$Cell_line
+                      )
+    
+  mds_sample <- ggplot(mds_df, aes(x, y, col = sample_id)) + 
+    geom_point(size = 3, alpha = 0.8) +
+    labs(x = "MDS dim. 1", y = "MDS dim. 2") + 
+    ggtitle(paste0(cluster, " - Sample")) + 
+    theme_bw() +
+    theme(panel.grid.minor = element_blank(),
+          plot.title = element_text(hjust = 0.5)) +
+    coord_fixed() + 
+    guides(color = guide_legend(ncol = 1, title = "Sample"))
+  
+  mds_cell_line <- ggplot(mds_df, aes(x, y, col = cell_id)) + 
+  geom_point(size = 3, alpha = 0.8) +
+  labs(x = "MDS dim. 1", y = "MDS dim. 2") + 
+  ggtitle(paste0(cluster, " - Cell line")) + 
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        plot.title = element_text(hjust = 0.5)) +
+  coord_fixed() + 
+  guides(color = guide_legend(ncol = 1, title = "Cell line"))
+  
+  mds_group <- ggplot(mds_df, aes(x, y, col = group_id)) + 
+    geom_point(size = 3, alpha = 0.8) +
+    labs(x = "MDS dim. 1", y = "MDS dim. 2") + 
+    ggtitle(paste0(cluster, " - Group")) + 
+    theme_bw() +
+    theme(panel.grid.minor = element_blank(),
+          plot.title = element_text(hjust = 0.5)) +
+    coord_fixed() + 
+    guides(color = guide_legend(ncol = 1, title = "Group"))
+
+  mds_plots[[paste0(cluster, "_Sample")]] <- mds_sample
+  mds_plots[[paste0(cluster, "_Cell_line")]] <- mds_cell_line
+  mds_plots[[paste0(cluster, "_Group")]] <- mds_group
+}
+```
+
+```{r mds_plots_cell_type, fig.width=24, fig.height=9}
+library(patchwork)
+combined_plots <- (mds_plots[[1]] + mds_plots[[4]] + mds_plots[[7]] + mds_plots[[10]] + mds_plots[[13]] + mds_plots[[16]] +
+                     mds_plots[[2]] + mds_plots[[5]] + mds_plots[[8]] + mds_plots[[11]] + mds_plots[[14]] + mds_plots[[17]] +
+                     mds_plots[[3]] + mds_plots[[6]] + mds_plots[[9]] + mds_plots[[12]] + mds_plots[[15]] + mds_plots[[18]]) +
+  plot_layout(nrow = 3)
+
+combined_plots
+```
+
+```{r UMAP_samples, fig.width=10, fig.height=6}
+Idents(iPS_integrated) <- iPS_integrated$cell_type
+DimPlot(iPS_integrated, split.by = "Sample", ncol = 3)
+```
+
+```{r FeatPlot_DYSF_UTRN, fig.width=6, fig.height=6}
+FeaturePlot(iPS_integrated, c("DYSF", "UTRN"), split.by = "Condition", pt.size = 0.3)
+```
+
+```{r VlnPlot_DYSF_UTRN, fig.width=13, fig.height=5}
+p1 <- VlnPlot(iPS_integrated, c("DYSF"), group.by = "cell_type",split.by = "Condition") + NoLegend() + theme(axis.title.x = element_blank())
+p2 <- VlnPlot(iPS_integrated, c("UTRN"), group.by = "cell_type",split.by = "Condition") + theme(axis.title.x = element_blank())
+p1 | p2
+```
+
+```{r FeatPlot_down_CM, fig.height=6, fig.width=9}
+down_genes <- c("B2M", "HLA-C", "ITGA1", "DPYSL3", "PDLIM3", "ZBTB7C")
+
+FeaturePlot(subset(iPS_integrated, cell_type %in% c("Atrial Cardiomyocytes", "Ventricular Cardiomyocytes")), features = down_genes, ncol = 3)
+```
+
+```{r Markers}
+Markers <- read.csv(here::here("output", "QC_integration_annotation", "iPS_Markers_all.csv"))
+```
+
+```{r Dotplot_markers, fig.height=10, fig.width=10}
+Markers_top5 <- as.data.frame(Markers %>% group_by(cluster) %>% top_n(n = 5, wt = avg_log2FC))
+Idents(iPS_integrated) <- factor(iPS_integrated$cell_type, levels = rev(levels(iPS_integrated$cell_type)))
+DotPlot(iPS_integrated, assay = "SCT", features = Markers_top5$gene, dot.scale = 5, group.by = "cell_type", split.by = "Condition", cols = "RdBu") +
+  RotatedAxis() +
+  theme(axis.title = element_blank(), axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 13), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
+                           "inches"))
+
+```
+```{r VlnPlot_ACTA2}
+VlnPlot(iPS_integrated, "ACTA2", group.by = "Condition", split.by = "Sample")
+```
+
+```{r VlnPlot_FLT1}
+VlnPlot(subset(iPS_integrated, cell_type = "Endothelial cells"), "FLT1", group.by = "Condition", split.by = "Sample")
+```
+
+
+## Differential expression
+
+### Cardiomyocytes
+
+```{r CM}
+CM <- subset(iPS_integrated, subset = cell_type %in% c("Atrial Cardiomyocytes", "Ventricular Cardiomyocytes"))
+Idents(CM) <- CM$Condition
+DefaultAssay(CM) <- "RNA"
+CM <- NormalizeData(CM)
+CM <- ScaleData(CM)
+```
+
+```{r Load DE}
+DE_JDR <- read.csv(file = here::here("output", "Differential_expression", "DE_JDR.csv"))
+DE_JD6 <- read.csv(file = here::here("output", "Differential_expression", "DE_JD6.csv"))
+```
+
+```{r common_CM}
+signif_JDR <- filter(DE_JDR, abs(avg_log2FC) > 0.5 & p_val_adj < 0.05)
+
+signif_JD6 <- filter(DE_JD6, abs(avg_log2FC) > 0.5 & p_val_adj < 0.05)
+
+
+common_up <- Reduce(intersect, list(filter(signif_JDR, avg_log2FC > 0.25)$gene,
+                                    filter(signif_JD6, avg_log2FC > 0.25)$gene))
+
+common_down <- Reduce(intersect, list(filter(signif_JDR, avg_log2FC < -0.25)$gene,
+                                      filter(signif_JD6, avg_log2FC < -0.25)$gene))
+
+common_genes <- union(common_up, common_down)
+
+common_FC <- data.frame(
+  gene = common_genes,
+  avg_logFC_JDR = signif_JDR %>%
+    dplyr::filter(gene %in% common_genes) %>%
+    dplyr::arrange(gene) %>%
+    dplyr::pull(avg_log2FC),
+  avg_logFC_JD6 = signif_JD6 %>%
+    dplyr::filter(gene %in% common_genes) %>%
+    dplyr::arrange(gene) %>%
+    dplyr::pull(avg_log2FC)
+) %>%
+  dplyr::arrange(avg_logFC_JDR)
+```
+
+```{r VlnPlot_DE_up_CM, fig.width=8, fig.height=6}
+p <- VlnPlot(subset(CM, Cell_line %in% c("JDR", "JD6")), features = common_up, group.by = "Condition", ncol = 4, pt.size = 0.01)
+p[[1]][["layers"]][[2]][["geom"]][["default_aes"]][["alpha"]] <- 0.2
+print(p)
+```
+
+```{r VlnPlot_DE_down_CM, fig.width=8, fig.height=9}
+p <- VlnPlot(subset(CM, Cell_line %in% c("JDR", "JD6")), features = common_down, group.by = "Condition", ncol = 4, pt.size = 0.01)
+p[[1]][["layers"]][[2]][["geom"]][["default_aes"]][["alpha"]] <- 0.2
+print(p)
+```
+
+```{r VlnPlot_DE_up_CM_Sample, fig.width=16, fig.height=6}
+p <- VlnPlot(subset(CM, Cell_line %in% c("JDR", "JD6")), features = common_up, group.by = "Cell_line", split.by = "Condition", ncol = 4, pt.size = 0.01)
+p[[1]][["layers"]][[2]][["geom"]][["default_aes"]][["alpha"]] <- 0.2
+print(p)
+```
+
+```{r VlnPlot_DE_down_CM_Sample, fig.width=16, fig.height=9}
+p <- VlnPlot(subset(CM, Cell_line %in% c("JDR", "JD6")), features = common_down, group.by = "Cell_line", split.by = "Condition", ncol = 4, pt.size = 0.01)
+p[[1]][["layers"]][[2]][["geom"]][["default_aes"]][["alpha"]] <- 0.2
+print(p)
+```
+
+```{r bitr CM}
+up_genes <- bitr(common_up, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Hs.eg.db")$ENTREZID
+down_genes <- bitr(common_down, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Hs.eg.db")$ENTREZID
+
+# Calculate gene counts across cells
+gene_counts <- rowSums(subset(CM, Cell_line %in% c("JDR", "JD6"))@assays$RNA@counts > 0)
+
+# Filter genes to include only those expressed in at least 3 cells
+universe_genes <- names(gene_counts[gene_counts >= 3])
+
+# Convert universe gene symbols to Entrez IDs
+universe_entrez <- bitr(universe_genes, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = org.Hs.eg.db)$ENTREZID
+```
+
+```{r GO_CM, fig.height=4, fig.width=12}
+GO_up <- enrichGO(up_genes, OrgDb = "org.Hs.eg.db", universe = universe_entrez, ont = "all", readable = TRUE)
+GO_up <- gsfilter(GO_up, by = 'Count', min = 3)
+GO_up <- simplify(
+  GO_up,
+  cutoff = 0.7,
+  by = "pvalue",
+  select_fun = min,
+  measure = "Wang",
+  semData = NULL
+)
+
+GO_down <- enrichGO(down_genes, OrgDb = "org.Hs.eg.db", universe = universe_entrez, ont = "all", readable = TRUE)
+GO_down <- gsfilter(GO_down, by = 'Count', min = 3)
+GO_down <- simplify(
+  GO_down,
+  cutoff = 0.7,
+  by = "pvalue",
+  select_fun = min,
+  measure = "Wang",
+  semData = NULL
+)
+
+p1 <- dotplot(GO_up, showCategory = 10, title = paste0("Upregulated genes"), label_format = 27, font.size = 15) +
+  theme(plot.title = element_text( face = "bold", size = 18, hjust = 0.5),
+        axis.text.y = element_text(face = "bold"),
+        axis.text.x = element_text(size = 10))
+p2 <- dotplot(GO_down, showCategory = 10, title = paste0("Downregulated genes"), label_format = 27, font.size = 15) +
+  theme(plot.title = element_text( face = "bold", size = 18, hjust = 0.5),
+        axis.text.y = element_text(face = "bold"),
+        axis.text.x = element_text(size = 10))
+p[[1]][["layers"]][[2]][["geom"]][["default_aes"]][["alpha"]] <- 1
+print(p1 + p2)
+```
+
+```{r cnetplot_GO_CM, fig.height=3, fig.width=9}
+p1 <- cnetplot(GO_up, cex_label_category = 0.7, cex_label_gene = 0.8, showCategory = 10)
+p2 <- cnetplot(GO_down, cex_label_category = 0.7, cex_label_gene = 0.8, showCategory = 10)
+print(p1 + p2)
+```
+
+
+### Fibroblasts
+
+```{r FB}
+FB <- subset(iPS_integrated, cell_type == "Fibroblasts")
+table(FB$cell_type)
+Idents(FB) <- FB$Condition
+DefaultAssay(FB) <- "RNA"
+FB <- NormalizeData(FB)
+FB <- ScaleData(FB)
+```
+
+```{r DE_FB, eval=FALSE}
+DE_JDR_FB <- FindMarkers(subset(FB, subset = Cell_line == "JDR"), test.use = "MAST", ident.1 = "DMD", ident.2 = "Ctr", min.pct = 0.05, logfc.threshold = 0.1, assay = "RNA")
+DE_JDR_FB$gene <- rownames(DE_JDR_FB)
+write.csv(DE_JDR_FB, file = here::here(output_dir_data, "DE_JDR_FB.csv"), quote=F, row.names = F)
+
+
+DE_JD6_FB <- FindMarkers(subset(FB, subset = Cell_line == "JD6"), test.use = "MAST", ident.1 = "DMD", ident.2 = "Ctr", min.pct = 0.05, logfc.threshold = 0.1, assay = "RNA")
+DE_JD6_FB$gene <- rownames(DE_JD6_FB)
+write.csv(DE_JD6_FB, file = here::here(output_dir_data, "DE_JD6_FB.csv"), quote=F, row.names = F)
+```
+
+```{r Load DE_FB}
+DE_JDR_FB <- read.csv(file = here::here(output_dir_data, "DE_JDR_FB.csv"))
+DE_JD6_FB <- read.csv(file = here::here(output_dir_data, "DE_JD6_FB.csv"))
+```
+
+```{r common_FB}
+signif_JDR_FB <- filter(DE_JDR_FB, abs(avg_log2FC) > 0.5 & p_val_adj < 0.05)
+
+signif_JD6_FB <- filter(DE_JD6_FB, abs(avg_log2FC) > 0.5 & p_val_adj < 0.05)
+
+
+common_up_FB <- Reduce(intersect, list(filter(signif_JDR_FB, avg_log2FC > 0.25)$gene,
+                                    filter(signif_JD6_FB, avg_log2FC > 0.25)$gene))
+
+common_down_FB <- Reduce(intersect, list(filter(signif_JDR_FB, avg_log2FC < -0.25)$gene,
+                                      filter(signif_JD6_FB, avg_log2FC < -0.25)$gene))
+
+common_genes_FB <- union(common_up_FB, common_down_FB)
+length(common_genes_FB)
+```
+
+```{r volcano_FB, fig.height=5, fig.width=8}
+volcano1 <- EnhancedVolcano(DE_JDR_FB,
+                  lab = DE_JDR_FB$gene,
+                  x = "avg_log2FC",
+                  y = "p_val_adj",
+                  labSize = 0,
+                  titleLabSize = 16,
+                  subtitleLabSize = 14,
+                  axisLabSize = 12,
+                  captionLabSize = 9,
+                  pointSize = 0.5,
+                  FCcutoff = 0.25,
+                  pCutoff  = 0.05,
+                  col = c("black", "black", "black", "red"),
+                  colAlpha = 1,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
+                  subtitle = NULL,
+                  title = "JDR Fibroblasts"
+  ) + theme(legend.position = "none")
+
+volcano2 <- EnhancedVolcano(DE_JD6_FB,
+                  lab = DE_JD6_FB$gene,
+                  x = "avg_log2FC",
+                  y = "p_val_adj",
+                  labSize = 0,
+                  titleLabSize = 16,
+                  subtitleLabSize = 14,
+                  axisLabSize = 12,
+                  captionLabSize = 9,
+                  pointSize = 0.5,
+                  FCcutoff = 0.25,
+                  pCutoff  = 0.05,
+                  col = c("black", "black", "black", "red"),
+                  colAlpha = 1,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
+                  subtitle = NULL,
+                  title = "JD6 Fibroblasts"
+  ) + theme(legend.position = "none")
+volcano1+volcano2
+```
+
+```{r VlnPlot_STX5, fig.width=4, fig.height=3}
+VlnPlot(subset(FB, Cell_line %in% c("JDR", "JD6")), "STX5", group.by = "Cell_line", split.by="Condition")
+```
+
+
+### Progenitor cells
+
+```{r PC}
+PC <- subset(iPS_integrated, cell_type == "Progenitor cells")
+table(PC$cell_type)
+Idents(PC) <- PC$Condition
+DefaultAssay(PC) <- "RNA"
+PC <- NormalizeData(PC)
+PC <- ScaleData(PC)
+```
+
+```{r DE_PC, eval=FALSE}
+DE_JDR_PC <- FindMarkers(subset(PC, subset = Cell_line == "JDR"), test.use = "MAST", ident.1 = "DMD", ident.2 = "Ctr", min.pct = 0.05, logfc.threshold = 0.1, assay = "RNA")
+DE_JDR_PC$gene <- rownames(DE_JDR_PC)
+write.csv(DE_JDR_PC, file = here::here(output_dir_data, "DE_JDR_PC.csv"), quote=F, row.names = F)
+
+
+DE_JD6_PC <- FindMarkers(subset(PC, subset = Cell_line == "JD6"), test.use = "MAST", ident.1 = "DMD", ident.2 = "Ctr", min.pct = 0.05, logfc.threshold = 0.1, assay = "RNA")
+DE_JD6_PC$gene <- rownames(DE_JD6_PC)
+write.csv(DE_JD6_PC, file = here::here(output_dir_data, "DE_JD6_PC.csv"), quote=F, row.names = F)
+```
+
+```{r Load DE_PC}
+DE_JDR_PC <- read.csv(file = here::here(output_dir_data, "DE_JDR_PC.csv"))
+DE_JD6_PC <- read.csv(file = here::here(output_dir_data, "DE_JD6_PC.csv"))
+```
+
+```{r common_PC}
+signif_JDR_PC <- filter(DE_JDR_PC, abs(avg_log2FC) > 0.5 & p_val_adj < 0.05)
+
+signif_JD6_PC <- filter(DE_JD6_PC, abs(avg_log2FC) > 0.5 & p_val_adj < 0.05)
+
+
+common_up_PC <- Reduce(intersect, list(filter(signif_JDR_PC, avg_log2FC > 0.25)$gene,
+                                    filter(signif_JD6_PC, avg_log2FC > 0.25)$gene))
+
+common_down_PC <- Reduce(intersect, list(filter(signif_JDR_PC, avg_log2FC < -0.25)$gene,
+                                      filter(signif_JD6_PC, avg_log2FC < -0.25)$gene))
+
+common_genes_PC <- union(common_up_PC, common_down_PC)
+length(common_genes_PC)
+```
+
+```{r volcano_PC, fig.height=5, fig.width=8}
+volcano1 <- EnhancedVolcano(DE_JDR_PC,
+                  lab = DE_JDR_PC$gene,
+                  x = "avg_log2FC",
+                  y = "p_val_adj",
+                  labSize = 0,
+                  titleLabSize = 16,
+                  subtitleLabSize = 14,
+                  axisLabSize = 12,
+                  captionLabSize = 9,
+                  pointSize = 0.5,
+                  FCcutoff = 0.25,
+                  pCutoff  = 0.05,
+                  col = c("black", "black", "black", "red"),
+                  colAlpha = 1,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
+                  subtitle = NULL,
+                  title = "JDR Progenitor cells"
+  ) + theme(legend.position = "none")
+
+volcano2 <- EnhancedVolcano(DE_JD6_PC,
+                  lab = DE_JD6_PC$gene,
+                  x = "avg_log2FC",
+                  y = "p_val_adj",
+                  labSize = 0,
+                  titleLabSize = 16,
+                  subtitleLabSize = 14,
+                  axisLabSize = 12,
+                  captionLabSize = 9,
+                  pointSize = 0.5,
+                  FCcutoff = 0.25,
+                  pCutoff  = 0.05,
+                  col = c("black", "black", "black", "red"),
+                  colAlpha = 1,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
+                  subtitle = NULL,
+                  title = "JD6 Progenitor cells"
+  ) + theme(legend.position = "none")
+volcano1+volcano2
+```
+
+
+### Unspecified cells
+
+```{r UC}
+UC <- subset(iPS_integrated, cell_type == "Unspecified cells")
+table(UC$cell_type)
+Idents(UC) <- UC$Condition
+DefaultAssay(UC) <- "RNA"
+UC <- NormalizeData(UC)
+UC <- ScaleData(UC)
+```
+
+```{r DE_UC, eval=FALSE}
+DE_JDR_UC <- FindMarkers(subset(UC, subset = Cell_line == "JDR"), test.use = "MAST", ident.1 = "DMD", ident.2 = "Ctr", min.pct = 0.05, logfc.threshold = 0.1, assay = "RNA")
+DE_JDR_UC$gene <- rownames(DE_JDR_UC)
+write.csv(DE_JDR_UC, file = here::here(output_dir_data, "DE_JDR_UC.csv"), quote=F, row.names = F)
+
+
+DE_JD6_UC <- FindMarkers(subset(UC, subset = Cell_line == "JD6"), test.use = "MAST", ident.1 = "DMD", ident.2 = "Ctr", min.pct = 0.05, logfc.threshold = 0.1, assay = "RNA")
+DE_JD6_UC$gene <- rownames(DE_JD6_UC)
+write.csv(DE_JD6_UC, file = here::here(output_dir_data, "DE_JD6_UC.csv"), quote=F, row.names = F)
+```
+
+```{r Load DE_UC}
+DE_JDR_UC <- read.csv(file = here::here(output_dir_data, "DE_JDR_UC.csv"))
+DE_JD6_UC <- read.csv(file = here::here(output_dir_data, "DE_JD6_UC.csv"))
+```
+
+```{r common_UC}
+signif_JDR_UC <- filter(DE_JDR_UC, abs(avg_log2FC) > 0.5 & p_val_adj < 0.05)
+
+signif_JD6_UC <- filter(DE_JD6_UC, abs(avg_log2FC) > 0.5 & p_val_adj < 0.05)
+
+
+common_up_UC <- Reduce(intersect, list(filter(signif_JDR_UC, avg_log2FC > 0.25)$gene,
+                                    filter(signif_JD6_UC, avg_log2FC > 0.25)$gene))
+
+common_down_UC <- Reduce(intersect, list(filter(signif_JDR_UC, avg_log2FC < -0.25)$gene,
+                                      filter(signif_JD6_UC, avg_log2FC < -0.25)$gene))
+
+common_genes_UC <- union(common_up_UC, common_down_UC)
+length(common_genes_UC)
+
+common_FC_UC <- data.frame(
+  gene = common_genes_UC,
+  avg_logFC_JDR = signif_JDR_UC %>%
+    dplyr::filter(gene %in% common_genes_UC) %>%
+    dplyr::arrange(gene) %>%
+    dplyr::pull(avg_log2FC),
+  avg_logFC_JD6 = signif_JD6_UC %>%
+    dplyr::filter(gene %in% common_genes_UC) %>%
+    dplyr::arrange(gene) %>%
+    dplyr::pull(avg_log2FC)
+) %>%
+  dplyr::arrange(avg_logFC_JDR)
+```
+
+```{r volano_UC, fig.height=5, fig.width=8}
+volcano1 <- EnhancedVolcano(DE_JDR_UC,
+                  lab = DE_JDR_UC$gene,
+                  x = "avg_log2FC",
+                  y = "p_val_adj",
+                  labSize = 0,
+                  titleLabSize = 16,
+                  subtitleLabSize = 14,
+                  axisLabSize = 12,
+                  captionLabSize = 9,
+                  pointSize = 0.5,
+                  FCcutoff = 0.25,
+                  pCutoff  = 0.05,
+                  col = c("black", "black", "black", "red"),
+                  colAlpha = 1,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
+                  subtitle = NULL,
+                  title = "JDR Unspecified cells"
+  ) + theme(legend.position = "none")
+
+volcano2 <- EnhancedVolcano(DE_JD6_UC,
+                  lab = DE_JD6_UC$gene,
+                  x = "avg_log2FC",
+                  y = "p_val_adj",
+                  labSize = 0,
+                  titleLabSize = 16,
+                  subtitleLabSize = 14,
+                  axisLabSize = 12,
+                  captionLabSize = 9,
+                  pointSize = 0.5,
+                  FCcutoff = 0.25,
+                  pCutoff  = 0.05,
+                  col = c("black", "black", "black", "red"),
+                  colAlpha = 1,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
+                  subtitle = NULL,
+                  title = "JD6 Unspecified cells"
+  ) + theme(legend.position = "none")
+volcano1+volcano2
+```
+
+
+
+```{r VlnPlot_DE_up_UC, fig.width=10, fig.height=9}
+p <- VlnPlot(subset(UC, Cell_line %in% c("JDR", "JD6")), features = common_up_UC, group.by = "Condition", ncol = 5, pt.size = 0.01)
+p[[1]][["layers"]][[2]][["geom"]][["default_aes"]][["alpha"]] <- 0.2
+print(p)
+```
+
+
+```{r VlnPlot_DE_up_UC_Sample, fig.width=20, fig.height=9}
+p <- VlnPlot(subset(UC, Cell_line %in% c("JDR", "JD6")), features = common_up_UC, group.by = "Cell_line", split.by = "Condition", ncol = 5, pt.size = 0.01)
+p[[1]][["layers"]][[2]][["geom"]][["default_aes"]][["alpha"]] <- 0.2
+print(p)
+```
+
+```{r bitr UC}
+up_genes <- bitr(common_up_UC, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Hs.eg.db")$ENTREZID
+
+# Calculate gene counts across cells
+gene_counts <- rowSums(subset(UC, Cell_line %in% c("JDR", "JD6"))@assays$RNA@counts > 0)
+
+# Filter genes to include only those expressed in at least 3 cells
+universe_genes <- names(gene_counts[gene_counts >= 3])
+
+# Convert universe gene symbols to Entrez IDs
+universe_entrez <- bitr(universe_genes, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = org.Hs.eg.db)$ENTREZID
+```
+
+```{r GO_UC, fig.height=4, fig.width=6}
+GO_up_UC <- enrichGO(up_genes, OrgDb = "org.Hs.eg.db", universe = universe_entrez, ont = "all", readable = TRUE)
+GO_up_UC <- gsfilter(GO_up_UC, by = 'Count', min = 3)
+GO_up_UC <- simplify(
+  GO_up_UC,
+  cutoff = 0.7,
+  by = "pvalue",
+  select_fun = min,
+  measure = "Wang",
+  semData = NULL
+)
+
+
+
+p1 <- dotplot(GO_up_UC, showCategory = 10, title = paste0("Upregulated genes"), label_format = 27, font.size = 15) +
+  theme(plot.title = element_text( face = "bold", size = 18, hjust = 0.5),
+        axis.text.y = element_text(face = "bold"),
+        axis.text.x = element_text(size = 10))
+p[[1]][["layers"]][[2]][["geom"]][["default_aes"]][["alpha"]] <- 1
+print(p1)
+```
+
+```{r cnetplot_GO_UC, fig.height=3, fig.width=4.5}
+p1 <- cnetplot(GO_up_UC, cex_label_category = 0.7, cex_label_gene = 0.8, showCategory = 10)
+print(p1)
+```
