@@ -388,7 +388,7 @@ div.tocify {
 <h4 class="author">GinoBonazza (<a
 href="mailto:ginoandrea.bonazza@usz.ch"
 class="email">ginoandrea.bonazza@usz.ch</a>)</h4>
-<h4 class="date">15 November, 2024</h4>
+<h4 class="date">26 February, 2025</h4>
 
 </div>
 
@@ -417,7 +417,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-11-15
+<strong>Last updated:</strong> 2025-02-26
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -548,15 +548,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstreebc4958efba26269a3d3dda566f115e9e5417e9d6targetblankbc4958ea">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree78abb9f3284bf885a7dd5aecfcb48dd99ffd1ecatargetblank78abb9fa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/GinoBonazza/iPS_organoids/tree/bc4958efba26269a3d3dda566f115e9e5417e9d6" target="_blank">bc4958e</a>
+<a href="https://github.com/GinoBonazza/iPS_organoids/tree/78abb9f3284bf885a7dd5aecfcb48dd99ffd1eca" target="_blank">78abb9f</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstreebc4958efba26269a3d3dda566f115e9e5417e9d6targetblankbc4958ea"
+id="strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstree78abb9f3284bf885a7dd5aecfcb48dd99ffd1ecatargetblank78abb9fa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -566,7 +566,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/GinoBonazza/iPS_organoids/tree/bc4958efba26269a3d3dda566f115e9e5417e9d6" target="_blank">bc4958e</a>.
+<a href="https://github.com/GinoBonazza/iPS_organoids/tree/78abb9f3284bf885a7dd5aecfcb48dd99ffd1eca" target="_blank">78abb9f</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -659,6 +659,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/78abb9f3284bf885a7dd5aecfcb48dd99ffd1eca/analysis/New_figures.Rmd" target="_blank">78abb9f</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2025-02-26
+</td>
+<td>
+wflow_publish("analysis/New_figures.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/GinoBonazza/iPS_organoids/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/New_figures.html" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/GinoBonazza/iPS_organoids/blob/bc4958efba26269a3d3dda566f115e9e5417e9d6/analysis/New_figures.Rmd" target="_blank">bc4958e</a>
 </td>
 <td>
@@ -742,19 +776,19 @@ if (!dir.exists(output_dir_figs)) dir.create(output_dir_figs)</code></pre>
 <pre class="r"><code>iPS_integrated &lt;- readRDS(here::here(&quot;output&quot;, &quot;QC_integration_annotation&quot;, &quot;iPS_integrated.rds&quot;))</code></pre>
 <pre class="r"><code>iPS_integrated$cell_type &lt;- factor(iPS_integrated$cell_type, levels = c(&quot;Atrial Cardiomyocytes&quot;, 
                                                                         &quot;Ventricular Cardiomyocytes&quot;,
-                                                                        &quot;Fibroblasts&quot;,
                                                                         &quot;Unspecified cells&quot;,
-                                                                        &quot;Endothelial cells&quot;,
-                                                                        &quot;Progenitor cells&quot;))
+                                                                        &quot;Fibroblasts&quot;,
+                                                                        &quot;Progenitor cells&quot;,
+                                                                        &quot;Endothelial cells&quot;))
 iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c(&quot;2&quot;), &quot;cell_type&quot;] = &quot;Unspecified cells&quot;
 table(iPS_integrated$cell_type)</code></pre>
 <pre><code>
      Atrial Cardiomyocytes Ventricular Cardiomyocytes 
                       2975                       2622 
-               Fibroblasts          Unspecified cells 
-                       732                       1231 
-         Endothelial cells           Progenitor cells 
-                        96                        431 </code></pre>
+         Unspecified cells                Fibroblasts 
+                      1231                        732 
+          Progenitor cells          Endothelial cells 
+                       431                         96 </code></pre>
 <pre class="r"><code>iPS_integrated$pseudobulk &lt;- &quot;Pseudobulk&quot;
 pseudocounts_all &lt;- Seurat2PB(iPS_integrated, sample=&quot;Sample&quot;, cluster = &quot;pseudobulk&quot;)
 colnames(pseudocounts_all) &lt;- pseudocounts_all$samples$sample</code></pre>
@@ -803,6 +837,43 @@ mds_all_group &lt;- ggplot(mds_df, aes(x, y, col = group_id)) +
 
 mds_all_sample + mds_all_cell_line + mds_all_group</code></pre>
 <p><img src="figure/New_figures.Rmd/mds_plots_all-1.png" width="3600" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-mds_plots_all-1">
+Past versions of mds_plots_all-1.png
+</button>
+</p>
+<div id="fig-mds_plots_all-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/mds_plots_all-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>cluster_names &lt;- levels(iPS_integrated$cell_type)</code></pre>
 <pre class="r"><code>for (cluster in cluster_names) {
   pseudocounts &lt;- Seurat2PB(subset(iPS_integrated, cell_type == cluster), sample=&quot;Sample&quot;, cluster = &quot;cell_type&quot;)
@@ -861,19 +932,204 @@ combined_plots &lt;- (mds_plots[[1]] + mds_plots[[4]] + mds_plots[[7]] + mds_plo
 
 combined_plots</code></pre>
 <p><img src="figure/New_figures.Rmd/mds_plots_cell_type-1.png" width="7200" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-mds_plots_cell_type-1">
+Past versions of mds_plots_cell_type-1.png
+</button>
+</p>
+<div id="fig-mds_plots_cell_type-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/mds_plots_cell_type-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>Idents(iPS_integrated) &lt;- iPS_integrated$cell_type
 DimPlot(iPS_integrated, split.by = &quot;Sample&quot;, ncol = 3)</code></pre>
 <p><img src="figure/New_figures.Rmd/UMAP_samples-1.png" width="3000" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>FeaturePlot(iPS_integrated, c(&quot;DYSF&quot;, &quot;UTRN&quot;), split.by = &quot;Condition&quot;, pt.size = 0.3)</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-UMAP_samples-1">
+Past versions of UMAP_samples-1.png
+</button>
+</p>
+<div id="fig-UMAP_samples-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/UMAP_samples-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>FeaturePlot(iPS_integrated, c(&quot;DMD&quot;, &quot;UTRN&quot;), split.by = &quot;Condition&quot;, pt.size = 0.3)</code></pre>
 <p><img src="figure/New_figures.Rmd/FeatPlot_DYSF_UTRN-1.png" width="1800" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>p1 &lt;- VlnPlot(iPS_integrated, c(&quot;DYSF&quot;), group.by = &quot;cell_type&quot;,split.by = &quot;Condition&quot;) + NoLegend() + theme(axis.title.x = element_blank())
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-FeatPlot_DYSF_UTRN-1">
+Past versions of FeatPlot_DYSF_UTRN-1.png
+</button>
+</p>
+<div id="fig-FeatPlot_DYSF_UTRN-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/FeatPlot_DYSF_UTRN-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>p1 &lt;- VlnPlot(iPS_integrated, c(&quot;DMD&quot;), group.by = &quot;cell_type&quot;,split.by = &quot;Condition&quot;) + NoLegend() + theme(axis.title.x = element_blank())
 p2 &lt;- VlnPlot(iPS_integrated, c(&quot;UTRN&quot;), group.by = &quot;cell_type&quot;,split.by = &quot;Condition&quot;) + theme(axis.title.x = element_blank())
 p1 | p2</code></pre>
 <p><img src="figure/New_figures.Rmd/VlnPlot_DYSF_UTRN-1.png" width="3900" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_DYSF_UTRN-1">
+Past versions of VlnPlot_DYSF_UTRN-1.png
+</button>
+</p>
+<div id="fig-VlnPlot_DYSF_UTRN-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/VlnPlot_DYSF_UTRN-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>down_genes &lt;- c(&quot;B2M&quot;, &quot;HLA-C&quot;, &quot;ITGA1&quot;, &quot;DPYSL3&quot;, &quot;PDLIM3&quot;, &quot;ZBTB7C&quot;)
 
 FeaturePlot(subset(iPS_integrated, cell_type %in% c(&quot;Atrial Cardiomyocytes&quot;, &quot;Ventricular Cardiomyocytes&quot;)), features = down_genes, ncol = 3)</code></pre>
 <p><img src="figure/New_figures.Rmd/FeatPlot_down_CM-1.png" width="2700" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-FeatPlot_down_CM-1">
+Past versions of FeatPlot_down_CM-1.png
+</button>
+</p>
+<div id="fig-FeatPlot_down_CM-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/FeatPlot_down_CM-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>Markers &lt;- read.csv(here::here(&quot;output&quot;, &quot;QC_integration_annotation&quot;, &quot;iPS_Markers_all.csv&quot;))</code></pre>
 <pre class="r"><code>Markers_top5 &lt;- as.data.frame(Markers %&gt;% group_by(cluster) %&gt;% top_n(n = 5, wt = avg_log2FC))
 Idents(iPS_integrated) &lt;- factor(iPS_integrated$cell_type, levels = rev(levels(iPS_integrated$cell_type)))
@@ -882,10 +1138,121 @@ DotPlot(iPS_integrated, assay = &quot;SCT&quot;, features = Markers_top5$gene, d
   theme(axis.title = element_blank(), axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 13), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
                            &quot;inches&quot;))</code></pre>
 <p><img src="figure/New_figures.Rmd/Dotplot_markers-1.png" width="3000" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-Dotplot_markers-1">
+Past versions of Dotplot_markers-1.png
+</button>
+</p>
+<div id="fig-Dotplot_markers-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/Dotplot_markers-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>VlnPlot(iPS_integrated, &quot;ACTA2&quot;, group.by = &quot;Condition&quot;, split.by = &quot;Sample&quot;)</code></pre>
 <p><img src="figure/New_figures.Rmd/VlnPlot_ACTA2-1.png" width="2100" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_ACTA2-1">
+Past versions of VlnPlot_ACTA2-1.png
+</button>
+</p>
+<div id="fig-VlnPlot_ACTA2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/VlnPlot_ACTA2-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>VlnPlot(subset(iPS_integrated, cell_type = &quot;Endothelial cells&quot;), &quot;FLT1&quot;, group.by = &quot;Condition&quot;, split.by = &quot;Sample&quot;)</code></pre>
 <p><img src="figure/New_figures.Rmd/VlnPlot_FLT1-1.png" width="2100" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_FLT1-1">
+Past versions of VlnPlot_FLT1-1.png
+</button>
+</p>
+<div id="fig-VlnPlot_FLT1-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/VlnPlot_FLT1-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="differential-expression" class="section level2">
 <h2>Differential expression</h2>
@@ -927,18 +1294,166 @@ common_FC &lt;- data.frame(
 p[[1]][[&quot;layers&quot;]][[2]][[&quot;geom&quot;]][[&quot;default_aes&quot;]][[&quot;alpha&quot;]] &lt;- 0.2
 print(p)</code></pre>
 <p><img src="figure/New_figures.Rmd/VlnPlot_DE_up_CM-1.png" width="2400" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_DE_up_CM-1">
+Past versions of VlnPlot_DE_up_CM-1.png
+</button>
+</p>
+<div id="fig-VlnPlot_DE_up_CM-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/VlnPlot_DE_up_CM-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>p &lt;- VlnPlot(subset(CM, Cell_line %in% c(&quot;JDR&quot;, &quot;JD6&quot;)), features = common_down, group.by = &quot;Condition&quot;, ncol = 4, pt.size = 0.01)
 p[[1]][[&quot;layers&quot;]][[2]][[&quot;geom&quot;]][[&quot;default_aes&quot;]][[&quot;alpha&quot;]] &lt;- 0.2
 print(p)</code></pre>
 <p><img src="figure/New_figures.Rmd/VlnPlot_DE_down_CM-1.png" width="2400" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_DE_down_CM-1">
+Past versions of VlnPlot_DE_down_CM-1.png
+</button>
+</p>
+<div id="fig-VlnPlot_DE_down_CM-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/VlnPlot_DE_down_CM-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>p &lt;- VlnPlot(subset(CM, Cell_line %in% c(&quot;JDR&quot;, &quot;JD6&quot;)), features = common_up, group.by = &quot;Cell_line&quot;, split.by = &quot;Condition&quot;, ncol = 4, pt.size = 0.01)
 p[[1]][[&quot;layers&quot;]][[2]][[&quot;geom&quot;]][[&quot;default_aes&quot;]][[&quot;alpha&quot;]] &lt;- 0.2
 print(p)</code></pre>
 <p><img src="figure/New_figures.Rmd/VlnPlot_DE_up_CM_Sample-1.png" width="4800" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_DE_up_CM_Sample-1">
+Past versions of VlnPlot_DE_up_CM_Sample-1.png
+</button>
+</p>
+<div id="fig-VlnPlot_DE_up_CM_Sample-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/VlnPlot_DE_up_CM_Sample-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>p &lt;- VlnPlot(subset(CM, Cell_line %in% c(&quot;JDR&quot;, &quot;JD6&quot;)), features = common_down, group.by = &quot;Cell_line&quot;, split.by = &quot;Condition&quot;, ncol = 4, pt.size = 0.01)
 p[[1]][[&quot;layers&quot;]][[2]][[&quot;geom&quot;]][[&quot;default_aes&quot;]][[&quot;alpha&quot;]] &lt;- 0.2
 print(p)</code></pre>
 <p><img src="figure/New_figures.Rmd/VlnPlot_DE_down_CM_Sample-1.png" width="4800" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_DE_down_CM_Sample-1">
+Past versions of VlnPlot_DE_down_CM_Sample-1.png
+</button>
+</p>
+<div id="fig-VlnPlot_DE_down_CM_Sample-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/VlnPlot_DE_down_CM_Sample-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>up_genes &lt;- bitr(common_up, fromType=&quot;SYMBOL&quot;, toType=&quot;ENTREZID&quot;, OrgDb=&quot;org.Hs.eg.db&quot;)$ENTREZID
 down_genes &lt;- bitr(common_down, fromType=&quot;SYMBOL&quot;, toType=&quot;ENTREZID&quot;, OrgDb=&quot;org.Hs.eg.db&quot;)$ENTREZID
 
@@ -983,10 +1498,84 @@ p2 &lt;- dotplot(GO_down, showCategory = 10, title = paste0(&quot;Downregulated 
 p[[1]][[&quot;layers&quot;]][[2]][[&quot;geom&quot;]][[&quot;default_aes&quot;]][[&quot;alpha&quot;]] &lt;- 1
 print(p1 + p2)</code></pre>
 <p><img src="figure/New_figures.Rmd/GO_CM-1.png" width="3600" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-GO_CM-1">
+Past versions of GO_CM-1.png
+</button>
+</p>
+<div id="fig-GO_CM-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/GO_CM-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>p1 &lt;- cnetplot(GO_up, cex_label_category = 0.7, cex_label_gene = 0.8, showCategory = 10)
 p2 &lt;- cnetplot(GO_down, cex_label_category = 0.7, cex_label_gene = 0.8, showCategory = 10)
 print(p1 + p2)</code></pre>
 <p><img src="figure/New_figures.Rmd/cnetplot_GO_CM-1.png" width="2700" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cnetplot_GO_CM-1">
+Past versions of cnetplot_GO_CM-1.png
+</button>
+</p>
+<div id="fig-cnetplot_GO_CM-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/cnetplot_GO_CM-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="fibroblasts" class="section level3">
 <h3>Fibroblasts</h3>
@@ -995,9 +1584,9 @@ table(FB$cell_type)</code></pre>
 <pre><code>
      Atrial Cardiomyocytes Ventricular Cardiomyocytes 
                          0                          0 
-               Fibroblasts          Unspecified cells 
-                       732                          0 
-         Endothelial cells           Progenitor cells 
+         Unspecified cells                Fibroblasts 
+                         0                        732 
+          Progenitor cells          Endothelial cells 
                          0                          0 </code></pre>
 <pre class="r"><code>Idents(FB) &lt;- FB$Condition
 DefaultAssay(FB) &lt;- &quot;RNA&quot;
@@ -1068,8 +1657,82 @@ volcano2 &lt;- EnhancedVolcano(DE_JD6_FB,
   ) + theme(legend.position = &quot;none&quot;)
 volcano1+volcano2</code></pre>
 <p><img src="figure/New_figures.Rmd/volcano_FB-1.png" width="2400" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-volcano_FB-1">
+Past versions of volcano_FB-1.png
+</button>
+</p>
+<div id="fig-volcano_FB-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/volcano_FB-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>VlnPlot(subset(FB, Cell_line %in% c(&quot;JDR&quot;, &quot;JD6&quot;)), &quot;STX5&quot;, group.by = &quot;Cell_line&quot;, split.by=&quot;Condition&quot;)</code></pre>
 <p><img src="figure/New_figures.Rmd/VlnPlot_STX5-1.png" width="1200" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_STX5-1">
+Past versions of VlnPlot_STX5-1.png
+</button>
+</p>
+<div id="fig-VlnPlot_STX5-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/VlnPlot_STX5-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="progenitor-cells" class="section level3">
 <h3>Progenitor cells</h3>
@@ -1078,10 +1741,10 @@ table(PC$cell_type)</code></pre>
 <pre><code>
      Atrial Cardiomyocytes Ventricular Cardiomyocytes 
                          0                          0 
-               Fibroblasts          Unspecified cells 
+         Unspecified cells                Fibroblasts 
                          0                          0 
-         Endothelial cells           Progenitor cells 
-                         0                        431 </code></pre>
+          Progenitor cells          Endothelial cells 
+                       431                          0 </code></pre>
 <pre class="r"><code>Idents(PC) &lt;- PC$Condition
 DefaultAssay(PC) &lt;- &quot;RNA&quot;
 PC &lt;- NormalizeData(PC)
@@ -1151,6 +1814,43 @@ volcano2 &lt;- EnhancedVolcano(DE_JD6_PC,
   ) + theme(legend.position = &quot;none&quot;)
 volcano1+volcano2</code></pre>
 <p><img src="figure/New_figures.Rmd/volcano_PC-1.png" width="2400" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-volcano_PC-1">
+Past versions of volcano_PC-1.png
+</button>
+</p>
+<div id="fig-volcano_PC-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/volcano_PC-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="unspecified-cells" class="section level3">
 <h3>Unspecified cells</h3>
@@ -1159,9 +1859,9 @@ table(UC$cell_type)</code></pre>
 <pre><code>
      Atrial Cardiomyocytes Ventricular Cardiomyocytes 
                          0                          0 
-               Fibroblasts          Unspecified cells 
-                         0                       1231 
-         Endothelial cells           Progenitor cells 
+         Unspecified cells                Fibroblasts 
+                      1231                          0 
+          Progenitor cells          Endothelial cells 
                          0                          0 </code></pre>
 <pre class="r"><code>Idents(UC) &lt;- UC$Condition
 DefaultAssay(UC) &lt;- &quot;RNA&quot;
@@ -1244,14 +1944,125 @@ volcano2 &lt;- EnhancedVolcano(DE_JD6_UC,
   ) + theme(legend.position = &quot;none&quot;)
 volcano1+volcano2</code></pre>
 <p><img src="figure/New_figures.Rmd/volano_UC-1.png" width="2400" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-volano_UC-1">
+Past versions of volano_UC-1.png
+</button>
+</p>
+<div id="fig-volano_UC-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/volano_UC-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>p &lt;- VlnPlot(subset(UC, Cell_line %in% c(&quot;JDR&quot;, &quot;JD6&quot;)), features = common_up_UC, group.by = &quot;Condition&quot;, ncol = 5, pt.size = 0.01)
 p[[1]][[&quot;layers&quot;]][[2]][[&quot;geom&quot;]][[&quot;default_aes&quot;]][[&quot;alpha&quot;]] &lt;- 0.2
 print(p)</code></pre>
 <p><img src="figure/New_figures.Rmd/VlnPlot_DE_up_UC-1.png" width="3000" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_DE_up_UC-1">
+Past versions of VlnPlot_DE_up_UC-1.png
+</button>
+</p>
+<div id="fig-VlnPlot_DE_up_UC-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/VlnPlot_DE_up_UC-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>p &lt;- VlnPlot(subset(UC, Cell_line %in% c(&quot;JDR&quot;, &quot;JD6&quot;)), features = common_up_UC, group.by = &quot;Cell_line&quot;, split.by = &quot;Condition&quot;, ncol = 5, pt.size = 0.01)
 p[[1]][[&quot;layers&quot;]][[2]][[&quot;geom&quot;]][[&quot;default_aes&quot;]][[&quot;alpha&quot;]] &lt;- 0.2
 print(p)</code></pre>
 <p><img src="figure/New_figures.Rmd/VlnPlot_DE_up_UC_Sample-1.png" width="6000" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-VlnPlot_DE_up_UC_Sample-1">
+Past versions of VlnPlot_DE_up_UC_Sample-1.png
+</button>
+</p>
+<div id="fig-VlnPlot_DE_up_UC_Sample-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/VlnPlot_DE_up_UC_Sample-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>up_genes &lt;- bitr(common_up_UC, fromType=&quot;SYMBOL&quot;, toType=&quot;ENTREZID&quot;, OrgDb=&quot;org.Hs.eg.db&quot;)$ENTREZID
 
 # Calculate gene counts across cells
@@ -1282,9 +2093,186 @@ p1 &lt;- dotplot(GO_up_UC, showCategory = 10, title = paste0(&quot;Upregulated g
 p[[1]][[&quot;layers&quot;]][[2]][[&quot;geom&quot;]][[&quot;default_aes&quot;]][[&quot;alpha&quot;]] &lt;- 1
 print(p1)</code></pre>
 <p><img src="figure/New_figures.Rmd/GO_UC-1.png" width="1800" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-GO_UC-1">
+Past versions of GO_UC-1.png
+</button>
+</p>
+<div id="fig-GO_UC-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/GO_UC-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>p1 &lt;- cnetplot(GO_up_UC, cex_label_category = 0.7, cex_label_gene = 0.8, showCategory = 10)
 print(p1)</code></pre>
 <p><img src="figure/New_figures.Rmd/cnetplot_GO_UC-1.png" width="1350" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cnetplot_GO_UC-1">
+Past versions of cnetplot_GO_UC-1.png
+</button>
+</p>
+<div id="fig-cnetplot_GO_UC-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/1e1113bf18a9e470ebab4312792049e2a0bf701e/docs/figure/New_figures.Rmd/cnetplot_GO_UC-1.png" target="_blank">1e1113b</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>Idents(iPS_integrated) &lt;- iPS_integrated$cell_type
+Samples &lt;- rownames(table(iPS_integrated$Sample))</code></pre>
+<pre class="r"><code>DimPlot(subset(iPS_integrated, Sample==Samples[[1]]), pt.size = 0.1, shuffle = T) + 
+  ggtitle(Samples[[1]]) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        axis.title.x = element_text(size = 11),
+        axis.title.y = element_text(size = 11))</code></pre>
+<p><img src="figure/New_figures.Rmd/UMAP_samples_1-1.png" width="1500" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DimPlot(subset(iPS_integrated, Sample==Samples[[2]]), pt.size = 0.1, shuffle = T) + 
+  ggtitle(Samples[[2]]) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        axis.title.x = element_text(size = 11),
+        axis.title.y = element_text(size = 11))</code></pre>
+<p><img src="figure/New_figures.Rmd/UMAP_samples_2-1.png" width="1500" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DimPlot(subset(iPS_integrated, Sample==Samples[[3]]), pt.size = 0.1, shuffle = T) + 
+  ggtitle(Samples[[3]]) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        axis.title.x = element_text(size = 11),
+        axis.title.y = element_text(size = 11))</code></pre>
+<p><img src="figure/New_figures.Rmd/UMAP_samples_3-1.png" width="1500" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DimPlot(subset(iPS_integrated, Sample==Samples[[4]]), pt.size = 0.1, shuffle = T) + 
+  ggtitle(Samples[[4]]) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        axis.title.x = element_text(size = 11),
+        axis.title.y = element_text(size = 11))</code></pre>
+<p><img src="figure/New_figures.Rmd/UMAP_samples_4-1.png" width="1500" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DimPlot(subset(iPS_integrated, Sample==Samples[[5]]), pt.size = 0.1, shuffle = T) + 
+  ggtitle(Samples[[5]]) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        axis.title.x = element_text(size = 11),
+        axis.title.y = element_text(size = 11))</code></pre>
+<p><img src="figure/New_figures.Rmd/UMAP_samples_5-1.png" width="1500" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DimPlot(subset(iPS_integrated, Sample==Samples[[6]]), pt.size = 0.1, shuffle = T) + 
+  ggtitle(Samples[[6]]) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        axis.title.x = element_text(size = 11),
+        axis.title.y = element_text(size = 11))</code></pre>
+<p><img src="figure/New_figures.Rmd/UMAP_samples_6-1.png" width="1500" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>colors &lt;- hue_pal()(6)
+props &lt;- getTransformedProps(iPS_integrated$cell_type, iPS_integrated$Sample, transform=&quot;logit&quot;)
+
+par(mar = c(8, 5, 1, 20), xpd = TRUE)
+barplot(props$Proportions, legend = FALSE, ylab = &quot;Proportions&quot;, col = colors, 
+        cex.names = 1.6, las = 2, font.lab = 2, font.axis = 2, cex.axis = 1, cex.lab = 1.6)
+legend(&quot;topright&quot;, inset = c(-0.95, 0.13), legend = rownames(props$Proportions), fill = colors, bty = &quot;n&quot;, cex = 1.6)</code></pre>
+<p><img src="figure/New_figures.Rmd/Barplot_Sample-1.png" width="2700" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>props &lt;- getTransformedProps(subset(iPS_integrated, Cell_line %in% c(&quot;JD6&quot;, &quot;JDR&quot;))$cell_type, subset(iPS_integrated, Cell_line %in% c(&quot;JD6&quot;, &quot;JDR&quot;))$Sample, transform=&quot;logit&quot;)
+
+par(mar = c(8, 5, 1, 20), xpd = TRUE)
+barplot(props$Proportions, legend = FALSE, ylab = &quot;Proportions&quot;, col = colors, 
+        cex.names = 1.6, las = 2, font.lab = 2, font.axis = 2, cex.axis = 1, cex.lab = 1.6)
+legend(&quot;topright&quot;, inset = c(-0.95, 0.13), legend = rownames(props$Proportions), fill = colors, bty = &quot;n&quot;, cex = 1.6)</code></pre>
+<p><img src="figure/New_figures.Rmd/Barplot_Sample_2-1.png" width="2700" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>Markers_top5 &lt;- as.data.frame(Markers %&gt;% group_by(cluster) %&gt;% top_n(n = 5, wt = avg_log2FC))
+Idents(iPS_integrated) &lt;- factor(iPS_integrated$cell_type, levels = rev(levels(iPS_integrated$cell_type)))
+DotPlot(subset(iPS_integrated, Condition == &quot;Ctr&quot;), assay = &quot;SCT&quot;, features = Markers_top5$gene, dot.scale = 5) +
+  RotatedAxis() +
+  theme(axis.title = element_blank(), axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 13), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
+                           &quot;inches&quot;)) + ggtitle(&quot;Ctr&quot;) + 
+  theme(plot.title = element_text(hjust = 0.5,      
+                                  face = &quot;bold&quot;,     
+                                  size = 20))</code></pre>
+<p><img src="figure/New_figures.Rmd/DotPlot_markers_Ctr-1.png" width="3000" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>Markers_top5 &lt;- as.data.frame(Markers %&gt;% group_by(cluster) %&gt;% top_n(n = 5, wt = avg_log2FC))
+Idents(iPS_integrated) &lt;- factor(iPS_integrated$cell_type, levels = rev(levels(iPS_integrated$cell_type)))
+DotPlot(subset(iPS_integrated, Condition == &quot;DMD&quot;), assay = &quot;SCT&quot;, features = Markers_top5$gene, dot.scale = 5) +
+  RotatedAxis() +
+  theme(axis.title = element_blank(), axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 13), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
+                           &quot;inches&quot;)) + ggtitle(&quot;DMD&quot;) + 
+  theme(plot.title = element_text(hjust = 0.5,      
+                                  face = &quot;bold&quot;,     
+                                  size = 20))</code></pre>
+<p><img src="figure/New_figures.Rmd/DotPlot_markers_DMD-1.png" width="3000" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>Stacked_VlnPlot(iPS_integrated, c(&quot;DMD&quot;, &quot;UTRN&quot;), group.by = &quot;cell_type&quot;, split.by = &quot;Condition&quot;, x_lab_rotate = TRUE, plot_legend = TRUE) + 
+  plot_annotation(title = &quot;DMD vs Ctr&quot;) &amp; 
+  theme(plot.title = element_text(hjust = 0.5,      
+                                  face = &quot;bold&quot;,     
+                                  size = 18))</code></pre>
+<p><img src="figure/New_figures.Rmd/Vlnplot_DMD_UTRN-1.png" width="2400" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>Stacked_VlnPlot(subset(iPS_integrated, Condition == &quot;Ctr&quot;), c(&quot;DMD&quot;, &quot;UTRN&quot;), group.by = &quot;cell_type&quot;, pt.size = 0, colors_use = colors, x_lab_rotate = TRUE) + 
+  plot_annotation(title = &quot;Ctr&quot;) &amp; 
+  theme(plot.title = element_text(hjust = 0.5,      
+                                  face = &quot;bold&quot;,     
+                                  size = 18))</code></pre>
+<p><img src="figure/New_figures.Rmd/Vlnplot_DMD_UTRN_2-1.png" width="1500" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>Stacked_VlnPlot(subset(iPS_integrated, Condition == &quot;DMD&quot;), c(&quot;DMD&quot;, &quot;UTRN&quot;), group.by = &quot;cell_type&quot;, pt.size = 0, colors_use = colors, x_lab_rotate = TRUE) + 
+  plot_annotation(title = &quot;DMD&quot;) &amp; 
+  theme(plot.title = element_text(hjust = 0.5,      
+                                  face = &quot;bold&quot;,     
+                                  size = 18))</code></pre>
+<p><img src="figure/New_figures.Rmd/Vlnplot_DMD_UTRN_3-1.png" width="1500" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
