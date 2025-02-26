@@ -88,10 +88,10 @@ iPS_integrated <- readRDS(here::here("output", "QC_integration_annotation", "iPS
 ```{r rename CDKN1A}
 iPS_integrated$cell_type <- factor(iPS_integrated$cell_type, levels = c("Atrial Cardiomyocytes", 
                                                                         "Ventricular Cardiomyocytes",
-                                                                        "Fibroblasts",
                                                                         "Unspecified cells",
-                                                                        "Endothelial cells",
-                                                                        "Progenitor cells"))
+                                                                        "Fibroblasts",
+                                                                        "Progenitor cells",
+                                                                        "Endothelial cells"))
 iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("2"), "cell_type"] = "Unspecified cells"
 table(iPS_integrated$cell_type)
 ```
@@ -227,11 +227,11 @@ DimPlot(iPS_integrated, split.by = "Sample", ncol = 3)
 ```
 
 ```{r FeatPlot_DYSF_UTRN, fig.width=6, fig.height=6}
-FeaturePlot(iPS_integrated, c("DYSF", "UTRN"), split.by = "Condition", pt.size = 0.3)
+FeaturePlot(iPS_integrated, c("DMD", "UTRN"), split.by = "Condition", pt.size = 0.3)
 ```
 
 ```{r VlnPlot_DYSF_UTRN, fig.width=13, fig.height=5}
-p1 <- VlnPlot(iPS_integrated, c("DYSF"), group.by = "cell_type",split.by = "Condition") + NoLegend() + theme(axis.title.x = element_blank())
+p1 <- VlnPlot(iPS_integrated, c("DMD"), group.by = "cell_type",split.by = "Condition") + NoLegend() + theme(axis.title.x = element_blank())
 p2 <- VlnPlot(iPS_integrated, c("UTRN"), group.by = "cell_type",split.by = "Condition") + theme(axis.title.x = element_blank())
 p1 | p2
 ```
@@ -719,4 +719,136 @@ print(p1)
 ```{r cnetplot_GO_UC, fig.height=3, fig.width=4.5}
 p1 <- cnetplot(GO_up_UC, cex_label_category = 0.7, cex_label_gene = 0.8, showCategory = 10)
 print(p1)
+```
+
+```{r Samples}
+Idents(iPS_integrated) <- iPS_integrated$cell_type
+Samples <- rownames(table(iPS_integrated$Sample))
+```
+
+```{r UMAP_samples_1, fig.width=5, fig.height=3}
+DimPlot(subset(iPS_integrated, Sample==Samples[[1]]), pt.size = 0.1, shuffle = T) + 
+  ggtitle(Samples[[1]]) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        axis.title.x = element_text(size = 11),
+        axis.title.y = element_text(size = 11))
+```
+
+```{r UMAP_samples_2, fig.width=5, fig.height=3}
+DimPlot(subset(iPS_integrated, Sample==Samples[[2]]), pt.size = 0.1, shuffle = T) + 
+  ggtitle(Samples[[2]]) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        axis.title.x = element_text(size = 11),
+        axis.title.y = element_text(size = 11))
+```
+
+```{r UMAP_samples_3, fig.width=5, fig.height=3}
+DimPlot(subset(iPS_integrated, Sample==Samples[[3]]), pt.size = 0.1, shuffle = T) + 
+  ggtitle(Samples[[3]]) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        axis.title.x = element_text(size = 11),
+        axis.title.y = element_text(size = 11))
+```
+
+```{r UMAP_samples_4, fig.width=5, fig.height=3}
+DimPlot(subset(iPS_integrated, Sample==Samples[[4]]), pt.size = 0.1, shuffle = T) + 
+  ggtitle(Samples[[4]]) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        axis.title.x = element_text(size = 11),
+        axis.title.y = element_text(size = 11))
+```
+
+```{r UMAP_samples_5, fig.width=5, fig.height=3}
+DimPlot(subset(iPS_integrated, Sample==Samples[[5]]), pt.size = 0.1, shuffle = T) + 
+  ggtitle(Samples[[5]]) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        axis.title.x = element_text(size = 11),
+        axis.title.y = element_text(size = 11))
+```
+
+```{r UMAP_samples_6, fig.width=5, fig.height=3}
+DimPlot(subset(iPS_integrated, Sample==Samples[[6]]), pt.size = 0.1, shuffle = T) + 
+  ggtitle(Samples[[6]]) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        axis.title.x = element_text(size = 11),
+        axis.title.y = element_text(size = 11))
+```
+
+```{r Barplot_Sample, fig.height=6, fig.width=9, message=FALSE}
+colors <- hue_pal()(6)
+props <- getTransformedProps(iPS_integrated$cell_type, iPS_integrated$Sample, transform="logit")
+
+par(mar = c(8, 5, 1, 20), xpd = TRUE)
+barplot(props$Proportions, legend = FALSE, ylab = "Proportions", col = colors, 
+        cex.names = 1.6, las = 2, font.lab = 2, font.axis = 2, cex.axis = 1, cex.lab = 1.6)
+legend("topright", inset = c(-0.95, 0.13), legend = rownames(props$Proportions), fill = colors, bty = "n", cex = 1.6)
+```
+
+```{r Barplot_Sample_2, fig.height=6, fig.width=9, message=FALSE}
+props <- getTransformedProps(subset(iPS_integrated, Cell_line %in% c("JD6", "JDR"))$cell_type, subset(iPS_integrated, Cell_line %in% c("JD6", "JDR"))$Sample, transform="logit")
+
+par(mar = c(8, 5, 1, 20), xpd = TRUE)
+barplot(props$Proportions, legend = FALSE, ylab = "Proportions", col = colors, 
+        cex.names = 1.6, las = 2, font.lab = 2, font.axis = 2, cex.axis = 1, cex.lab = 1.6)
+legend("topright", inset = c(-0.95, 0.13), legend = rownames(props$Proportions), fill = colors, bty = "n", cex = 1.6)
+```
+
+```{r DotPlot_markers_Ctr, fig.width=10, fig.height=5}
+Markers_top5 <- as.data.frame(Markers %>% group_by(cluster) %>% top_n(n = 5, wt = avg_log2FC))
+Idents(iPS_integrated) <- factor(iPS_integrated$cell_type, levels = rev(levels(iPS_integrated$cell_type)))
+DotPlot(subset(iPS_integrated, Condition == "Ctr"), assay = "SCT", features = Markers_top5$gene, dot.scale = 5) +
+  RotatedAxis() +
+  theme(axis.title = element_blank(), axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 13), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
+                           "inches")) + ggtitle("Ctr") + 
+  theme(plot.title = element_text(hjust = 0.5,      
+                                  face = "bold",     
+                                  size = 20))
+```
+
+```{r DotPlot_markers_DMD, fig.width=10, fig.height=5}
+Markers_top5 <- as.data.frame(Markers %>% group_by(cluster) %>% top_n(n = 5, wt = avg_log2FC))
+Idents(iPS_integrated) <- factor(iPS_integrated$cell_type, levels = rev(levels(iPS_integrated$cell_type)))
+DotPlot(subset(iPS_integrated, Condition == "DMD"), assay = "SCT", features = Markers_top5$gene, dot.scale = 5) +
+  RotatedAxis() +
+  theme(axis.title = element_blank(), axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 13), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
+                           "inches")) + ggtitle("DMD") + 
+  theme(plot.title = element_text(hjust = 0.5,      
+                                  face = "bold",     
+                                  size = 20))
+```
+
+```{r Vlnplot_DMD_UTRN, fig.height=6, fig.width=8}
+Stacked_VlnPlot(iPS_integrated, c("DMD", "UTRN"), group.by = "cell_type", split.by = "Condition", x_lab_rotate = TRUE, plot_legend = TRUE) + 
+  plot_annotation(title = "DMD vs Ctr") & 
+  theme(plot.title = element_text(hjust = 0.5,      
+                                  face = "bold",     
+                                  size = 18))
+```
+
+```{r Vlnplot_DMD_UTRN_2, fig.height=6, fig.width=5}
+Stacked_VlnPlot(subset(iPS_integrated, Condition == "Ctr"), c("DMD", "UTRN"), group.by = "cell_type", pt.size = 0, colors_use = colors, x_lab_rotate = TRUE) + 
+  plot_annotation(title = "Ctr") & 
+  theme(plot.title = element_text(hjust = 0.5,      
+                                  face = "bold",     
+                                  size = 18))
+```
+
+```{r Vlnplot_DMD_UTRN_3, fig.height=6, fig.width=5}
+Stacked_VlnPlot(subset(iPS_integrated, Condition == "DMD"), c("DMD", "UTRN"), group.by = "cell_type", pt.size = 0, colors_use = colors, x_lab_rotate = TRUE) + 
+  plot_annotation(title = "DMD") & 
+  theme(plot.title = element_text(hjust = 0.5,      
+                                  face = "bold",     
+                                  size = 18))
 ```
