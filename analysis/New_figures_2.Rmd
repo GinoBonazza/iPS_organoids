@@ -343,3 +343,68 @@ FeaturePlot(CM, features = c("MYL2", "MYH7"), ncol=2)
 ```{r , fig.height=6, fig.width=9}
 FeaturePlot(subset(iPS_integrated, cell_type %in% c("Atrial Cardiomyocytes", "Ventricular Cardiomyocytes")), features = down_genes, ncol = 3)
 ```
+
+```{r, fig.width=3, fig.height=3}
+FeaturePlot(iPS_integrated, c("DDR2"), pt.size = 0.3)
+```
+
+```{r, fig.width=6.5, fig.height=5}
+VlnPlot(iPS_integrated, c("DDR2"), group.by = "cell_type") + NoLegend() + theme(axis.title.x = element_blank())
+```
+
+```{r}
+Idents(iPS_integrated) <- factor(iPS_integrated$cell_type, levels = rev(levels(iPS_integrated$cell_type)))
+```
+
+```{r, fig.height=4, fig.width=8}
+genes_oi <- c("PLN", "ATP2A2", "SCN5A", "CACNA1C", "KCNQ1", "KCNH2", "KCNE1", "GJA1", "HCN4", "TNNT2", "TNNI3", "ACTN2", "TTN", "LDB3")
+DotPlot(iPS_integrated, features = genes_oi, dot.scale = 5) +
+  RotatedAxis() +
+  theme(axis.title = element_blank(), axis.text.x = element_text(size = 14), axis.text.y = element_text(size = 15), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
+                           "inches"))  
+```
+
+```{r, fig.height=4, fig.width=6}
+genes_oi <- c("DDR2", "PDGFRA")
+DotPlot(iPS_integrated, features = genes_oi, dot.scale = 5) +
+  RotatedAxis() +
+  theme(axis.title = element_blank(), axis.text.x = element_text(size = 14), axis.text.y = element_text(size = 15), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
+                           "inches"))  
+```
+
+```{r, fig.height=4, fig.width=8}
+genes_oi <- c("COL1A1", "COL1A2", "COL3A1", "POSTN", "DCN", "HAPLN1", "OGN", "MMP2", "MMP9", "TIMP1", "TGFB1", "ACTA2")
+DotPlot(iPS_integrated, features = genes_oi, dot.scale = 5) +
+  RotatedAxis() +
+  theme(axis.title = element_blank(), axis.text.x = element_text(size = 14), axis.text.y = element_text(size = 15), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
+                           "inches"))  
+```
+
+```{r, fig.height=4, fig.width=6}
+genes_oi <- c("DAG1", "SNTB1", "SNTB2", "NOS1")
+
+DotPlot(iPS_integrated, features = genes_oi, dot.scale = 5) +
+  RotatedAxis() +
+  theme(axis.title = element_blank(), axis.text.x = element_text(size = 14), axis.text.y = element_text(size = 15), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
+                           "inches"))  
+```
+
+```{r, fig.height=4, fig.width=8}
+genes_oi <- c("CASP3", "CASP8", "BAX", "BCL2", "TP53", "NFKB1", "IL6", "TNF", "IL1B", "HIF1A", "CDKN1A", "CDKN2A", "SLC8A1")
+
+
+DotPlot(iPS_integrated, features = genes_oi, dot.scale = 5) +
+  RotatedAxis() +
+  theme(axis.title = element_blank(), axis.text.x = element_text(size = 14), axis.text.y = element_text(size = 15), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
+                           "inches"))  
+```
+
+```{r, fig.height=4, fig.width=8}
+genes_oi <- c("CISD1", "FTH1", "FTL", "TFRC", "SLC40A1", "HAMP", "HMOX1", "NFE2L2", "GPX4", "SOD2", "ALOX5", "ACSL4", "PTGS2")
+
+
+DotPlot(iPS_integrated, features = genes_oi, dot.scale = 5) +
+  RotatedAxis() +
+  theme(axis.title = element_blank(), axis.text.x = element_text(size = 14), axis.text.y = element_text(size = 15), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
+                           "inches"))  
+```
