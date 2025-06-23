@@ -517,29 +517,17 @@ GO_down <- simplify(
 ```
 
 ```{r, fig.height=4, fig.width=6}
+p[[1]][["layers"]][[2]][["geom"]][["default_aes"]][["alpha"]] <- 1
 dotplot(GO_up, showCategory = 10, title = paste0("Upregulated genes"), label_format = 20, font.size = 15) +
   theme(plot.title = element_text(size = 18, hjust = 0.5, face = "bold"),
         axis.text.x = element_text(size = 10))
 ```
 
 ```{r, fig.height=4, fig.width=6}
+p[[1]][["layers"]][[2]][["geom"]][["default_aes"]][["alpha"]] <- 1
 dotplot(GO_down, showCategory = 10, title = paste0("Downregulated genes"), label_format = 20, font.size = 15) +
   theme(plot.title = element_text(size = 18, hjust = 0.5, face = "bold"),
         axis.text.x = element_text(size = 10))
-```
-
-```{r, fig.height=7, fig.width=7}
-
-p1 <- dotplot(GO_up, showCategory = 10, title = paste0("Upregulated genes"), label_format = 27, font.size = 15) +
-  theme(plot.title = element_text( face = "bold", size = 18, hjust = 0.5),
-        axis.text.y = element_text(face = "bold"),
-        axis.text.x = element_text(size = 10))
-p2 <- dotplot(GO_down, showCategory = 10, title = paste0("Downregulated genes"), label_format = 27, font.size = 15) +
-  theme(plot.title = element_text( face = "bold", size = 18, hjust = 0.5),
-        axis.text.y = element_text(face = "bold"),
-        axis.text.x = element_text(size = 10))
-p[[1]][["layers"]][[2]][["geom"]][["default_aes"]][["alpha"]] <- 1
-print(p1 / p2)
 ```
 
 ```{r, fig.height=3, fig.width=9}
