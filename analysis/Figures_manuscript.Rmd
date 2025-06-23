@@ -1,0 +1,549 @@
+---
+title: "Figures for manuscript 19-06-2025"
+author: "GinoBonazza (ginoandrea.bonazza@usz.ch)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r knitr config, include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  dpi = 300,
+  fig.align = "center"
+)
+```
+
+## Setup
+
+```{r setup, class.source = "fold-hide"}
+# Get current file name to make folder
+current_file <- "Figures_manuscript"
+
+# Load libraries
+library(here)
+library(readr)
+library(readxl)
+library(xlsx)
+library(Seurat)
+library(DropletUtils)
+library(Matrix)
+library(scDblFinder)
+library(scCustomize)
+library(dplyr)
+library(ggplot2)
+library(magrittr)
+library(tidyverse)
+library(reshape2)
+library(S4Vectors)
+library(SingleCellExperiment)
+library(pheatmap)
+library(png)
+library(gridExtra)
+library(knitr)
+library(scales)
+library(RColorBrewer)
+library(scater)
+library(patchwork)
+library(limma)
+library(gridExtra)
+library(knitr)
+library(scales)
+library(clusterProfiler)
+library(org.Hs.eg.db)
+library(AnnotationHub)
+library(ReactomePA)
+library(EnhancedVolcano)
+library(RColorBrewer)
+library(Matrix.utils)
+library(DESeq2)
+library(tibble)
+library(speckle)
+library(limma)
+library(ggplot2)
+library(scater)
+library(patchwork)
+library(statmod)
+library(edgeR)
+library(dplyr)
+library(ggplot2)
+
+#Output paths
+output_dir_data <- here::here("output", current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data)
+
+if (!dir.exists(here::here("docs", "figure"))) dir.create(here::here("docs", "figure"))
+
+output_dir_figs <- here::here("docs", "figure", paste0(current_file, ".Rmd"))
+if (!dir.exists(output_dir_figs)) dir.create(output_dir_figs)
+```
+
+```{r Load dataset}
+iPS_integrated <- readRDS(here::here("output", "QC_integration_annotation", "iPS_integrated.rds"))
+```
+
+```{r}
+iPS_integrated <- subset(iPS_integrated, Cell_line %in% c("JD6", "JDR"))
+iPS_integrated$Condition <- recode(iPS_integrated$Condition, Ctr = "CTRL")
+```
+
+```{r}
+iPS_integrated$cell_type <- factor(iPS_integrated$cell_type, levels = c("Atrial Cardiomyocytes", 
+                                                                        "Ventricular Cardiomyocytes",
+                                                                        "Unspecified cells",
+                                                                        "Fibroblasts",
+                                                                        "Progenitor cells",
+                                                                        "Endothelial cells"))
+iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 %in% c("2"), "cell_type"] = "Unspecified cells"
+table(iPS_integrated$cell_type)
+```
+
+```{r}
+cell_type_cols <- c("#1F78B4", "#d05050", "#FF7F00", "#33A02C", "#8ED0F9", "#6A3D8F")  
+
+#sample_cols <- DiscretePalette_scCustomize(num_colors = 25, palette = "alphabet", shuffle_pal = TRUE, seed = 220510)
+#batch_cols <- DiscretePalette_scCustomize(num_colors = 8, palette = "alphabet", shuffle_pal = TRUE, seed = 220510)
+#cluster_cols <- DiscretePalette_scCustomize(num_colors = 14, palette = "alphabet", shuffle_pal = TRUE, seed = 220510)
+```
+
+```{r, fig.height=4, fig.width=16}
+p1  <- DimPlot(
+  subset(iPS_integrated, (Condition=="CTRL" & Cell_line == "JDR")),
+  group.by  = "cell_type",
+  reduction = "umap",
+  cols      = cell_type_cols,       
+  label     = FALSE,
+  shuffle=T,
+  pt.size = 0.5
+) +
+  labs(title = "CTRL") +
+  NoLegend() +
+  theme(axis.text  = element_text(size = 9),
+        axis.title = element_text(size = 12),
+        plot.title = element_text(size = 15))
+
+p2  <- DimPlot(
+  subset(iPS_integrated, (Condition=="DMD" & Cell_line == "JDR")),
+  group.by  = "cell_type",
+  reduction = "umap",
+  cols      = cell_type_cols,       
+  label     = FALSE,
+  shuffle=T,
+  pt.size = 0.5
+) +
+  labs(title = "DMD") +
+  NoLegend() +
+  theme(axis.text  = element_text(size = 9),
+        axis.title = element_text(size = 12),
+        plot.title = element_text(size = 15))
+
+p3  <- DimPlot(
+  subset(iPS_integrated, (Condition=="CTRL" & Cell_line == "JD6")),
+  group.by  = "cell_type",
+  reduction = "umap",
+  cols      = cell_type_cols,       
+  label     = FALSE,
+  shuffle=T,
+  pt.size = 0.5
+) +
+  labs(title = "CTRL") +
+  NoLegend() +
+  theme(axis.text  = element_text(size = 9),
+        axis.title = element_text(size = 12),
+        plot.title = element_text(size = 15))
+
+p4  <- DimPlot(
+  subset(iPS_integrated, (Condition=="DMD" & Cell_line == "JD6")),
+  group.by  = "cell_type",
+  reduction = "umap",
+  cols      = cell_type_cols,       
+  label     = FALSE,
+  shuffle=T,
+  pt.size = 0.5
+) +
+  labs(title = "DMD") +
+  NoLegend() +
+  theme(axis.text  = element_text(size = 9),
+        axis.title = element_text(size = 12),
+        plot.title = element_text(size = 15))
+p1|p2|p3|p4
+```
+
+```{r, fig.height=3, fig.width=6}
+p1|p2
+```
+```{r, fig.height=3, fig.width=6}
+p3|p4
+```
+
+```{r , fig.height=6, fig.width=7, message=FALSE}
+props <- getTransformedProps(iPS_integrated$cell_type, iPS_integrated$Condition, transform="logit")
+
+par(mar = c(8, 5, 1, 20), xpd = TRUE)
+barplot(props$Proportions, legend = FALSE, ylab = "Proportions", col = cell_type_cols, 
+        cex.names = 1.6, las = 2, font.lab = 2, font.axis = 2, cex.axis = 1, cex.lab = 1.6)
+legend("topright", inset = c(-2, 0.13), legend = rownames(props$Proportions), fill = cell_type_cols, bty = "n", cex = 1.6)
+```
+
+```{r , fig.height=6, fig.width=7, message=FALSE}
+props <- getTransformedProps(iPS_integrated$cell_type,
+                             iPS_integrated$Condition,
+                             transform = "logit")
+
+par(mar = c(8, 5, 1, 20), xpd = TRUE)        # big bottom margin for angled labels
+
+## 1) draw the bars and *save the midpoints* returned by barplot()
+bp <- barplot(props$Proportions,
+              names.arg = rep("", ncol(props$Proportions)),  # no x-labels yet
+              legend  = FALSE,
+              ylab    = "Proportions",
+              col     = cell_type_cols,
+              cex.names = 1.6, las = 2,
+              font.lab = 2, font.axis = 2,
+              cex.axis = 1, cex.lab = 1.6)
+
+## 2) add the 45° labels
+lbls <- colnames(props$Proportions)          # or rownames, whichever you need
+text(x   = bp,                               # bar midpoints
+     y   = par("usr")[3] - 0.02,             # a bit below the x-axis
+     lbls,
+     srt = 45,                               # rotate 45 degrees
+     adj = 1,                                # right-justify relative to point
+     xpd = TRUE,                             # allow drawing in the margin
+     cex = 1.6, font = 2)
+
+## legend as before
+legend("topright", inset = c(-2, 0.13),
+       legend = rownames(props$Proportions),
+       fill   = cell_type_cols,
+       bty    = "n",
+       cex    = 1.6)
+```
+
+```{r}
+DefaultAssay(iPS_integrated) <- "SCT"
+Idents(iPS_integrated) <- "cell_type"
+Markers <- FindAllMarkers(iPS_integrated, only.pos = TRUE, min.pct = 0.5, logfc.threshold = 0.5, recorrect_umi=F)
+write.csv(Markers, here::here(output_dir_data, "iPS_Markers_all_cell_type.csv"))
+Markers_top10 <- as.data.frame(Markers %>% group_by(cluster) %>% top_n(n = 10, wt = avg_log2FC))
+write.csv(Markers_top10, here::here(output_dir_data, "iPS_Markers_top10_cell_type.csv"))
+Markers_top3 <- as.data.frame(Markers %>% group_by(cluster) %>% top_n(n = 3, wt = avg_log2FC))
+write.csv(Markers_top3, here::here(output_dir_data, "iPS_Markers_top3_cell_type.csv"))
+```
+
+```{r, fig.width=8.5, fig.height=5}
+Markers_top5 <- as.data.frame(Markers %>% group_by(cluster) %>% top_n(n = 5, wt = avg_log2FC))
+Idents(iPS_integrated) <- factor(iPS_integrated$cell_type, levels = rev(levels(iPS_integrated$cell_type)))
+library(stringr)     # for str_wrap
+# or use scales::label_wrap_gen(), same idea
+
+wrap_2lines <- function(x) str_wrap(x, width = 15)   # tweak width to taste
+
+DotPlot_scCustom(
+    subset(iPS_integrated, Condition == "CTRL"),
+    assay     = "SCT",
+    features  = Markers_top5$gene,
+    dot.scale = 5
+) +
+  RotatedAxis() +
+  guides(
+    size  = guide_legend(title = "Percent\nExpressed"),
+    colour = guide_colourbar(title = "Average\nExpression")
+  ) + 
+  scale_y_discrete(labels = wrap_2lines) +   # <<< wraps the y-axis text
+  theme(
+    axis.title  = element_blank(),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 15),
+    legend.text = element_text(size = 9),
+    legend.title = element_text(size = 11),
+    plot.margin = unit(c(0, 0, 0, 0.1), "inches"),
+    plot.title  = element_text(hjust = 0.5, face = "bold", size = 20)
+  ) +
+  ggtitle("CTRL")
+```
+
+```{r, fig.width=8.5, fig.height=5}
+Markers_top5 <- as.data.frame(Markers %>% group_by(cluster) %>% top_n(n = 5, wt = avg_log2FC))
+Idents(iPS_integrated) <- factor(iPS_integrated$cell_type, levels = rev(levels(iPS_integrated$cell_type)))
+library(stringr)     # for str_wrap
+# or use scales::label_wrap_gen(), same idea
+
+wrap_2lines <- function(x) str_wrap(x, width = 15)   # tweak width to taste
+
+DotPlot_scCustom(
+    subset(iPS_integrated, Condition == "DMD"),
+    assay     = "SCT",
+    features  = Markers_top5$gene,
+    dot.scale = 5
+) +
+  RotatedAxis() +
+  guides(
+    size  = guide_legend(title = "Percent\nExpressed"),
+    colour = guide_colourbar(title = "Average\nExpression")
+  ) + 
+  scale_y_discrete(labels = wrap_2lines) +   # <<< wraps the y-axis text
+  theme(
+    axis.title  = element_blank(),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 15),
+    legend.text = element_text(size = 9),
+    legend.title = element_text(size = 11),
+    plot.margin = unit(c(0, 0, 0, 0.1), "inches"),
+    plot.title  = element_text(hjust = 0.5, face = "bold", size = 20)
+  ) +
+  ggtitle("DMD")
+```
+
+```{r, fig.width=10, fig.height=5}
+Markers_top5 <- as.data.frame(Markers %>% group_by(cluster) %>% top_n(n = 5, wt = avg_log2FC))
+Idents(iPS_integrated) <- factor(iPS_integrated$cell_type, levels = rev(levels(iPS_integrated$cell_type)))
+DotPlot_scCustom(subset(iPS_integrated, Condition == "DMD"), assay = "SCT", features = Markers_top5$gene, dot.scale = 5) +
+  RotatedAxis() +
+  theme(axis.title = element_blank(), axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 14), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
+                           "inches")) + ggtitle("DMD") + 
+  theme(plot.title = element_text(hjust = 0.5,      
+                                  face = "bold",     
+                                  size = 20))
+```
+
+```{r, fig.width=10, fig.height=5}
+Markers_top5 <- as.data.frame(Markers %>% group_by(cluster) %>% top_n(n = 5, wt = avg_log2FC))
+Idents(iPS_integrated) <- factor(iPS_integrated$cell_type, levels = rev(levels(iPS_integrated$cell_type)))
+DotPlot_scCustom(subset(iPS_integrated, Condition == "CTRL"), assay = "SCT", features = Markers_top5$gene, dot.scale = 5) +
+  RotatedAxis() +
+  theme(axis.title = element_blank(), axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 14), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
+                           "inches")) + ggtitle("CTRL") + 
+  theme(plot.title = element_text(hjust = 0.5,      
+                                  face = "bold",     
+                                  size = 20))
+```
+
+```{r}
+table(iPS_integrated$cell_type)
+CM <- subset(iPS_integrated, subset = cell_type %in% c("Atrial Cardiomyocytes", "Ventricular Cardiomyocytes"))
+table(CM$cell_type)
+Idents(CM) <- CM$Condition
+DefaultAssay(CM) <- "RNA"
+CM <- NormalizeData(CM)
+CM <- ScaleData(CM)
+```
+
+
+```{r, eval=FALSE}
+DE_JDR <- FindMarkers(subset(CM, subset = Cell_line == "JDR"), test.use = "MAST", ident.1 = "DMD", ident.2 = "CTRL", min.pct = 0.05, logfc.threshold = 0.1, assay = "RNA")
+DE_JDR$gene <- rownames(DE_JDR)
+write.csv(DE_JDR, file = here::here(output_dir_data, "DE_JDR.csv"), quote=F, row.names = F)
+
+
+DE_JD6 <- FindMarkers(subset(CM, subset = Cell_line == "JD6"), test.use = "MAST", ident.1 = "DMD", ident.2 = "CTRL", min.pct = 0.05, logfc.threshold = 0.1, assay = "RNA")
+DE_JD6$gene <- rownames(DE_JD6)
+write.csv(DE_JD6, file = here::here(output_dir_data, "DE_JD6.csv"), quote=F, row.names = F)
+```
+
+```{r}
+DE_JDR <- read.csv(file = here::here(output_dir_data, "DE_JDR.csv"))
+DE_JD6 <- read.csv(file = here::here(output_dir_data, "DE_JD6.csv"))
+```
+
+```{r}
+signif_JDR <- filter(DE_JDR, abs(avg_log2FC) > 0.5 & p_val_adj < 0.05)
+
+nrow(filter(signif_JDR, avg_log2FC > 0.25))
+nrow(filter(signif_JDR, avg_log2FC < -0.25))
+
+signif_JD6 <- filter(DE_JD6, abs(avg_log2FC) > 0.5 & p_val_adj < 0.05)
+
+nrow(filter(signif_JD6, avg_log2FC > 0.25))
+nrow(filter(signif_JD6, avg_log2FC < -0.25))
+
+common_up <- Reduce(intersect, list(filter(signif_JDR, avg_log2FC > 0.25)$gene,
+                                    filter(signif_JD6, avg_log2FC > 0.25)$gene))
+
+common_down <- Reduce(intersect, list(filter(signif_JDR, avg_log2FC < -0.25)$gene,
+                                      filter(signif_JD6, avg_log2FC < -0.25)$gene))
+
+common_genes <- union(common_up, common_down)
+
+common_FC <- data.frame(
+  gene = common_genes,
+  avg_logFC_JDR = signif_JDR %>%
+    filter(gene %in% common_genes) %>%
+    arrange(gene) %>%
+    pull(avg_log2FC),
+  avg_logFC_JD6 = signif_JD6 %>%
+    filter(gene %in% common_genes) %>%
+    arrange(gene) %>%
+    pull(avg_log2FC)
+) %>%
+  arrange(avg_logFC_JDR)
+```
+
+```{r, fig.height=5, fig.width=5.5}
+keyvals <- rep("grey", nrow(DE_JDR))
+  names(keyvals) <- rep("Not significant", nrow(DE_JDR))
+  keyvals[DE_JDR$avg_log2FC > 0.25 & DE_JDR$p_val_adj < 0.01] <- "#A63A2A"
+  names(keyvals)[keyvals == "#A63A2A"] <- "Increased"
+  keyvals[DE_JDR$avg_log2FC < -0.25 & DE_JDR$p_val_adj < 0.01] <- "#004C8C"
+  names(keyvals)[keyvals == "#004C8C"] <- "Decreased"
+  
+volcano_1 <- EnhancedVolcano(DE_JDR,
+                  lab = DE_JDR$gene,
+                  x = "avg_log2FC",
+                  y = "p_val_adj",
+                  labSize = 0,
+                  titleLabSize = 22,
+                  subtitleLabSize = 14,
+                  axisLabSize = 15,
+                  captionLabSize = 9,
+                  pointSize = 1.2,
+                  FCcutoff = 0.25,
+                  pCutoff  = 0.05,
+                  colCustom = keyvals,
+                  colAlpha = 1,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
+                  subtitle = NULL,
+                  title = "Cardiomyocytes Line 1"
+  ) + theme(legend.position = "none")
+
+keyvals <- rep("grey", nrow(DE_JD6))
+  names(keyvals) <- rep("Not significant", nrow(DE_JD6))
+  keyvals[DE_JD6$avg_log2FC > 0.25 & DE_JD6$p_val_adj < 0.01] <- "#A63A2A"
+  names(keyvals)[keyvals == "#A63A2A"] <- "Increased"
+  keyvals[DE_JD6$avg_log2FC < -0.25 & DE_JD6$p_val_adj < 0.01] <- "#004C8C"
+  names(keyvals)[keyvals == "#004C8C"] <- "Decreased"
+  
+volcano_2 <- EnhancedVolcano(DE_JD6,
+                  lab = DE_JD6$gene,
+                  x = "avg_log2FC",
+                  y = "p_val_adj",
+                  labSize = 0,
+                  titleLabSize = 22,
+                  subtitleLabSize = 14,
+                  axisLabSize = 15,
+                  captionLabSize = 9,
+                  pointSize = 1.2,
+                  FCcutoff = 0.25,
+                  pCutoff  = 0.05,
+                  colCustom = keyvals,
+                  colAlpha = 1,
+                  drawConnectors = FALSE,
+                  boxedLabels = FALSE,
+                  subtitle = NULL,
+                  maxoverlapsConnectors = 15,
+                  max.overlaps = 15,
+                  title = "Cardiomyocytes Line 2"
+  ) + theme(legend.position = "none")
+```
+
+```{r, fig.height=5.5, fig.width=9}
+volcano_1|volcano_2
+```
+
+```{r}
+Idents(CM) <- factor(
+  CM$Sample,
+  levels = c("JDR_Ctr", "JD6_Ctr", "JDR_DMD", "JD6_DMD")
+)
+heatmap_cols <- colorRampPalette(RColorBrewer::brewer.pal(9,"RdBu"))(256)
+heatmap_cols <- rev(heatmap_cols[1:256])
+```
+
+```{r, fig.height=7, fig.width=11}
+DoHeatmap(CM, features = common_genes,
+          draw.lines = F,
+          size = 7) +
+  scale_fill_gradientn(colours = heatmap_cols) + 
+  theme(text = element_text(size = 17, colour = "black"), 
+        axis.text.y = element_text(size = 17, colour = "black"),
+        plot.margin = margin(t = 20, r = 5, b = 5, l = 5, unit = "pt"))
+```
+
+```{r, fig.width=8, fig.height=6}
+p <- VlnPlot(subset(CM, Cell_line %in% c("JDR", "JD6")), features = common_up, group.by = "Condition", ncol = 4, pt.size = 0.01)
+p[[1]][["layers"]][[2]][["geom"]][["default_aes"]][["alpha"]] <- 0.2
+p <- p & theme(axis.title.x = element_blank())
+print(p)
+```
+
+```{r, fig.width=8, fig.height=9}
+p <- VlnPlot(subset(CM, Cell_line %in% c("JDR", "JD6")), features = common_down, group.by = "Condition", ncol = 4, pt.size = 0.01)
+p[[1]][["layers"]][[2]][["geom"]][["default_aes"]][["alpha"]] <- 0.2
+p <- p & theme(axis.title.x = element_blank())
+print(p)
+```
+
+```{r}
+up_genes <- bitr(common_up, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Hs.eg.db")$ENTREZID
+down_genes <- bitr(common_down, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Hs.eg.db")$ENTREZID
+
+# Calculate gene counts across cells
+gene_counts <- rowSums(subset(CM, Cell_line %in% c("JDR", "JD6"))@assays$RNA@counts > 0)
+
+# Filter genes to include only those expressed in at least 3 cells
+universe_genes <- names(gene_counts[gene_counts >= 3])
+
+# Convert universe gene symbols to Entrez IDs
+universe_entrez <- bitr(universe_genes, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = org.Hs.eg.db)$ENTREZID
+```
+
+```{r}
+GO_up <- enrichGO(up_genes, OrgDb = "org.Hs.eg.db", universe = universe_entrez, ont = "all", readable = TRUE)
+GO_up <- gsfilter(GO_up, by = 'Count', min = 3)
+GO_up <- simplify(
+  GO_up,
+  cutoff = 0.7,
+  by = "pvalue",
+  select_fun = min,
+  measure = "Wang",
+  semData = NULL
+)
+
+GO_down <- enrichGO(down_genes, OrgDb = "org.Hs.eg.db", universe = universe_entrez, ont = "all", readable = TRUE)
+GO_down <- gsfilter(GO_down, by = 'Count', min = 3)
+GO_down <- simplify(
+  GO_down,
+  cutoff = 0.7,
+  by = "pvalue",
+  select_fun = min,
+  measure = "Wang",
+  semData = NULL
+)
+
+```
+
+```{r, fig.height=4, fig.width=6}
+dotplot(GO_up, showCategory = 10, title = paste0("Upregulated genes"), label_format = 20, font.size = 15) +
+  theme(plot.title = element_text(size = 18, hjust = 0.5, face = "bold"),
+        axis.text.x = element_text(size = 10))
+```
+
+```{r, fig.height=4, fig.width=6}
+dotplot(GO_down, showCategory = 10, title = paste0("Downregulated genes"), label_format = 20, font.size = 15) +
+  theme(plot.title = element_text(size = 18, hjust = 0.5, face = "bold"),
+        axis.text.x = element_text(size = 10))
+```
+
+```{r, fig.height=7, fig.width=7}
+
+p1 <- dotplot(GO_up, showCategory = 10, title = paste0("Upregulated genes"), label_format = 27, font.size = 15) +
+  theme(plot.title = element_text( face = "bold", size = 18, hjust = 0.5),
+        axis.text.y = element_text(face = "bold"),
+        axis.text.x = element_text(size = 10))
+p2 <- dotplot(GO_down, showCategory = 10, title = paste0("Downregulated genes"), label_format = 27, font.size = 15) +
+  theme(plot.title = element_text( face = "bold", size = 18, hjust = 0.5),
+        axis.text.y = element_text(face = "bold"),
+        axis.text.x = element_text(size = 10))
+p[[1]][["layers"]][[2]][["geom"]][["default_aes"]][["alpha"]] <- 1
+print(p1 / p2)
+```
+
+```{r, fig.height=3, fig.width=9}
+p1 <- cnetplot(GO_up, cex_label_category = 0.7, cex_label_gene = 0.8, showCategory = 10)
+p2 <- cnetplot(GO_down, cex_label_category = 0.7, cex_label_gene = 0.8, showCategory = 10)
+print(p1 + p2)
+```
