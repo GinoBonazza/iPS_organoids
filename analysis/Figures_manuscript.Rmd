@@ -109,6 +109,26 @@ cell_type_cols <- c("#1F78B4", "#d05050", "#FF7F00", "#33A02C", "#8ED0F9", "#6A3
 #cluster_cols <- DiscretePalette_scCustomize(num_colors = 14, palette = "alphabet", shuffle_pal = TRUE, seed = 220510)
 ```
 
+```{r}
+iPS_integrated@meta.data[iPS_integrated@meta.data$Sample %in% c("JDR_Ctr"), "Sample2"] = "CTRL1"
+iPS_integrated@meta.data[iPS_integrated@meta.data$Sample %in% c("JDR_DMD"), "Sample2"] = "DMD1"
+iPS_integrated@meta.data[iPS_integrated@meta.data$Sample %in% c("JD6_Ctr"), "Sample2"] = "CTRL2"
+iPS_integrated@meta.data[iPS_integrated@meta.data$Sample %in% c("JD6_DMD"), "Sample2"] = "DMD2"
+iPS_integrated$Sample2 <- factor(iPS_integrated$Sample2, levels = c("CTRL1", 
+                                                                        "CTRL2",
+                                                                        "DMD1",
+                                                                        "DMD2"))
+```
+
+```{r , fig.height=6, fig.width=7, message=FALSE}
+props <- getTransformedProps(iPS_integrated$Phase, iPS_integrated$Sample2, transform="logit")
+
+par(mar = c(8, 5, 1, 15), xpd = TRUE)
+barplot(props$Proportions, legend = FALSE, ylab = "Proportions", col = cell_type_cols, 
+        cex.names = 1.6, las = 2, font.lab = 2, font.axis = 2, cex.axis = 1, cex.lab = 1.6, width = 3)
+legend("topright", inset = c(-0.5, 0.3), legend = rownames(props$Proportions), fill = cell_type_cols, bty = "n", cex = 1.6)
+```
+
 ```{r, fig.height=4, fig.width=16}
 p1  <- DimPlot(
   subset(iPS_integrated, (Condition=="CTRL" & Cell_line == "JDR")),
@@ -352,19 +372,19 @@ DE_JD6 <- read.csv(file = here::here(output_dir_data, "DE_JD6.csv"))
 ```{r}
 signif_JDR <- filter(DE_JDR, abs(avg_log2FC) > 0.5 & p_val_adj < 0.05)
 
-nrow(filter(signif_JDR, avg_log2FC > 0.25))
-nrow(filter(signif_JDR, avg_log2FC < -0.25))
+nrow(filter(signif_JDR, avg_log2FC > 0.5))
+nrow(filter(signif_JDR, avg_log2FC < -0.5))
 
 signif_JD6 <- filter(DE_JD6, abs(avg_log2FC) > 0.5 & p_val_adj < 0.05)
 
-nrow(filter(signif_JD6, avg_log2FC > 0.25))
-nrow(filter(signif_JD6, avg_log2FC < -0.25))
+nrow(filter(signif_JD6, avg_log2FC > 0.5))
+nrow(filter(signif_JD6, avg_log2FC < -0.5))
 
-common_up <- Reduce(intersect, list(filter(signif_JDR, avg_log2FC > 0.25)$gene,
-                                    filter(signif_JD6, avg_log2FC > 0.25)$gene))
+common_up <- Reduce(intersect, list(filter(signif_JDR, avg_log2FC > 0.5)$gene,
+                                    filter(signif_JD6, avg_log2FC > 0.5)$gene))
 
-common_down <- Reduce(intersect, list(filter(signif_JDR, avg_log2FC < -0.25)$gene,
-                                      filter(signif_JD6, avg_log2FC < -0.25)$gene))
+common_down <- Reduce(intersect, list(filter(signif_JDR, avg_log2FC < -0.5)$gene,
+                                      filter(signif_JD6, avg_log2FC < -0.5)$gene))
 
 common_genes <- union(common_up, common_down)
 
@@ -385,9 +405,9 @@ common_FC <- data.frame(
 ```{r, fig.height=5, fig.width=5.5}
 keyvals <- rep("grey", nrow(DE_JDR))
   names(keyvals) <- rep("Not significant", nrow(DE_JDR))
-  keyvals[DE_JDR$avg_log2FC > 0.25 & DE_JDR$p_val_adj < 0.01] <- "#A63A2A"
+  keyvals[DE_JDR$avg_log2FC > 0.5 & DE_JDR$p_val_adj < 0.01] <- "#A63A2A"
   names(keyvals)[keyvals == "#A63A2A"] <- "Increased"
-  keyvals[DE_JDR$avg_log2FC < -0.25 & DE_JDR$p_val_adj < 0.01] <- "#004C8C"
+  keyvals[DE_JDR$avg_log2FC < -0.5 & DE_JDR$p_val_adj < 0.01] <- "#004C8C"
   names(keyvals)[keyvals == "#004C8C"] <- "Decreased"
   
 volcano_1 <- EnhancedVolcano(DE_JDR,
@@ -398,9 +418,9 @@ volcano_1 <- EnhancedVolcano(DE_JDR,
                   titleLabSize = 22,
                   subtitleLabSize = 14,
                   axisLabSize = 15,
-                  captionLabSize = 9,
+                  captionLabSize = 0,
                   pointSize = 1.2,
-                  FCcutoff = 0.25,
+                  FCcutoff = 0.5,
                   pCutoff  = 0.05,
                   colCustom = keyvals,
                   colAlpha = 1,
@@ -412,9 +432,9 @@ volcano_1 <- EnhancedVolcano(DE_JDR,
 
 keyvals <- rep("grey", nrow(DE_JD6))
   names(keyvals) <- rep("Not significant", nrow(DE_JD6))
-  keyvals[DE_JD6$avg_log2FC > 0.25 & DE_JD6$p_val_adj < 0.01] <- "#A63A2A"
+  keyvals[DE_JD6$avg_log2FC > 0.5 & DE_JD6$p_val_adj < 0.01] <- "#A63A2A"
   names(keyvals)[keyvals == "#A63A2A"] <- "Increased"
-  keyvals[DE_JD6$avg_log2FC < -0.25 & DE_JD6$p_val_adj < 0.01] <- "#004C8C"
+  keyvals[DE_JD6$avg_log2FC < -0.5 & DE_JD6$p_val_adj < 0.01] <- "#004C8C"
   names(keyvals)[keyvals == "#004C8C"] <- "Decreased"
   
 volcano_2 <- EnhancedVolcano(DE_JD6,
@@ -425,9 +445,9 @@ volcano_2 <- EnhancedVolcano(DE_JD6,
                   titleLabSize = 22,
                   subtitleLabSize = 14,
                   axisLabSize = 15,
-                  captionLabSize = 9,
+                  captionLabSize = 0,
                   pointSize = 1.2,
-                  FCcutoff = 0.25,
+                  FCcutoff = 0.5,
                   pCutoff  = 0.05,
                   colCustom = keyvals,
                   colAlpha = 1,
