@@ -388,7 +388,7 @@ div.tocify {
 <h4 class="author">GinoBonazza (<a
 href="mailto:ginoandrea.bonazza@usz.ch"
 class="email">ginoandrea.bonazza@usz.ch</a>)</h4>
-<h4 class="date">23 June, 2025</h4>
+<h4 class="date">08 July, 2025</h4>
 
 </div>
 
@@ -417,7 +417,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2025-06-23
+<strong>Last updated:</strong> 2025-07-08
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -548,15 +548,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstreef9ba090b232ae4b4744f4077678705401c59cebatargetblankf9ba090a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstreed8788d013264248a13efcc7e56e738fea65ebe16targetblankd8788d0a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/GinoBonazza/iPS_organoids/tree/f9ba090b232ae4b4744f4077678705401c59ceba" target="_blank">f9ba090</a>
+<a href="https://github.com/GinoBonazza/iPS_organoids/tree/d8788d013264248a13efcc7e56e738fea65ebe16" target="_blank">d8788d0</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstreef9ba090b232ae4b4744f4077678705401c59cebatargetblankf9ba090a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomGinoBonazzaiPSorganoidstreed8788d013264248a13efcc7e56e738fea65ebe16targetblankd8788d0a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -566,7 +566,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/GinoBonazza/iPS_organoids/tree/f9ba090b232ae4b4744f4077678705401c59ceba" target="_blank">f9ba090</a>.
+<a href="https://github.com/GinoBonazza/iPS_organoids/tree/d8788d013264248a13efcc7e56e738fea65ebe16" target="_blank">d8788d0</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -657,6 +657,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/d8788d013264248a13efcc7e56e738fea65ebe16/analysis/Figures_manuscript.Rmd" target="_blank">d8788d0</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2025-07-08
+</td>
+<td>
+wflow_publish("analysis/Figures_manuscript.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/GinoBonazza/iPS_organoids/e2b39e6ae0f0d3c0ddb5396ff11b315b363af407/docs/Figures_manuscript.html" target="_blank">e2b39e6</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2025-06-23
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -799,6 +833,58 @@ table(iPS_integrated$cell_type)</code></pre>
 #sample_cols &lt;- DiscretePalette_scCustomize(num_colors = 25, palette = &quot;alphabet&quot;, shuffle_pal = TRUE, seed = 220510)
 #batch_cols &lt;- DiscretePalette_scCustomize(num_colors = 8, palette = &quot;alphabet&quot;, shuffle_pal = TRUE, seed = 220510)
 #cluster_cols &lt;- DiscretePalette_scCustomize(num_colors = 14, palette = &quot;alphabet&quot;, shuffle_pal = TRUE, seed = 220510)</code></pre>
+<pre class="r"><code>iPS_integrated@meta.data[iPS_integrated@meta.data$Sample %in% c(&quot;JDR_Ctr&quot;), &quot;Sample2&quot;] = &quot;CTRL1&quot;
+iPS_integrated@meta.data[iPS_integrated@meta.data$Sample %in% c(&quot;JDR_DMD&quot;), &quot;Sample2&quot;] = &quot;DMD1&quot;
+iPS_integrated@meta.data[iPS_integrated@meta.data$Sample %in% c(&quot;JD6_Ctr&quot;), &quot;Sample2&quot;] = &quot;CTRL2&quot;
+iPS_integrated@meta.data[iPS_integrated@meta.data$Sample %in% c(&quot;JD6_DMD&quot;), &quot;Sample2&quot;] = &quot;DMD2&quot;
+iPS_integrated$Sample2 &lt;- factor(iPS_integrated$Sample2, levels = c(&quot;CTRL1&quot;, 
+                                                                        &quot;CTRL2&quot;,
+                                                                        &quot;DMD1&quot;,
+                                                                        &quot;DMD2&quot;))</code></pre>
+<pre class="r"><code>props &lt;- getTransformedProps(iPS_integrated$Phase, iPS_integrated$Sample2, transform=&quot;logit&quot;)
+
+par(mar = c(8, 5, 1, 15), xpd = TRUE)
+barplot(props$Proportions, legend = FALSE, ylab = &quot;Proportions&quot;, col = cell_type_cols, 
+        cex.names = 1.6, las = 2, font.lab = 2, font.axis = 2, cex.axis = 1, cex.lab = 1.6, width = 3)
+legend(&quot;topright&quot;, inset = c(-0.5, 0.3), legend = rownames(props$Proportions), fill = cell_type_cols, bty = &quot;n&quot;, cex = 1.6)</code></pre>
+<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-5-1.png" width="2100" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-1">
+Past versions of unnamed-chunk-5-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-5-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/7eda34261b87a3c3991500a2eaf39c77f8eceea3/docs/figure/Figures_manuscript.Rmd/unnamed-chunk-5-1.png" target="_blank">7eda342</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2025-06-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>p1  &lt;- DimPlot(
   subset(iPS_integrated, (Condition==&quot;CTRL&quot; &amp; Cell_line == &quot;JDR&quot;)),
   group.by  = &quot;cell_type&quot;,
@@ -859,85 +945,7 @@ p4  &lt;- DimPlot(
         axis.title = element_text(size = 12),
         plot.title = element_text(size = 15))
 p1|p2|p3|p4</code></pre>
-<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-4-1.png" width="4800" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-4-1">
-Past versions of unnamed-chunk-4-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-4-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/7eda34261b87a3c3991500a2eaf39c77f8eceea3/docs/figure/Figures_manuscript.Rmd/unnamed-chunk-4-1.png" target="_blank">7eda342</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2025-06-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>p1|p2</code></pre>
-<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-5-1.png" width="1800" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-1">
-Past versions of unnamed-chunk-5-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-5-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/7eda34261b87a3c3991500a2eaf39c77f8eceea3/docs/figure/Figures_manuscript.Rmd/unnamed-chunk-5-1.png" target="_blank">7eda342</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2025-06-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>p3|p4</code></pre>
-<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-6-1.png" width="1800" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-6-1.png" width="4800" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-1">
 Past versions of unnamed-chunk-6-1.png
@@ -975,13 +983,8 @@ GinoBonazza
 </table>
 </div>
 </div>
-<pre class="r"><code>props &lt;- getTransformedProps(iPS_integrated$cell_type, iPS_integrated$Condition, transform=&quot;logit&quot;)
-
-par(mar = c(8, 5, 1, 20), xpd = TRUE)
-barplot(props$Proportions, legend = FALSE, ylab = &quot;Proportions&quot;, col = cell_type_cols, 
-        cex.names = 1.6, las = 2, font.lab = 2, font.axis = 2, cex.axis = 1, cex.lab = 1.6)
-legend(&quot;topright&quot;, inset = c(-2, 0.13), legend = rownames(props$Proportions), fill = cell_type_cols, bty = &quot;n&quot;, cex = 1.6)</code></pre>
-<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-7-1.png" width="2100" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>p1|p2</code></pre>
+<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-7-1.png" width="1800" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-1">
 Past versions of unnamed-chunk-7-1.png
@@ -1019,6 +1022,52 @@ GinoBonazza
 </table>
 </div>
 </div>
+<pre class="r"><code>p3|p4</code></pre>
+<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-8-1.png" width="1800" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
+Past versions of unnamed-chunk-8-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/7eda34261b87a3c3991500a2eaf39c77f8eceea3/docs/figure/Figures_manuscript.Rmd/unnamed-chunk-8-1.png" target="_blank">7eda342</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2025-06-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>props &lt;- getTransformedProps(iPS_integrated$cell_type, iPS_integrated$Condition, transform=&quot;logit&quot;)
+
+par(mar = c(8, 5, 1, 20), xpd = TRUE)
+barplot(props$Proportions, legend = FALSE, ylab = &quot;Proportions&quot;, col = cell_type_cols, 
+        cex.names = 1.6, las = 2, font.lab = 2, font.axis = 2, cex.axis = 1, cex.lab = 1.6)
+legend(&quot;topright&quot;, inset = c(-2, 0.13), legend = rownames(props$Proportions), fill = cell_type_cols, bty = &quot;n&quot;, cex = 1.6)</code></pre>
+<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-9-1.png" width="2100" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>props &lt;- getTransformedProps(iPS_integrated$cell_type,
                              iPS_integrated$Condition,
                              transform = &quot;logit&quot;)
@@ -1051,13 +1100,13 @@ legend(&quot;topright&quot;, inset = c(-2, 0.13),
        fill   = cell_type_cols,
        bty    = &quot;n&quot;,
        cex    = 1.6)</code></pre>
-<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-8-1.png" width="2100" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-10-1.png" width="2100" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
-Past versions of unnamed-chunk-8-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
 </button>
 </p>
-<div id="fig-unnamed-chunk-8-1" class="collapse">
+<div id="fig-unnamed-chunk-10-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1076,7 +1125,7 @@ Date
 <tbody>
 <tr>
 <td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/7eda34261b87a3c3991500a2eaf39c77f8eceea3/docs/figure/Figures_manuscript.Rmd/unnamed-chunk-8-1.png" target="_blank">7eda342</a>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/7eda34261b87a3c3991500a2eaf39c77f8eceea3/docs/figure/Figures_manuscript.Rmd/unnamed-chunk-10-1.png" target="_blank">7eda342</a>
 </td>
 <td>
 GinoBonazza
@@ -1126,13 +1175,13 @@ DotPlot_scCustom(
     plot.title  = element_text(hjust = 0.5, face = &quot;bold&quot;, size = 20)
   ) +
   ggtitle(&quot;CTRL&quot;)</code></pre>
-<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-10-1.png" width="2550" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-12-1.png" width="2550" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
-Past versions of unnamed-chunk-10-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
+Past versions of unnamed-chunk-12-1.png
 </button>
 </p>
-<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div id="fig-unnamed-chunk-12-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1151,7 +1200,7 @@ Date
 <tbody>
 <tr>
 <td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/7eda34261b87a3c3991500a2eaf39c77f8eceea3/docs/figure/Figures_manuscript.Rmd/unnamed-chunk-10-1.png" target="_blank">7eda342</a>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/7eda34261b87a3c3991500a2eaf39c77f8eceea3/docs/figure/Figures_manuscript.Rmd/unnamed-chunk-12-1.png" target="_blank">7eda342</a>
 </td>
 <td>
 GinoBonazza
@@ -1193,101 +1242,7 @@ DotPlot_scCustom(
     plot.title  = element_text(hjust = 0.5, face = &quot;bold&quot;, size = 20)
   ) +
   ggtitle(&quot;DMD&quot;)</code></pre>
-<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-11-1.png" width="2550" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
-Past versions of unnamed-chunk-11-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-11-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/7eda34261b87a3c3991500a2eaf39c77f8eceea3/docs/figure/Figures_manuscript.Rmd/unnamed-chunk-11-1.png" target="_blank">7eda342</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2025-06-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>Markers_top5 &lt;- as.data.frame(Markers %&gt;% group_by(cluster) %&gt;% top_n(n = 5, wt = avg_log2FC))
-Idents(iPS_integrated) &lt;- factor(iPS_integrated$cell_type, levels = rev(levels(iPS_integrated$cell_type)))
-DotPlot_scCustom(subset(iPS_integrated, Condition == &quot;DMD&quot;), assay = &quot;SCT&quot;, features = Markers_top5$gene, dot.scale = 5) +
-  RotatedAxis() +
-  theme(axis.title = element_blank(), axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 14), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
-                           &quot;inches&quot;)) + ggtitle(&quot;DMD&quot;) + 
-  theme(plot.title = element_text(hjust = 0.5,      
-                                  face = &quot;bold&quot;,     
-                                  size = 20))</code></pre>
-<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-12-1.png" width="3000" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
-Past versions of unnamed-chunk-12-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-12-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/7eda34261b87a3c3991500a2eaf39c77f8eceea3/docs/figure/Figures_manuscript.Rmd/unnamed-chunk-12-1.png" target="_blank">7eda342</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2025-06-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>Markers_top5 &lt;- as.data.frame(Markers %&gt;% group_by(cluster) %&gt;% top_n(n = 5, wt = avg_log2FC))
-Idents(iPS_integrated) &lt;- factor(iPS_integrated$cell_type, levels = rev(levels(iPS_integrated$cell_type)))
-DotPlot_scCustom(subset(iPS_integrated, Condition == &quot;CTRL&quot;), assay = &quot;SCT&quot;, features = Markers_top5$gene, dot.scale = 5) +
-  RotatedAxis() +
-  theme(axis.title = element_blank(), axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 14), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
-                           &quot;inches&quot;)) + ggtitle(&quot;CTRL&quot;) + 
-  theme(plot.title = element_text(hjust = 0.5,      
-                                  face = &quot;bold&quot;,     
-                                  size = 20))</code></pre>
-<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-13-1.png" width="3000" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-13-1.png" width="2550" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-1">
 Past versions of unnamed-chunk-13-1.png
@@ -1325,6 +1280,26 @@ GinoBonazza
 </table>
 </div>
 </div>
+<pre class="r"><code>Markers_top5 &lt;- as.data.frame(Markers %&gt;% group_by(cluster) %&gt;% top_n(n = 5, wt = avg_log2FC))
+Idents(iPS_integrated) &lt;- factor(iPS_integrated$cell_type, levels = rev(levels(iPS_integrated$cell_type)))
+DotPlot_scCustom(subset(iPS_integrated, Condition == &quot;DMD&quot;), assay = &quot;SCT&quot;, features = Markers_top5$gene, dot.scale = 5) +
+  RotatedAxis() +
+  theme(axis.title = element_blank(), axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 14), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
+                           &quot;inches&quot;)) + ggtitle(&quot;DMD&quot;) + 
+  theme(plot.title = element_text(hjust = 0.5,      
+                                  face = &quot;bold&quot;,     
+                                  size = 20))</code></pre>
+<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-14-1.png" width="3000" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>Markers_top5 &lt;- as.data.frame(Markers %&gt;% group_by(cluster) %&gt;% top_n(n = 5, wt = avg_log2FC))
+Idents(iPS_integrated) &lt;- factor(iPS_integrated$cell_type, levels = rev(levels(iPS_integrated$cell_type)))
+DotPlot_scCustom(subset(iPS_integrated, Condition == &quot;CTRL&quot;), assay = &quot;SCT&quot;, features = Markers_top5$gene, dot.scale = 5) +
+  RotatedAxis() +
+  theme(axis.title = element_blank(), axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 14), legend.text = element_text(size = 9), legend.title = element_text(size = 11), plot.margin = unit(c(0, 0, 0, 0.1), 
+                           &quot;inches&quot;)) + ggtitle(&quot;CTRL&quot;) + 
+  theme(plot.title = element_text(hjust = 0.5,      
+                                  face = &quot;bold&quot;,     
+                                  size = 20))</code></pre>
+<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-15-1.png" width="3000" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>table(iPS_integrated$cell_type)</code></pre>
 <pre><code>
      Atrial Cardiomyocytes Ventricular Cardiomyocytes 
@@ -1358,21 +1333,21 @@ write.csv(DE_JD6, file = here::here(output_dir_data, &quot;DE_JD6.csv&quot;), qu
 DE_JD6 &lt;- read.csv(file = here::here(output_dir_data, &quot;DE_JD6.csv&quot;))</code></pre>
 <pre class="r"><code>signif_JDR &lt;- filter(DE_JDR, abs(avg_log2FC) &gt; 0.5 &amp; p_val_adj &lt; 0.05)
 
-nrow(filter(signif_JDR, avg_log2FC &gt; 0.25))</code></pre>
+nrow(filter(signif_JDR, avg_log2FC &gt; 0.5))</code></pre>
 <pre><code>[1] 132</code></pre>
-<pre class="r"><code>nrow(filter(signif_JDR, avg_log2FC &lt; -0.25))</code></pre>
+<pre class="r"><code>nrow(filter(signif_JDR, avg_log2FC &lt; -0.5))</code></pre>
 <pre><code>[1] 130</code></pre>
 <pre class="r"><code>signif_JD6 &lt;- filter(DE_JD6, abs(avg_log2FC) &gt; 0.5 &amp; p_val_adj &lt; 0.05)
 
-nrow(filter(signif_JD6, avg_log2FC &gt; 0.25))</code></pre>
+nrow(filter(signif_JD6, avg_log2FC &gt; 0.5))</code></pre>
 <pre><code>[1] 61</code></pre>
-<pre class="r"><code>nrow(filter(signif_JD6, avg_log2FC &lt; -0.25))</code></pre>
+<pre class="r"><code>nrow(filter(signif_JD6, avg_log2FC &lt; -0.5))</code></pre>
 <pre><code>[1] 65</code></pre>
-<pre class="r"><code>common_up &lt;- Reduce(intersect, list(filter(signif_JDR, avg_log2FC &gt; 0.25)$gene,
-                                    filter(signif_JD6, avg_log2FC &gt; 0.25)$gene))
+<pre class="r"><code>common_up &lt;- Reduce(intersect, list(filter(signif_JDR, avg_log2FC &gt; 0.5)$gene,
+                                    filter(signif_JD6, avg_log2FC &gt; 0.5)$gene))
 
-common_down &lt;- Reduce(intersect, list(filter(signif_JDR, avg_log2FC &lt; -0.25)$gene,
-                                      filter(signif_JD6, avg_log2FC &lt; -0.25)$gene))
+common_down &lt;- Reduce(intersect, list(filter(signif_JDR, avg_log2FC &lt; -0.5)$gene,
+                                      filter(signif_JD6, avg_log2FC &lt; -0.5)$gene))
 
 common_genes &lt;- union(common_up, common_down)
 
@@ -1390,9 +1365,9 @@ common_FC &lt;- data.frame(
   arrange(avg_logFC_JDR)</code></pre>
 <pre class="r"><code>keyvals &lt;- rep(&quot;grey&quot;, nrow(DE_JDR))
   names(keyvals) &lt;- rep(&quot;Not significant&quot;, nrow(DE_JDR))
-  keyvals[DE_JDR$avg_log2FC &gt; 0.25 &amp; DE_JDR$p_val_adj &lt; 0.01] &lt;- &quot;#A63A2A&quot;
+  keyvals[DE_JDR$avg_log2FC &gt; 0.5 &amp; DE_JDR$p_val_adj &lt; 0.01] &lt;- &quot;#A63A2A&quot;
   names(keyvals)[keyvals == &quot;#A63A2A&quot;] &lt;- &quot;Increased&quot;
-  keyvals[DE_JDR$avg_log2FC &lt; -0.25 &amp; DE_JDR$p_val_adj &lt; 0.01] &lt;- &quot;#004C8C&quot;
+  keyvals[DE_JDR$avg_log2FC &lt; -0.5 &amp; DE_JDR$p_val_adj &lt; 0.01] &lt;- &quot;#004C8C&quot;
   names(keyvals)[keyvals == &quot;#004C8C&quot;] &lt;- &quot;Decreased&quot;
   
 volcano_1 &lt;- EnhancedVolcano(DE_JDR,
@@ -1403,9 +1378,9 @@ volcano_1 &lt;- EnhancedVolcano(DE_JDR,
                   titleLabSize = 22,
                   subtitleLabSize = 14,
                   axisLabSize = 15,
-                  captionLabSize = 9,
+                  captionLabSize = 0,
                   pointSize = 1.2,
-                  FCcutoff = 0.25,
+                  FCcutoff = 0.5,
                   pCutoff  = 0.05,
                   colCustom = keyvals,
                   colAlpha = 1,
@@ -1417,9 +1392,9 @@ volcano_1 &lt;- EnhancedVolcano(DE_JDR,
 
 keyvals &lt;- rep(&quot;grey&quot;, nrow(DE_JD6))
   names(keyvals) &lt;- rep(&quot;Not significant&quot;, nrow(DE_JD6))
-  keyvals[DE_JD6$avg_log2FC &gt; 0.25 &amp; DE_JD6$p_val_adj &lt; 0.01] &lt;- &quot;#A63A2A&quot;
+  keyvals[DE_JD6$avg_log2FC &gt; 0.5 &amp; DE_JD6$p_val_adj &lt; 0.01] &lt;- &quot;#A63A2A&quot;
   names(keyvals)[keyvals == &quot;#A63A2A&quot;] &lt;- &quot;Increased&quot;
-  keyvals[DE_JD6$avg_log2FC &lt; -0.25 &amp; DE_JD6$p_val_adj &lt; 0.01] &lt;- &quot;#004C8C&quot;
+  keyvals[DE_JD6$avg_log2FC &lt; -0.5 &amp; DE_JD6$p_val_adj &lt; 0.01] &lt;- &quot;#004C8C&quot;
   names(keyvals)[keyvals == &quot;#004C8C&quot;] &lt;- &quot;Decreased&quot;
   
 volcano_2 &lt;- EnhancedVolcano(DE_JD6,
@@ -1430,9 +1405,9 @@ volcano_2 &lt;- EnhancedVolcano(DE_JD6,
                   titleLabSize = 22,
                   subtitleLabSize = 14,
                   axisLabSize = 15,
-                  captionLabSize = 9,
+                  captionLabSize = 0,
                   pointSize = 1.2,
-                  FCcutoff = 0.25,
+                  FCcutoff = 0.5,
                   pCutoff  = 0.05,
                   colCustom = keyvals,
                   colAlpha = 1,
@@ -1444,58 +1419,7 @@ volcano_2 &lt;- EnhancedVolcano(DE_JD6,
                   title = &quot;Cardiomyocytes Line 2&quot;
   ) + theme(legend.position = &quot;none&quot;)</code></pre>
 <pre class="r"><code>volcano_1|volcano_2</code></pre>
-<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-19-1.png" width="2700" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-19-1">
-Past versions of unnamed-chunk-19-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-19-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/7eda34261b87a3c3991500a2eaf39c77f8eceea3/docs/figure/Figures_manuscript.Rmd/unnamed-chunk-19-1.png" target="_blank">7eda342</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2025-06-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>Idents(CM) &lt;- factor(
-  CM$Sample,
-  levels = c(&quot;JDR_Ctr&quot;, &quot;JD6_Ctr&quot;, &quot;JDR_DMD&quot;, &quot;JD6_DMD&quot;)
-)
-heatmap_cols &lt;- colorRampPalette(RColorBrewer::brewer.pal(9,&quot;RdBu&quot;))(256)
-heatmap_cols &lt;- rev(heatmap_cols[1:256])</code></pre>
-<pre class="r"><code>DoHeatmap(CM, features = common_genes,
-          draw.lines = F,
-          size = 7) +
-  scale_fill_gradientn(colours = heatmap_cols) + 
-  theme(text = element_text(size = 17, colour = &quot;black&quot;), 
-        axis.text.y = element_text(size = 17, colour = &quot;black&quot;),
-        plot.margin = margin(t = 20, r = 5, b = 5, l = 5, unit = &quot;pt&quot;))</code></pre>
-<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-21-1.png" width="3300" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-21-1.png" width="2700" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-1">
 Past versions of unnamed-chunk-21-1.png
@@ -1533,53 +1457,20 @@ GinoBonazza
 </table>
 </div>
 </div>
-<pre class="r"><code>p &lt;- VlnPlot(subset(CM, Cell_line %in% c(&quot;JDR&quot;, &quot;JD6&quot;)), features = common_up, group.by = &quot;Condition&quot;, ncol = 4, pt.size = 0.01)
-p[[1]][[&quot;layers&quot;]][[2]][[&quot;geom&quot;]][[&quot;default_aes&quot;]][[&quot;alpha&quot;]] &lt;- 0.2
-p &lt;- p &amp; theme(axis.title.x = element_blank())
-print(p)</code></pre>
-<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-22-1.png" width="2400" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-1">
-Past versions of unnamed-chunk-22-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-22-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/7eda34261b87a3c3991500a2eaf39c77f8eceea3/docs/figure/Figures_manuscript.Rmd/unnamed-chunk-22-1.png" target="_blank">7eda342</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2025-06-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>p &lt;- VlnPlot(subset(CM, Cell_line %in% c(&quot;JDR&quot;, &quot;JD6&quot;)), features = common_down, group.by = &quot;Condition&quot;, ncol = 4, pt.size = 0.01)
-p[[1]][[&quot;layers&quot;]][[2]][[&quot;geom&quot;]][[&quot;default_aes&quot;]][[&quot;alpha&quot;]] &lt;- 0.2
-p &lt;- p &amp; theme(axis.title.x = element_blank())
-print(p)</code></pre>
-<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-23-1.png" width="2400" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>Idents(CM) &lt;- factor(
+  CM$Sample,
+  levels = c(&quot;JDR_Ctr&quot;, &quot;JD6_Ctr&quot;, &quot;JDR_DMD&quot;, &quot;JD6_DMD&quot;)
+)
+heatmap_cols &lt;- colorRampPalette(RColorBrewer::brewer.pal(9,&quot;RdBu&quot;))(256)
+heatmap_cols &lt;- rev(heatmap_cols[1:256])</code></pre>
+<pre class="r"><code>DoHeatmap(CM, features = common_genes,
+          draw.lines = F,
+          size = 7) +
+  scale_fill_gradientn(colours = heatmap_cols) + 
+  theme(text = element_text(size = 17, colour = &quot;black&quot;), 
+        axis.text.y = element_text(size = 17, colour = &quot;black&quot;),
+        plot.margin = margin(t = 20, r = 5, b = 5, l = 5, unit = &quot;pt&quot;))</code></pre>
+<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-23-1.png" width="3300" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-23-1">
 Past versions of unnamed-chunk-23-1.png
@@ -1617,6 +1508,16 @@ GinoBonazza
 </table>
 </div>
 </div>
+<pre class="r"><code>p &lt;- VlnPlot(subset(CM, Cell_line %in% c(&quot;JDR&quot;, &quot;JD6&quot;)), features = common_up, group.by = &quot;Condition&quot;, ncol = 4, pt.size = 0.01)
+p[[1]][[&quot;layers&quot;]][[2]][[&quot;geom&quot;]][[&quot;default_aes&quot;]][[&quot;alpha&quot;]] &lt;- 0.2
+p &lt;- p &amp; theme(axis.title.x = element_blank())
+print(p)</code></pre>
+<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-24-1.png" width="2400" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>p &lt;- VlnPlot(subset(CM, Cell_line %in% c(&quot;JDR&quot;, &quot;JD6&quot;)), features = common_down, group.by = &quot;Condition&quot;, ncol = 4, pt.size = 0.01)
+p[[1]][[&quot;layers&quot;]][[2]][[&quot;geom&quot;]][[&quot;default_aes&quot;]][[&quot;alpha&quot;]] &lt;- 0.2
+p &lt;- p &amp; theme(axis.title.x = element_blank())
+print(p)</code></pre>
+<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-25-1.png" width="2400" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>up_genes &lt;- bitr(common_up, fromType=&quot;SYMBOL&quot;, toType=&quot;ENTREZID&quot;, OrgDb=&quot;org.Hs.eg.db&quot;)$ENTREZID
 down_genes &lt;- bitr(common_down, fromType=&quot;SYMBOL&quot;, toType=&quot;ENTREZID&quot;, OrgDb=&quot;org.Hs.eg.db&quot;)$ENTREZID
 
@@ -1653,90 +1554,7 @@ GO_down &lt;- simplify(
 dotplot(GO_up, showCategory = 10, title = paste0(&quot;Upregulated genes&quot;), label_format = 20, font.size = 15) +
   theme(plot.title = element_text(size = 18, hjust = 0.5, face = &quot;bold&quot;),
         axis.text.x = element_text(size = 10))</code></pre>
-<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-26-1.png" width="1800" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-26-1">
-Past versions of unnamed-chunk-26-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-26-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/7eda34261b87a3c3991500a2eaf39c77f8eceea3/docs/figure/Figures_manuscript.Rmd/unnamed-chunk-26-1.png" target="_blank">7eda342</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2025-06-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>p[[1]][[&quot;layers&quot;]][[2]][[&quot;geom&quot;]][[&quot;default_aes&quot;]][[&quot;alpha&quot;]] &lt;- 1
-dotplot(GO_down, showCategory = 10, title = paste0(&quot;Downregulated genes&quot;), label_format = 20, font.size = 15) +
-  theme(plot.title = element_text(size = 18, hjust = 0.5, face = &quot;bold&quot;),
-        axis.text.x = element_text(size = 10))</code></pre>
-<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-27-1.png" width="1800" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-27-1">
-Past versions of unnamed-chunk-27-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-27-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/GinoBonazza/iPS_organoids/blob/7eda34261b87a3c3991500a2eaf39c77f8eceea3/docs/figure/Figures_manuscript.Rmd/unnamed-chunk-27-1.png" target="_blank">7eda342</a>
-</td>
-<td>
-GinoBonazza
-</td>
-<td>
-2025-06-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>p1 &lt;- cnetplot(GO_up, cex_label_category = 0.7, cex_label_gene = 0.8, showCategory = 10)
-p2 &lt;- cnetplot(GO_down, cex_label_category = 0.7, cex_label_gene = 0.8, showCategory = 10)
-print(p1 + p2)</code></pre>
-<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-28-1.png" width="2700" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-28-1.png" width="1800" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-28-1">
 Past versions of unnamed-chunk-28-1.png
@@ -1761,6 +1579,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/e2b39e6ae0f0d3c0ddb5396ff11b315b363af407/docs/figure/Figures_manuscript.Rmd/unnamed-chunk-28-1.png" target="_blank">e2b39e6</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2025-06-23
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/GinoBonazza/iPS_organoids/blob/7eda34261b87a3c3991500a2eaf39c77f8eceea3/docs/figure/Figures_manuscript.Rmd/unnamed-chunk-28-1.png" target="_blank">7eda342</a>
 </td>
 <td>
@@ -1774,6 +1603,63 @@ GinoBonazza
 </table>
 </div>
 </div>
+<pre class="r"><code>p[[1]][[&quot;layers&quot;]][[2]][[&quot;geom&quot;]][[&quot;default_aes&quot;]][[&quot;alpha&quot;]] &lt;- 1
+dotplot(GO_down, showCategory = 10, title = paste0(&quot;Downregulated genes&quot;), label_format = 20, font.size = 15) +
+  theme(plot.title = element_text(size = 18, hjust = 0.5, face = &quot;bold&quot;),
+        axis.text.x = element_text(size = 10))</code></pre>
+<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-29-1.png" width="1800" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-29-1">
+Past versions of unnamed-chunk-29-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-29-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/e2b39e6ae0f0d3c0ddb5396ff11b315b363af407/docs/figure/Figures_manuscript.Rmd/unnamed-chunk-29-1.png" target="_blank">e2b39e6</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2025-06-23
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/GinoBonazza/iPS_organoids/blob/7eda34261b87a3c3991500a2eaf39c77f8eceea3/docs/figure/Figures_manuscript.Rmd/unnamed-chunk-29-1.png" target="_blank">7eda342</a>
+</td>
+<td>
+GinoBonazza
+</td>
+<td>
+2025-06-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>p1 &lt;- cnetplot(GO_up, cex_label_category = 0.7, cex_label_gene = 0.8, showCategory = 10)
+p2 &lt;- cnetplot(GO_down, cex_label_category = 0.7, cex_label_gene = 0.8, showCategory = 10)
+print(p1 + p2)</code></pre>
+<p><img src="figure/Figures_manuscript.Rmd/unnamed-chunk-30-1.png" width="2700" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
