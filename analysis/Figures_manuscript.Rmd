@@ -243,6 +243,96 @@ legend("topright", inset = c(-2, 0.13),
        cex    = 1.6)
 ```
 
+```{r , fig.height=6, fig.width=7, message=FALSE}
+props <- getTransformedProps(iPS_integrated$cell_type, iPS_integrated$Sample2, transform="logit")
+
+par(mar = c(8, 5, 1, 20), xpd = TRUE)
+barplot(props$Proportions, legend = FALSE, ylab = "Proportions", col = cell_type_cols, 
+        cex.names = 1.6, las = 2, font.lab = 2, font.axis = 2, cex.axis = 1, cex.lab = 1.6)
+legend("topright", inset = c(-2, 0.13), legend = rownames(props$Proportions), fill = cell_type_cols, bty = "n", cex = 1.6)
+```
+
+```{r , fig.height=5, fig.width=8, message=FALSE}
+props <- getTransformedProps(iPS_integrated$cell_type,
+                             iPS_integrated$Sample2,
+                             transform = "logit")
+
+par(mar = c(5, 5, 1, 22), xpd = TRUE)        # big bottom margin for angled labels
+
+## 1) draw the bars and *save the midpoints* returned by barplot()
+bp <- barplot(props$Proportions,
+              names.arg = rep("", ncol(props$Proportions)),  # no x-labels yet
+              legend  = FALSE,
+              ylab    = "Proportions",
+              col     = cell_type_cols,
+              cex.names = 1.6, las = 2,
+              font.lab = 2, font.axis = 2,
+              cex.axis = 1, cex.lab = 1.6)
+
+## 2) add the 45° labels
+lbls <- colnames(props$Proportions)          # or rownames, whichever you need
+text(x   = bp,                               # bar midpoints
+     y   = par("usr")[3] - 0.02,             # a bit below the x-axis
+     lbls,
+     srt = 45,                               # rotate 45 degrees
+     adj = 1,                                # right-justify relative to point
+     xpd = TRUE,                             # allow drawing in the margin
+     cex = 1.6, font = 2)
+
+## legend as before
+legend("topright", inset = c(-1.55, 0.2),
+       legend = rownames(props$Proportions),
+       fill   = cell_type_cols,
+       bty    = "n",
+       cex    = 1.6)
+```
+
+```{r}
+iPS_integrated@meta.data[iPS_integrated@meta.data$Sample %in% c("JDR_Ctr"), "Sample3"] = "CTRL1"
+iPS_integrated@meta.data[iPS_integrated@meta.data$Sample %in% c("JDR_DMD"), "Sample3"] = "DMD1"
+iPS_integrated@meta.data[iPS_integrated@meta.data$Sample %in% c("JD6_Ctr"), "Sample3"] = "CTRL2"
+iPS_integrated@meta.data[iPS_integrated@meta.data$Sample %in% c("JD6_DMD"), "Sample3"] = "DMD2"
+iPS_integrated$Sample3 <- factor(iPS_integrated$Sample3, levels = c("CTRL1", 
+                                                                        "DMD1",
+                                                                        "CTRL2",
+                                                                        "DMD2"))
+```
+
+```{r , fig.height=5, fig.width=8, message=FALSE}
+props <- getTransformedProps(iPS_integrated$cell_type,
+                             iPS_integrated$Sample3,
+                             transform = "logit")
+
+par(mar = c(5, 5, 1, 22), xpd = TRUE)        # big bottom margin for angled labels
+
+## 1) draw the bars and *save the midpoints* returned by barplot()
+bp <- barplot(props$Proportions,
+              names.arg = rep("", ncol(props$Proportions)),  # no x-labels yet
+              legend  = FALSE,
+              ylab    = "Proportions",
+              col     = cell_type_cols,
+              cex.names = 1.6, las = 2,
+              font.lab = 2, font.axis = 2,
+              cex.axis = 1, cex.lab = 1.6)
+
+## 2) add the 45° labels
+lbls <- colnames(props$Proportions)          # or rownames, whichever you need
+text(x   = bp,                               # bar midpoints
+     y   = par("usr")[3] - 0.02,             # a bit below the x-axis
+     lbls,
+     srt = 45,                               # rotate 45 degrees
+     adj = 1,                                # right-justify relative to point
+     xpd = TRUE,                             # allow drawing in the margin
+     cex = 1.6, font = 2)
+
+## legend as before
+legend("topright", inset = c(-1.55, 0.2),
+       legend = rownames(props$Proportions),
+       fill   = cell_type_cols,
+       bty    = "n",
+       cex    = 1.6)
+```
+
 ```{r}
 DefaultAssay(iPS_integrated) <- "SCT"
 Idents(iPS_integrated) <- "cell_type"
