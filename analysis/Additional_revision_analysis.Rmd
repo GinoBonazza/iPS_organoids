@@ -1,0 +1,867 @@
+---
+title: "Additional analyses for revision"
+author: "GinoBonazza (ginoandrea.bonazza@usz.ch)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r knitr config, include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  dpi = 300,
+  fig.align = "center"
+)
+```
+
+## Setup
+
+```{r setup, class.source = "fold-hide"}
+current_file <- "Additional_revision_analysis"
+
+library(here)
+library(Seurat)
+library(Matrix)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(patchwork)
+library(clusterProfiler)
+library(org.Hs.eg.db)
+library(AnnotationDbi)
+library(enrichplot)
+library(openxlsx)
+library(EnhancedVolcano)
+library(ggpubr)
+library(stringr)
+library(CellChat)
+
+output_dir_data <- here::here("output", current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data)
+
+if (!dir.exists(here::here("docs", "figure"))) dir.create(here::here("docs", "figure"))
+output_dir_figs <- here::here("docs", "figure", paste0(current_file, ".Rmd"))
+if (!dir.exists(output_dir_figs)) dir.create(output_dir_figs)
+```
+
+# Load dataset
+
+Use the same final integrated object and the same two isogenic pairs used for the manuscript scRNA-seq analysis.
+
+Cluster 2 is labelled as `Unspecified cells`. `cell_type` is converted to character before assigning the new label because assigning a new value directly to the original factor generates `NA`.
+
+```{r Load dataset}
+iPS_integrated <- readRDS(here::here("output", "QC_integration_annotation", "iPS_integrated.rds"))
+
+iPS_integrated <- subset(iPS_integrated, Cell_line %in% c("JDR", "JD6"))
+iPS_integrated$Condition <- recode(iPS_integrated$Condition, Ctr = "CTRL")
+
+iPS_integrated$cell_type <- as.character(iPS_integrated$cell_type)
+iPS_integrated@meta.data[iPS_integrated@meta.data$integrated_snn_res.0.2 == "2", "cell_type"] <- "Unspecified cells"
+
+iPS_integrated$cell_type <- factor(iPS_integrated$cell_type,
+  levels = c("Atrial Cardiomyocytes", "Ventricular Cardiomyocytes", "Unspecified cells",
+             "Fibroblasts", "Progenitor cells", "Endothelial cells"))
+
+iPS_integrated@meta.data[iPS_integrated@meta.data$Sample == "JDR_Ctr", "Sample2"] <- "CTRL1"
+iPS_integrated@meta.data[iPS_integrated@meta.data$Sample == "JDR_DMD", "Sample2"] <- "DMD1"
+iPS_integrated@meta.data[iPS_integrated@meta.data$Sample == "JD6_Ctr", "Sample2"] <- "CTRL2"
+iPS_integrated@meta.data[iPS_integrated@meta.data$Sample == "JD6_DMD", "Sample2"] <- "DMD2"
+iPS_integrated$Sample2 <- factor(iPS_integrated$Sample2, levels = c("CTRL1", "CTRL2", "DMD1", "DMD2"))
+
+table(iPS_integrated$cell_type, iPS_integrated$Sample2, useNA = "ifany")
+```
+
+```{r cardiomyocytes}
+CM <- subset(iPS_integrated, cell_type %in% c("Atrial Cardiomyocytes", "Ventricular Cardiomyocytes"))
+DefaultAssay(CM) <- "RNA"
+CM <- NormalizeData(CM)
+Idents(CM) <- "Condition"
+
+table(CM$cell_type, CM$Sample2)
+```
+
+# 1. DMD vs CTRL in all cardiomyocytes
+
+The two isogenic pairs are analysed separately. Differential expression is used to generate full ranked gene lists for GSEA. Genes are ranked by `avg_log2FC`; cell-level P values are not used for ranking.
+
+## Differential expression
+
+The DE chunk can be run once and the saved tables reused afterwards.
+
+```{r DE all CM, eval=TRUE}
+DE_CM_JDR <- FindMarkers(subset(CM, Cell_line == "JDR"), ident.1 = "DMD", ident.2 = "CTRL", test.use = "MAST", assay = "RNA", min.pct = 0.05, logfc.threshold = 0)
+DE_CM_JDR$gene <- rownames(DE_CM_JDR)
+write.csv(DE_CM_JDR, here::here(output_dir_data, "DE_CM_JDR_all_genes.csv"), quote = FALSE, row.names = FALSE)
+
+DE_CM_JD6 <- FindMarkers(subset(CM, Cell_line == "JD6"), ident.1 = "DMD", ident.2 = "CTRL", test.use = "MAST", assay = "RNA", min.pct = 0.05, logfc.threshold = 0)
+DE_CM_JD6$gene <- rownames(DE_CM_JD6)
+write.csv(DE_CM_JD6, here::here(output_dir_data, "DE_CM_JD6_all_genes.csv"), quote = FALSE, row.names = FALSE)
+```
+
+```{r read DE all CM}
+DE_CM_JDR <- read.csv(here::here(output_dir_data, "DE_CM_JDR_all_genes.csv"))
+DE_CM_JD6 <- read.csv(here::here(output_dir_data, "DE_CM_JD6_all_genes.csv"))
+```
+
+## Rank genes and run GO-BP GSEA
+
+```{r rank all CM}
+rank_CM_JDR_symbol <- DE_CM_JDR$avg_log2FC
+names(rank_CM_JDR_symbol) <- DE_CM_JDR$gene
+rank_CM_JDR_symbol <- sort(rank_CM_JDR_symbol[!is.na(rank_CM_JDR_symbol)], decreasing = TRUE)
+
+rank_CM_JD6_symbol <- DE_CM_JD6$avg_log2FC
+names(rank_CM_JD6_symbol) <- DE_CM_JD6$gene
+rank_CM_JD6_symbol <- sort(rank_CM_JD6_symbol[!is.na(rank_CM_JD6_symbol)], decreasing = TRUE)
+
+map_JDR <- bitr(names(rank_CM_JDR_symbol), fromType = "SYMBOL", toType = "ENTREZID", OrgDb = org.Hs.eg.db) %>%
+  mutate(avg_log2FC = rank_CM_JDR_symbol[SYMBOL]) %>%
+  group_by(ENTREZID) %>% slice_max(abs(avg_log2FC), n = 1, with_ties = FALSE) %>% ungroup()
+
+rank_CM_JDR <- map_JDR$avg_log2FC
+names(rank_CM_JDR) <- map_JDR$ENTREZID
+rank_CM_JDR <- sort(rank_CM_JDR, decreasing = TRUE)
+
+map_JD6 <- bitr(names(rank_CM_JD6_symbol), fromType = "SYMBOL", toType = "ENTREZID", OrgDb = org.Hs.eg.db) %>%
+  mutate(avg_log2FC = rank_CM_JD6_symbol[SYMBOL]) %>%
+  group_by(ENTREZID) %>% slice_max(abs(avg_log2FC), n = 1, with_ties = FALSE) %>% ungroup()
+
+rank_CM_JD6 <- map_JD6$avg_log2FC
+names(rank_CM_JD6) <- map_JD6$ENTREZID
+rank_CM_JD6 <- sort(rank_CM_JD6, decreasing = TRUE)
+```
+
+```{r GSEA all CM}
+GSEA_CM_JDR <- gseGO(geneList = rank_CM_JDR, OrgDb = org.Hs.eg.db, keyType = "ENTREZID", ont = "BP", minGSSize = 10, maxGSSize = 800, pvalueCutoff = 1, verbose = FALSE)
+GSEA_CM_JD6 <- gseGO(geneList = rank_CM_JD6, OrgDb = org.Hs.eg.db, keyType = "ENTREZID", ont = "BP", minGSSize = 10, maxGSSize = 800, pvalueCutoff = 1, verbose = FALSE)
+
+GSEA_CM_JDR_df <- as.data.frame(GSEA_CM_JDR)
+GSEA_CM_JD6_df <- as.data.frame(GSEA_CM_JD6)
+
+write.csv(GSEA_CM_JDR_df, here::here(output_dir_data, "GSEA_GO_BP_CM_JDR.csv"), row.names = FALSE)
+write.csv(GSEA_CM_JD6_df, here::here(output_dir_data, "GSEA_GO_BP_CM_JD6.csv"), row.names = FALSE)
+```
+
+## Shared GO-BP pathways
+
+Shared pathways have the same NES direction and FDR < 0.05 in both lines.
+
+GO redundancy is reduced with `clusterProfiler::simplify()` using a semantic similarity cutoff of 0.6. The representative term within each redundant group is selected using the worse FDR across the two lines, so the simplification does not favour one line.
+
+```{r shared GSEA all CM}
+shared_CM <- inner_join(
+  GSEA_CM_JDR_df %>% dplyr::select(ID, Description, NES, pvalue, p.adjust) %>% dplyr::rename(NES_L1 = NES, p_L1 = pvalue, FDR_L1 = p.adjust),
+  GSEA_CM_JD6_df %>% dplyr::select(ID, Description, NES, pvalue, p.adjust) %>% dplyr::rename(NES_L2 = NES, p_L2 = pvalue, FDR_L2 = p.adjust),
+  by = c("ID", "Description")
+) %>%
+  filter(sign(NES_L1) == sign(NES_L2), FDR_L1 < 0.05, FDR_L2 < 0.05) %>%
+  mutate(worst_FDR = pmax(FDR_L1, FDR_L2), mean_abs_NES = (abs(NES_L1) + abs(NES_L2))/2) %>%
+  arrange(worst_FDR, desc(mean_abs_NES))
+
+GSEA_CM_shared_for_simplify <- GSEA_CM_JDR
+GSEA_CM_shared_for_simplify@result <- GSEA_CM_JDR@result %>%
+  filter(ID %in% shared_CM$ID) %>%
+  dplyr::select(-p.adjust) %>%
+  left_join(shared_CM %>% dplyr::select(ID, worst_FDR), by = "ID") %>%
+  dplyr::rename(p.adjust = worst_FDR)
+
+GSEA_CM_shared_simple <- clusterProfiler::simplify(GSEA_CM_shared_for_simplify, cutoff = 0.6, by = "p.adjust", select_fun = min, measure = "Wang")
+
+shared_CM_simple <- shared_CM %>%
+  filter(ID %in% GSEA_CM_shared_simple@result$ID) %>%
+  arrange(worst_FDR, desc(mean_abs_NES))
+
+shared_CM_top <- shared_CM_simple %>% slice_head(n = 20)
+
+write.csv(shared_CM, here::here(output_dir_data, "GSEA_GO_BP_CM_shared_full.csv"), row.names = FALSE)
+write.csv(shared_CM_simple, here::here(output_dir_data, "GSEA_GO_BP_CM_shared_simplified.csv"), row.names = FALSE)
+```
+
+Bar length is NES. Bar colour is `-log10(p) × sign(NES)`, matching the NES plots used in the DCM project.
+
+```{r shared GSEA all CM plot, fig.width=8, fig.height=5, dpi=300}
+shared_CM_plot <- bind_rows(
+  shared_CM_top %>% transmute(Description, Line = "Line 1", NES = NES_L1, pvalue = p_L1),
+  shared_CM_top %>% transmute(Description, Line = "Line 2", NES = NES_L2, pvalue = p_L2)
+) %>%
+  mutate(Line = factor(Line, levels = c("Line 1", "Line 2")),
+         Description = factor(Description, levels = rev(shared_CM_top$Description)),
+         signed_logp = -log10(pmax(pvalue, 1e-50)) * sign(NES))
+
+ggplot(shared_CM_plot, aes(Description, NES, fill = signed_logp)) +
+  geom_col(width = 0.72) +
+  geom_hline(yintercept = 0, linewidth = 0.4) +
+  coord_flip() +
+  facet_wrap(~Line, ncol = 2) +
+  scale_fill_gradient2(low = "#2166AC", mid = "grey80", high = "#B2182B", midpoint = 0,
+                       name = expression(-log[10](p) %*% sign(NES))) +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 45)) +
+  labs(x = NULL, y = "Normalized enrichment score (NES)", title = "Shared GO-BP pathways in DMD cardiomyocytes") +
+  theme_classic() +
+  theme(strip.text = element_text(face = "bold"), legend.position = "bottom")
+```
+
+# 2. Predefined pathway GSEA
+
+The predefined pathways directly address the processes raised during revision: contraction, calcium handling, oxidative phosphorylation, glycolysis, ECM/cytoskeleton and oxidative stress.
+
+```{r pathway gene sets}
+go_terms <- c(
+  "Cardiac muscle contraction" = "GO:0060048",
+  "Calcium ion homeostasis" = "GO:0006874",
+  "Oxidative phosphorylation" = "GO:0006119",
+  "Glycolysis" = "GO:0006096",
+  "ECM organization" = "GO:0030198",
+  "Actin cytoskeleton organization" = "GO:0030036",
+  "Oxidative stress response" = "GO:0034599"
+)
+
+go_annotation <- AnnotationDbi::select(org.Hs.eg.db, keys = unname(go_terms), keytype = "GOALL", columns = "SYMBOL") %>%
+  filter(!is.na(SYMBOL)) %>% distinct(GOALL, SYMBOL)
+
+pathway_sets <- list(
+  "Cardiac muscle contraction" = go_annotation$SYMBOL[go_annotation$GOALL == go_terms["Cardiac muscle contraction"]],
+  "Calcium ion homeostasis" = go_annotation$SYMBOL[go_annotation$GOALL == go_terms["Calcium ion homeostasis"]],
+  "Oxidative phosphorylation" = go_annotation$SYMBOL[go_annotation$GOALL == go_terms["Oxidative phosphorylation"]],
+  "Glycolysis" = go_annotation$SYMBOL[go_annotation$GOALL == go_terms["Glycolysis"]],
+  "ECM organization" = go_annotation$SYMBOL[go_annotation$GOALL == go_terms["ECM organization"]],
+  "Actin cytoskeleton organization" = go_annotation$SYMBOL[go_annotation$GOALL == go_terms["Actin cytoskeleton organization"]],
+  "Oxidative stress response" = go_annotation$SYMBOL[go_annotation$GOALL == go_terms["Oxidative stress response"]]
+)
+
+pathway_sets <- lapply(pathway_sets, unique)
+sapply(pathway_sets, length)
+
+TERM2GENE <- bind_rows(lapply(names(pathway_sets), function(x) data.frame(term = x, gene = pathway_sets[[x]])))
+TERM2NAME <- data.frame(term = names(pathway_sets), name = names(pathway_sets))
+```
+
+```{r targeted GSEA all CM}
+GSEA_target_CM_JDR <- GSEA(rank_CM_JDR_symbol, TERM2GENE = TERM2GENE, TERM2NAME = TERM2NAME, minGSSize = 10, maxGSSize = 1500, pvalueCutoff = 1, verbose = FALSE)
+GSEA_target_CM_JD6 <- GSEA(rank_CM_JD6_symbol, TERM2GENE = TERM2GENE, TERM2NAME = TERM2NAME, minGSSize = 10, maxGSSize = 1500, pvalueCutoff = 1, verbose = FALSE)
+
+targeted_CM_bar <- bind_rows(
+  as.data.frame(GSEA_target_CM_JDR) %>% mutate(Line = "Line 1"),
+  as.data.frame(GSEA_target_CM_JD6) %>% mutate(Line = "Line 2")
+) %>%
+  mutate(Line = factor(Line, levels = c("Line 1", "Line 2")),
+         Description = factor(Description, levels = rev(names(pathway_sets))),
+         Significant = p.adjust < 0.05,
+         signed_logp = -log10(pmax(pvalue, 1e-50)) * sign(NES))
+
+write.csv(targeted_CM_bar, here::here(output_dir_data, "GSEA_targeted_all_CM.csv"), row.names = FALSE)
+```
+
+The asterisk marks FDR < 0.05.
+
+```{r targeted GSEA all CM plot, fig.width=8, fig.height=3.5, dpi=300}
+star_offset_CM <- 0.06 * max(abs(targeted_CM_bar$NES))
+
+ggplot(targeted_CM_bar, aes(Description, NES, fill = signed_logp)) +
+  geom_col(width = 0.72) +
+  geom_hline(yintercept = 0, linewidth = 0.4) +
+  geom_text(data = targeted_CM_bar %>% filter(Significant),
+            aes(y = NES + ifelse(NES > 0, star_offset_CM, -star_offset_CM), label = "*"), size = 5) +
+  coord_flip(clip = "off") +
+  facet_wrap(~Line, ncol = 2) +
+  scale_fill_gradient2(low = "#2166AC", mid = "grey80", high = "#B2182B", midpoint = 0,
+                       name = expression(-log[10](p) %*% sign(NES))) +
+  scale_y_continuous(expand = expansion(mult = c(0.10, 0.10))) +
+  labs(x = NULL, y = "Normalized enrichment score (NES)", title = "Selected pathways in DMD cardiomyocytes") +
+  theme_classic() +
+  theme(strip.text = element_text(face = "bold"), legend.position = "bottom")
+```
+
+# 3. Atrial and ventricular cardiomyocytes
+
+The relevant question is whether the DMD-associated response is similar or different within atrial and ventricular cardiomyocytes.
+
+## Differential expression
+
+```{r atrial ventricular objects}
+ACM <- subset(CM, cell_type == "Atrial Cardiomyocytes")
+VCM <- subset(CM, cell_type == "Ventricular Cardiomyocytes")
+Idents(ACM) <- "Condition"
+Idents(VCM) <- "Condition"
+```
+
+```{r DE atrial ventricular, eval=TRUE}
+DE_ACM_JDR <- FindMarkers(subset(ACM, Cell_line == "JDR"), ident.1 = "DMD", ident.2 = "CTRL", test.use = "MAST", assay = "RNA", min.pct = 0.05, logfc.threshold = 0)
+DE_ACM_JDR$gene <- rownames(DE_ACM_JDR)
+write.csv(DE_ACM_JDR, here::here(output_dir_data, "DE_ACM_JDR_all_genes.csv"), quote = FALSE, row.names = FALSE)
+
+DE_ACM_JD6 <- FindMarkers(subset(ACM, Cell_line == "JD6"), ident.1 = "DMD", ident.2 = "CTRL", test.use = "MAST", assay = "RNA", min.pct = 0.05, logfc.threshold = 0)
+DE_ACM_JD6$gene <- rownames(DE_ACM_JD6)
+write.csv(DE_ACM_JD6, here::here(output_dir_data, "DE_ACM_JD6_all_genes.csv"), quote = FALSE, row.names = FALSE)
+
+DE_VCM_JDR <- FindMarkers(subset(VCM, Cell_line == "JDR"), ident.1 = "DMD", ident.2 = "CTRL", test.use = "MAST", assay = "RNA", min.pct = 0.05, logfc.threshold = 0)
+DE_VCM_JDR$gene <- rownames(DE_VCM_JDR)
+write.csv(DE_VCM_JDR, here::here(output_dir_data, "DE_VCM_JDR_all_genes.csv"), quote = FALSE, row.names = FALSE)
+
+DE_VCM_JD6 <- FindMarkers(subset(VCM, Cell_line == "JD6"), ident.1 = "DMD", ident.2 = "CTRL", test.use = "MAST", assay = "RNA", min.pct = 0.05, logfc.threshold = 0)
+DE_VCM_JD6$gene <- rownames(DE_VCM_JD6)
+write.csv(DE_VCM_JD6, here::here(output_dir_data, "DE_VCM_JD6_all_genes.csv"), quote = FALSE, row.names = FALSE)
+```
+
+```{r read DE atrial ventricular}
+DE_ACM_JDR <- read.csv(here::here(output_dir_data, "DE_ACM_JDR_all_genes.csv"))
+DE_ACM_JD6 <- read.csv(here::here(output_dir_data, "DE_ACM_JD6_all_genes.csv"))
+DE_VCM_JDR <- read.csv(here::here(output_dir_data, "DE_VCM_JDR_all_genes.csv"))
+DE_VCM_JD6 <- read.csv(here::here(output_dir_data, "DE_VCM_JD6_all_genes.csv"))
+```
+
+## Volcano plots
+
+Adjusted P < 0.01 and absolute log2FC > 0.5 are used for colouring, matching the manuscript-style volcano plots.
+
+```{r volcano function}
+make_volcano <- function(de, plot_title) {
+  keyvals <- rep("grey", nrow(de))
+  names(keyvals) <- rep("Not significant", nrow(de))
+
+  keyvals[de$avg_log2FC > 0.5 & de$p_val_adj < 0.01] <- "#A63A2A"
+  names(keyvals)[keyvals == "#A63A2A"] <- "Increased"
+
+  keyvals[de$avg_log2FC < -0.5 & de$p_val_adj < 0.01] <- "#004C8C"
+  names(keyvals)[keyvals == "#004C8C"] <- "Decreased"
+
+  EnhancedVolcano(de, lab = de$gene, x = "avg_log2FC", y = "p_val_adj", labSize = 0,
+                  titleLabSize = 18, subtitleLabSize = 14, axisLabSize = 13, captionLabSize = 0,
+                  pointSize = 1.2, FCcutoff = 0.5, pCutoff = 0.01, colCustom = keyvals,
+                  colAlpha = 1, drawConnectors = FALSE, boxedLabels = FALSE,
+                  subtitle = NULL, title = plot_title) +
+    theme(legend.position = "none")
+}
+```
+
+```{r ACM VCM volcano plots, fig.width=10, fig.height=10, dpi=300}
+volcano_ACM_L1 <- make_volcano(DE_ACM_JDR, "Atrial cardiomyocytes\nLine 1")
+volcano_ACM_L2 <- make_volcano(DE_ACM_JD6, "Atrial cardiomyocytes\nLine 2")
+volcano_VCM_L1 <- make_volcano(DE_VCM_JDR, "Ventricular cardiomyocytes\nLine 1")
+volcano_VCM_L2 <- make_volcano(DE_VCM_JD6, "Ventricular cardiomyocytes\nLine 2")
+
+(volcano_ACM_L1 | volcano_ACM_L2) / (volcano_VCM_L1 | volcano_VCM_L2)
+```
+
+## Rank genes and run subtype GSEA
+
+```{r rank ACM VCM}
+rank_ACM_JDR <- DE_ACM_JDR$avg_log2FC
+names(rank_ACM_JDR) <- DE_ACM_JDR$gene
+rank_ACM_JDR <- sort(rank_ACM_JDR[!is.na(rank_ACM_JDR)], decreasing = TRUE)
+
+rank_ACM_JD6 <- DE_ACM_JD6$avg_log2FC
+names(rank_ACM_JD6) <- DE_ACM_JD6$gene
+rank_ACM_JD6 <- sort(rank_ACM_JD6[!is.na(rank_ACM_JD6)], decreasing = TRUE)
+
+rank_VCM_JDR <- DE_VCM_JDR$avg_log2FC
+names(rank_VCM_JDR) <- DE_VCM_JDR$gene
+rank_VCM_JDR <- sort(rank_VCM_JDR[!is.na(rank_VCM_JDR)], decreasing = TRUE)
+
+rank_VCM_JD6 <- DE_VCM_JD6$avg_log2FC
+names(rank_VCM_JD6) <- DE_VCM_JD6$gene
+rank_VCM_JD6 <- sort(rank_VCM_JD6[!is.na(rank_VCM_JD6)], decreasing = TRUE)
+```
+
+```{r targeted GSEA ACM VCM}
+GSEA_target_ACM_JDR <- GSEA(rank_ACM_JDR, TERM2GENE = TERM2GENE, TERM2NAME = TERM2NAME, minGSSize = 10, maxGSSize = 1500, pvalueCutoff = 1, verbose = FALSE)
+GSEA_target_ACM_JD6 <- GSEA(rank_ACM_JD6, TERM2GENE = TERM2GENE, TERM2NAME = TERM2NAME, minGSSize = 10, maxGSSize = 1500, pvalueCutoff = 1, verbose = FALSE)
+GSEA_target_VCM_JDR <- GSEA(rank_VCM_JDR, TERM2GENE = TERM2GENE, TERM2NAME = TERM2NAME, minGSSize = 10, maxGSSize = 1500, pvalueCutoff = 1, verbose = FALSE)
+GSEA_target_VCM_JD6 <- GSEA(rank_VCM_JD6, TERM2GENE = TERM2GENE, TERM2NAME = TERM2NAME, minGSSize = 10, maxGSSize = 1500, pvalueCutoff = 1, verbose = FALSE)
+```
+
+```{r unbiased GSEA ACM VCM}
+map_ACM_JDR <- bitr(names(rank_ACM_JDR), fromType = "SYMBOL", toType = "ENTREZID", OrgDb = org.Hs.eg.db) %>%
+  mutate(avg_log2FC = rank_ACM_JDR[SYMBOL]) %>% group_by(ENTREZID) %>%
+  slice_max(abs(avg_log2FC), n = 1, with_ties = FALSE) %>% ungroup()
+rank_ACM_JDR_entrez <- map_ACM_JDR$avg_log2FC
+names(rank_ACM_JDR_entrez) <- map_ACM_JDR$ENTREZID
+rank_ACM_JDR_entrez <- sort(rank_ACM_JDR_entrez, decreasing = TRUE)
+
+map_ACM_JD6 <- bitr(names(rank_ACM_JD6), fromType = "SYMBOL", toType = "ENTREZID", OrgDb = org.Hs.eg.db) %>%
+  mutate(avg_log2FC = rank_ACM_JD6[SYMBOL]) %>% group_by(ENTREZID) %>%
+  slice_max(abs(avg_log2FC), n = 1, with_ties = FALSE) %>% ungroup()
+rank_ACM_JD6_entrez <- map_ACM_JD6$avg_log2FC
+names(rank_ACM_JD6_entrez) <- map_ACM_JD6$ENTREZID
+rank_ACM_JD6_entrez <- sort(rank_ACM_JD6_entrez, decreasing = TRUE)
+
+map_VCM_JDR <- bitr(names(rank_VCM_JDR), fromType = "SYMBOL", toType = "ENTREZID", OrgDb = org.Hs.eg.db) %>%
+  mutate(avg_log2FC = rank_VCM_JDR[SYMBOL]) %>% group_by(ENTREZID) %>%
+  slice_max(abs(avg_log2FC), n = 1, with_ties = FALSE) %>% ungroup()
+rank_VCM_JDR_entrez <- map_VCM_JDR$avg_log2FC
+names(rank_VCM_JDR_entrez) <- map_VCM_JDR$ENTREZID
+rank_VCM_JDR_entrez <- sort(rank_VCM_JDR_entrez, decreasing = TRUE)
+
+map_VCM_JD6 <- bitr(names(rank_VCM_JD6), fromType = "SYMBOL", toType = "ENTREZID", OrgDb = org.Hs.eg.db) %>%
+  mutate(avg_log2FC = rank_VCM_JD6[SYMBOL]) %>% group_by(ENTREZID) %>%
+  slice_max(abs(avg_log2FC), n = 1, with_ties = FALSE) %>% ungroup()
+rank_VCM_JD6_entrez <- map_VCM_JD6$avg_log2FC
+names(rank_VCM_JD6_entrez) <- map_VCM_JD6$ENTREZID
+rank_VCM_JD6_entrez <- sort(rank_VCM_JD6_entrez, decreasing = TRUE)
+
+GSEA_ACM_JDR <- gseGO(rank_ACM_JDR_entrez, OrgDb = org.Hs.eg.db, keyType = "ENTREZID", ont = "BP", minGSSize = 10, maxGSSize = 800, pvalueCutoff = 1, verbose = FALSE)
+GSEA_ACM_JD6 <- gseGO(rank_ACM_JD6_entrez, OrgDb = org.Hs.eg.db, keyType = "ENTREZID", ont = "BP", minGSSize = 10, maxGSSize = 800, pvalueCutoff = 1, verbose = FALSE)
+GSEA_VCM_JDR <- gseGO(rank_VCM_JDR_entrez, OrgDb = org.Hs.eg.db, keyType = "ENTREZID", ont = "BP", minGSSize = 10, maxGSSize = 800, pvalueCutoff = 1, verbose = FALSE)
+GSEA_VCM_JD6 <- gseGO(rank_VCM_JD6_entrez, OrgDb = org.Hs.eg.db, keyType = "ENTREZID", ont = "BP", minGSSize = 10, maxGSSize = 800, pvalueCutoff = 1, verbose = FALSE)
+
+write.csv(as.data.frame(GSEA_ACM_JDR), here::here(output_dir_data, "GSEA_GO_BP_ACM_JDR.csv"), row.names = FALSE)
+write.csv(as.data.frame(GSEA_ACM_JD6), here::here(output_dir_data, "GSEA_GO_BP_ACM_JD6.csv"), row.names = FALSE)
+write.csv(as.data.frame(GSEA_VCM_JDR), here::here(output_dir_data, "GSEA_GO_BP_VCM_JDR.csv"), row.names = FALSE)
+write.csv(as.data.frame(GSEA_VCM_JD6), here::here(output_dir_data, "GSEA_GO_BP_VCM_JD6.csv"), row.names = FALSE)
+```
+
+## Shared GO-BP pathways in atrial cardiomyocytes
+
+```{r shared GSEA ACM}
+shared_ACM <- inner_join(
+  as.data.frame(GSEA_ACM_JDR) %>% dplyr::select(ID, Description, NES, pvalue, p.adjust) %>% dplyr::rename(NES_L1 = NES, p_L1 = pvalue, FDR_L1 = p.adjust),
+  as.data.frame(GSEA_ACM_JD6) %>% dplyr::select(ID, Description, NES, pvalue, p.adjust) %>% dplyr::rename(NES_L2 = NES, p_L2 = pvalue, FDR_L2 = p.adjust),
+  by = c("ID", "Description")
+) %>%
+  filter(sign(NES_L1) == sign(NES_L2), FDR_L1 < 0.05, FDR_L2 < 0.05) %>%
+  mutate(worst_FDR = pmax(FDR_L1, FDR_L2), mean_abs_NES = (abs(NES_L1) + abs(NES_L2))/2) %>%
+  arrange(worst_FDR, desc(mean_abs_NES))
+
+GSEA_ACM_shared_for_simplify <- GSEA_ACM_JDR
+GSEA_ACM_shared_for_simplify@result <- GSEA_ACM_JDR@result %>%
+  filter(ID %in% shared_ACM$ID) %>%
+  dplyr::select(-p.adjust) %>%
+  left_join(shared_ACM %>% dplyr::select(ID, worst_FDR), by = "ID") %>%
+  dplyr::rename(p.adjust = worst_FDR)
+
+GSEA_ACM_shared_simple <- clusterProfiler::simplify(GSEA_ACM_shared_for_simplify, cutoff = 0.6, by = "p.adjust", select_fun = min, measure = "Wang")
+
+shared_ACM_simple <- shared_ACM %>%
+  filter(ID %in% GSEA_ACM_shared_simple@result$ID) %>%
+  arrange(worst_FDR, desc(mean_abs_NES))
+
+shared_ACM_top <- shared_ACM_simple %>% slice_head(n = 15)
+
+write.csv(shared_ACM, here::here(output_dir_data, "GSEA_GO_BP_ACM_shared_full.csv"), row.names = FALSE)
+write.csv(shared_ACM_simple, here::here(output_dir_data, "GSEA_GO_BP_ACM_shared_simplified.csv"), row.names = FALSE)
+```
+
+```{r shared GSEA ACM plot, fig.width=8, fig.height=4, dpi=300}
+shared_ACM_plot <- bind_rows(
+  shared_ACM_top %>% transmute(Description, Line = "Line 1", NES = NES_L1, pvalue = p_L1),
+  shared_ACM_top %>% transmute(Description, Line = "Line 2", NES = NES_L2, pvalue = p_L2)
+) %>%
+  mutate(Line = factor(Line, levels = c("Line 1", "Line 2")),
+         Description = factor(Description, levels = rev(shared_ACM_top$Description)),
+         signed_logp = -log10(pmax(pvalue, 1e-50)) * sign(NES))
+
+ggplot(shared_ACM_plot, aes(Description, NES, fill = signed_logp)) +
+  geom_col(width = 0.72) +
+  geom_hline(yintercept = 0, linewidth = 0.4) +
+  coord_flip() +
+  facet_wrap(~Line, ncol = 2) +
+  scale_fill_gradient2(low = "#2166AC", mid = "grey80", high = "#B2182B", midpoint = 0,
+                       name = expression(-log[10](p) %*% sign(NES))) +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 45)) +
+  labs(x = NULL, y = "Normalized enrichment score (NES)", title = "Shared GO-BP pathways in atrial cardiomyocytes") +
+  theme_classic() +
+  theme(strip.text = element_text(face = "bold"), legend.position = "bottom")
+```
+
+## Shared GO-BP pathways in ventricular cardiomyocytes
+
+```{r shared GSEA VCM}
+shared_VCM <- inner_join(
+  as.data.frame(GSEA_VCM_JDR) %>% dplyr::select(ID, Description, NES, pvalue, p.adjust) %>% dplyr::rename(NES_L1 = NES, p_L1 = pvalue, FDR_L1 = p.adjust),
+  as.data.frame(GSEA_VCM_JD6) %>% dplyr::select(ID, Description, NES, pvalue, p.adjust) %>% dplyr::rename(NES_L2 = NES, p_L2 = pvalue, FDR_L2 = p.adjust),
+  by = c("ID", "Description")
+) %>%
+  filter(sign(NES_L1) == sign(NES_L2), FDR_L1 < 0.05, FDR_L2 < 0.05) %>%
+  mutate(worst_FDR = pmax(FDR_L1, FDR_L2), mean_abs_NES = (abs(NES_L1) + abs(NES_L2))/2) %>%
+  arrange(worst_FDR, desc(mean_abs_NES))
+
+GSEA_VCM_shared_for_simplify <- GSEA_VCM_JDR
+GSEA_VCM_shared_for_simplify@result <- GSEA_VCM_JDR@result %>%
+  filter(ID %in% shared_VCM$ID) %>%
+  dplyr::select(-p.adjust) %>%
+  left_join(shared_VCM %>% dplyr::select(ID, worst_FDR), by = "ID") %>%
+  dplyr::rename(p.adjust = worst_FDR)
+
+GSEA_VCM_shared_simple <- clusterProfiler::simplify(GSEA_VCM_shared_for_simplify, cutoff = 0.6, by = "p.adjust", select_fun = min, measure = "Wang")
+
+shared_VCM_simple <- shared_VCM %>%
+  filter(ID %in% GSEA_VCM_shared_simple@result$ID) %>%
+  arrange(worst_FDR, desc(mean_abs_NES))
+
+shared_VCM_top <- shared_VCM_simple %>% slice_head(n = 20)
+
+write.csv(shared_VCM, here::here(output_dir_data, "GSEA_GO_BP_VCM_shared_full.csv"), row.names = FALSE)
+write.csv(shared_VCM_simple, here::here(output_dir_data, "GSEA_GO_BP_VCM_shared_simplified.csv"), row.names = FALSE)
+```
+
+```{r shared GSEA VCM plot, fig.width=8, fig.height=5, dpi=300}
+shared_VCM_plot <- bind_rows(
+  shared_VCM_top %>% transmute(Description, Line = "Line 1", NES = NES_L1, pvalue = p_L1),
+  shared_VCM_top %>% transmute(Description, Line = "Line 2", NES = NES_L2, pvalue = p_L2)
+) %>%
+  mutate(Line = factor(Line, levels = c("Line 1", "Line 2")),
+         Description = factor(Description, levels = rev(shared_VCM_top$Description)),
+         signed_logp = -log10(pmax(pvalue, 1e-50)) * sign(NES))
+
+ggplot(shared_VCM_plot, aes(Description, NES, fill = signed_logp)) +
+  geom_col(width = 0.72) +
+  geom_hline(yintercept = 0, linewidth = 0.4) +
+  coord_flip() +
+  facet_wrap(~Line, ncol = 2) +
+  scale_fill_gradient2(low = "#2166AC", mid = "grey80", high = "#B2182B", midpoint = 0,
+                       name = expression(-log[10](p) %*% sign(NES))) +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 45)) +
+  labs(x = NULL, y = "Normalized enrichment score (NES)", title = "Shared GO-BP pathways in ventricular cardiomyocytes") +
+  theme_classic() +
+  theme(strip.text = element_text(face = "bold"), legend.position = "bottom")
+```
+
+## Selected pathways in atrial and ventricular cardiomyocytes
+
+```{r targeted GSEA ACM VCM table}
+targeted_subtype_bar <- bind_rows(
+  as.data.frame(GSEA_target_ACM_JDR) %>% mutate(Subtype = "Atrial cardiomyocytes", Line = "Line 1"),
+  as.data.frame(GSEA_target_ACM_JD6) %>% mutate(Subtype = "Atrial cardiomyocytes", Line = "Line 2"),
+  as.data.frame(GSEA_target_VCM_JDR) %>% mutate(Subtype = "Ventricular cardiomyocytes", Line = "Line 1"),
+  as.data.frame(GSEA_target_VCM_JD6) %>% mutate(Subtype = "Ventricular cardiomyocytes", Line = "Line 2")
+) %>%
+  mutate(Subtype = factor(Subtype, levels = c("Atrial cardiomyocytes", "Ventricular cardiomyocytes")),
+         Line = factor(Line, levels = c("Line 1", "Line 2")),
+         Description = factor(Description, levels = rev(names(pathway_sets))),
+         Significant = p.adjust < 0.05,
+         signed_logp = -log10(pmax(pvalue, 1e-50)) * sign(NES))
+
+write.csv(targeted_subtype_bar, here::here(output_dir_data, "GSEA_targeted_ACM_VCM.csv"), row.names = FALSE)
+```
+
+```{r targeted GSEA ACM VCM plot, fig.width=8, fig.height=5.4, dpi=300}
+star_offset_subtype <- 0.06 * max(abs(targeted_subtype_bar$NES))
+
+ggplot(targeted_subtype_bar, aes(Description, NES, fill = signed_logp)) +
+  geom_col(width = 0.72) +
+  geom_hline(yintercept = 0, linewidth = 0.4) +
+  geom_text(data = targeted_subtype_bar %>% filter(Significant),
+            aes(y = NES + ifelse(NES > 0, star_offset_subtype, -star_offset_subtype), label = "*"), size = 4.5) +
+  coord_flip(clip = "off") +
+  facet_grid(Subtype ~ Line) +
+  scale_fill_gradient2(low = "#2166AC", mid = "grey80", high = "#B2182B", midpoint = 0,
+                       name = expression(-log[10](p) %*% sign(NES))) +
+  scale_y_continuous(expand = expansion(mult = c(0.10, 0.10))) +
+  labs(x = NULL, y = "Normalized enrichment score (NES)", title = "Selected pathways in atrial and ventricular cardiomyocytes") +
+  theme_classic() +
+  theme(strip.text = element_text(face = "bold"), legend.position = "bottom")
+```
+
+# 4. Module scores
+
+Use the same seven predefined GO gene sets. The violin plots show the single-cell distributions and Wilcoxon comparisons within each isogenic pair.
+
+```{r module scores}
+pathway_sets_CM <- lapply(pathway_sets, function(x) intersect(x, rownames(CM)))
+sapply(pathway_sets_CM, length)
+
+for (i in seq_along(pathway_sets_CM)) {
+  score_name <- names(pathway_sets_CM)[i]
+  CM <- AddModuleScore(CM, features = list(pathway_sets_CM[[i]]), assay = "RNA", name = paste0("score_", i, "_"), seed = 123)
+  colnames(CM@meta.data)[ncol(CM@meta.data)] <- score_name
+}
+
+module_score_long <- CM@meta.data %>%
+  dplyr::select(Sample2, Sample, Condition, Cell_line, cell_type, all_of(names(pathway_sets_CM))) %>%
+  pivot_longer(cols = all_of(names(pathway_sets_CM)), names_to = "Pathway", values_to = "Score")
+
+module_score_summary <- module_score_long %>%
+  group_by(Sample2, Sample, Condition, Cell_line, Pathway) %>%
+  summarise(Median_score = median(Score), Mean_score = mean(Score), .groups = "drop")
+
+write.csv(module_score_summary, here::here(output_dir_data, "module_score_summary.csv"), row.names = FALSE)
+```
+
+The pathways are arranged in two rows. Extra vertical expansion is added so the significance brackets are not clipped. A maximum of three asterisks is used.
+
+```{r module score violin statistics, fig.width=9.5, fig.height=5, dpi=300}
+module_score_violin <- module_score_long %>%
+  mutate(Sample2 = factor(Sample2, levels = c("CTRL1", "DMD1", "CTRL2", "DMD2")),
+         Pathway = factor(Pathway, levels = names(pathway_sets)))
+
+comparisons <- list(c("CTRL1", "DMD1"), c("CTRL2", "DMD2"))
+
+ggplot(module_score_violin, aes(Sample2, Score, fill = Condition)) +
+  geom_violin(scale = "width", trim = FALSE, width = 0.9) +
+  geom_boxplot(width = 0.12, outlier.shape = NA, fill = "white") +
+  stat_compare_means(comparisons = comparisons, method = "wilcox.test", label = "p.signif",
+                     symnum.args = list(cutpoints = c(0, 0.001, 0.01, 0.05, Inf), symbols = c("***", "**", "*", "ns")),
+                     hide.ns = FALSE, tip.length = 0.01, step.increase = 0.08) +
+  facet_wrap(~Pathway, scales = "free_y", nrow = 2) +
+  scale_x_discrete(labels = c("CTRL1" = "CTRL\nLine 1", "DMD1" = "DMD\nLine 1",
+                              "CTRL2" = "CTRL\nLine 2", "DMD2" = "DMD\nLine 2")) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.25))) +
+  coord_cartesian(clip = "off") +
+  labs(x = NULL, y = "Module score", fill = NULL, title = "Selected pathway module scores in cardiomyocytes") +
+  theme_classic() +
+  theme(strip.text = element_text(face = "bold"), axis.text.x = element_text(angle = 0),
+        legend.position = "bottom", plot.margin = margin(10, 10, 20, 10))
+```
+
+# 5. CellChat
+
+CellChat is exploratory. CTRL1/CTRL2 and DMD1/DMD2 are pooled within condition, so this is not a replicate-aware differential communication analysis.
+
+All six annotated populations are included. `population.size = FALSE` avoids explicitly scaling communication probability by recovered cell abundance. The strong differences in fibroblast and endothelial recovery remain an important limitation.
+
+## Run CellChat
+
+```{r CellChat input}
+cellchat_input_all <- iPS_integrated
+DefaultAssay(cellchat_input_all) <- "RNA"
+cellchat_input_all <- NormalizeData(cellchat_input_all)
+
+table(cellchat_input_all$cell_type, cellchat_input_all$Sample2)
+```
+
+```{r CellChat CTRL DMD, eval=TRUE}
+CellChatDB.use <- CellChatDB.human
+
+cellchat_CTRL_all_data <- subset(cellchat_input_all, Condition == "CTRL")
+cellchat_CTRL_all_data$cell_type <- droplevels(cellchat_CTRL_all_data$cell_type)
+Idents(cellchat_CTRL_all_data) <- "cell_type"
+
+cellchat_CTRL_all <- createCellChat(object = cellchat_CTRL_all_data, group.by = "cell_type", assay = "RNA")
+cellchat_CTRL_all@idents <- droplevels(cellchat_CTRL_all@idents)
+cellchat_CTRL_all@DB <- CellChatDB.use
+cellchat_CTRL_all <- subsetData(cellchat_CTRL_all)
+cellchat_CTRL_all <- identifyOverExpressedGenes(cellchat_CTRL_all)
+cellchat_CTRL_all <- identifyOverExpressedInteractions(cellchat_CTRL_all)
+cellchat_CTRL_all <- computeCommunProb(cellchat_CTRL_all, type = "triMean", population.size = FALSE)
+cellchat_CTRL_all <- filterCommunication(cellchat_CTRL_all, min.cells = 5)
+cellchat_CTRL_all <- computeCommunProbPathway(cellchat_CTRL_all)
+cellchat_CTRL_all <- aggregateNet(cellchat_CTRL_all)
+
+cellchat_DMD_all_data <- subset(cellchat_input_all, Condition == "DMD")
+cellchat_DMD_all_data$cell_type <- droplevels(cellchat_DMD_all_data$cell_type)
+Idents(cellchat_DMD_all_data) <- "cell_type"
+
+cellchat_DMD_all <- createCellChat(object = cellchat_DMD_all_data, group.by = "cell_type", assay = "RNA")
+cellchat_DMD_all@idents <- droplevels(cellchat_DMD_all@idents)
+cellchat_DMD_all@DB <- CellChatDB.use
+cellchat_DMD_all <- subsetData(cellchat_DMD_all)
+cellchat_DMD_all <- identifyOverExpressedGenes(cellchat_DMD_all)
+cellchat_DMD_all <- identifyOverExpressedInteractions(cellchat_DMD_all)
+cellchat_DMD_all <- computeCommunProb(cellchat_DMD_all, type = "triMean", population.size = FALSE)
+cellchat_DMD_all <- filterCommunication(cellchat_DMD_all, min.cells = 5)
+cellchat_DMD_all <- computeCommunProbPathway(cellchat_DMD_all)
+cellchat_DMD_all <- aggregateNet(cellchat_DMD_all)
+
+#saveRDS(cellchat_CTRL_all, here::here(output_dir_data, "CellChat_CTRL_all_populations.rds"))
+#saveRDS(cellchat_DMD_all, here::here(output_dir_data, "CellChat_DMD_all_populations.rds"))
+```
+
+```{r load CellChat objects}
+CellChat_CTRL_all_interactions <- subsetCommunication(cellchat_CTRL_all, slot.name = "net")
+CellChat_DMD_all_interactions <- subsetCommunication(cellchat_DMD_all, slot.name = "net")
+
+write.csv(CellChat_CTRL_all_interactions, here::here(output_dir_data, "CellChat_CTRL_all_populations_interactions.csv"), row.names = FALSE)
+write.csv(CellChat_DMD_all_interactions, here::here(output_dir_data, "CellChat_DMD_all_populations_interactions.csv"), row.names = FALSE)
+
+cellchat_merged_all <- mergeCellChat(list(CTRL = cellchat_CTRL_all, DMD = cellchat_DMD_all), add.names = c("CTRL", "DMD"))
+#saveRDS(cellchat_merged_all, here::here(output_dir_data, "CellChat_CTRL_DMD_all_populations_merged.rds"))
+```
+
+## Overall number and strength of inferred interactions
+
+```{r CellChat overall comparison, fig.width=6, fig.height=3, dpi=300}
+p_count <- compareInteractions(cellchat_merged_all, group = c(1, 2), show.legend = FALSE, measure = "count") +
+  ggtitle("Number of inferred interactions")
+
+p_weight <- compareInteractions(cellchat_merged_all, group = c(1, 2), show.legend = FALSE, measure = "weight") +
+  ggtitle("Interaction strength")
+
+p_count + p_weight
+```
+
+## Incoming and outgoing signaling roles
+
+The same x- and y-axis limits are used for CTRL and DMD.
+
+```{r CellChat signaling roles, fig.width=9, fig.height=4, dpi=300}
+cellchat_CTRL_all <- netAnalysis_computeCentrality(cellchat_CTRL_all, slot.name = "netP")
+cellchat_DMD_all <- netAnalysis_computeCentrality(cellchat_DMD_all, slot.name = "netP")
+
+p_role_CTRL <- netAnalysis_signalingRole_scatter(cellchat_CTRL_all, title = "CTRL")
+p_role_DMD <- netAnalysis_signalingRole_scatter(cellchat_DMD_all, title = "DMD")
+
+build_CTRL <- ggplot_build(p_role_CTRL)
+build_DMD <- ggplot_build(p_role_DMD)
+
+xmax <- max(build_CTRL$layout$panel_params[[1]]$x.range[2], build_DMD$layout$panel_params[[1]]$x.range[2])
+ymax <- max(build_CTRL$layout$panel_params[[1]]$y.range[2], build_DMD$layout$panel_params[[1]]$y.range[2])
+
+p_role_CTRL <- p_role_CTRL + coord_cartesian(xlim = c(0, xmax), ylim = c(0, ymax))
+p_role_DMD <- p_role_DMD + coord_cartesian(xlim = c(0, xmax), ylim = c(0, ymax))
+
+p_role_CTRL + p_role_DMD
+```
+
+## Global communication networks
+
+The same edge scale is used within each measure. Node size is kept constant because cell abundance is shown elsewhere.
+
+```{r CellChat circle plots, fig.width=9, fig.height=7, dpi=300}
+max_count <- max(cellchat_CTRL_all@net$count, cellchat_DMD_all@net$count)
+max_weight <- max(cellchat_CTRL_all@net$weight, cellchat_DMD_all@net$weight)
+
+vertex_CTRL <- rep(1, nrow(cellchat_CTRL_all@net$count))
+vertex_DMD <- rep(1, nrow(cellchat_DMD_all@net$count))
+
+par(mfrow = c(2, 2), mar = c(0, 0, 2, 0), xpd = TRUE)
+
+netVisual_circle(cellchat_CTRL_all@net$count, vertex.weight = vertex_CTRL, weight.scale = TRUE,
+                 edge.weight.max = max_count, label.edge = FALSE, title.name = "CTRL - number of interactions")
+
+netVisual_circle(cellchat_DMD_all@net$count, vertex.weight = vertex_DMD, weight.scale = TRUE,
+                 edge.weight.max = max_count, label.edge = FALSE, title.name = "DMD - number of interactions")
+
+netVisual_circle(cellchat_CTRL_all@net$weight, vertex.weight = vertex_CTRL, weight.scale = TRUE,
+                 edge.weight.max = max_weight, label.edge = FALSE, title.name = "CTRL - interaction strength")
+
+netVisual_circle(cellchat_DMD_all@net$weight, vertex.weight = vertex_DMD, weight.scale = TRUE,
+                 edge.weight.max = max_weight, label.edge = FALSE, title.name = "DMD - interaction strength")
+
+par(mfrow = c(1, 1))
+```
+
+## Differential source-target communication
+
+```{r CellChat differential heatmaps, fig.width=7, fig.height=4, dpi=300}
+h_count <- netVisual_heatmap(cellchat_merged_all, comparison = c(1, 2), measure = "count")
+h_weight <- netVisual_heatmap(cellchat_merged_all, comparison = c(1, 2), measure = "weight")
+
+h_count + h_weight
+```
+
+## Differential ligand-receptor interactions
+
+Use CellChat's DEG-mapping workflow to identify interactions supported by condition-associated ligand/receptor expression.
+
+The DE P-value threshold is deliberately permissive (`thresh.p = 1`) so that selection is driven mainly by expression fraction and effect size rather than by cell-level P values. A log2FC cutoff of 0.1 is subsequently required for both ligand and receptor.
+
+```{r CellChat DEG mapping}
+pos.dataset <- "DMD"
+features.name <- "DMD.merged"
+
+cellchat_merged_all <- identifyOverExpressedGenes(cellchat_merged_all, group.dataset = "datasets", pos.dataset = pos.dataset,
+  features.name = features.name, only.pos = FALSE, thresh.pc = 0.1, thresh.fc = 0.05, thresh.p = 1, group.DE.combined = FALSE)
+
+net_DEG <- netMappingDEG(cellchat_merged_all, features.name = features.name, variable.all = TRUE)
+
+fc_cut <- 0.1
+
+net_DMD_up <- subsetCommunication(cellchat_merged_all, net = net_DEG, datasets = "DMD",
+  ligand.logFC = fc_cut, receptor.logFC = fc_cut)
+
+net_CTRL_up <- subsetCommunication(cellchat_merged_all, net = net_DEG, datasets = "CTRL",
+  ligand.logFC = -fc_cut, receptor.logFC = -fc_cut)
+
+write.csv(net_DMD_up, here::here(output_dir_data, "CellChat_DEG_mapped_higher_DMD.csv"), row.names = FALSE)
+write.csv(net_CTRL_up, here::here(output_dir_data, "CellChat_DEG_mapped_higher_CTRL.csv"), row.names = FALSE)
+
+nrow(net_DMD_up)
+nrow(net_CTRL_up)
+```
+
+For the final figure, only interactions inferred in both CTRL and DMD are considered. DMD-associated interactions must satisfy both:
+
+1. ligand/receptor expression supports DMD;
+2. CellChat communication probability is higher in DMD.
+
+The reverse criteria are used for CTRL. The final ten interactions in each direction are ranked by the actual difference in communication probability.
+
+```{r CellChat concordant LR table}
+LR_CTRL_prob <- CellChat_CTRL_all_interactions %>%
+  dplyr::select(source, target, interaction_name, pathway_name, prob, pval) %>%
+  dplyr::rename(prob_CTRL = prob, pval_CTRL = pval)
+
+LR_DMD_prob <- CellChat_DMD_all_interactions %>%
+  dplyr::select(source, target, interaction_name, pathway_name, prob, pval) %>%
+  dplyr::rename(prob_DMD = prob, pval_DMD = pval)
+
+LR_shared <- inner_join(LR_CTRL_prob, LR_DMD_prob,
+  by = c("source", "target", "interaction_name", "pathway_name")) %>%
+  mutate(delta_prob = prob_DMD - prob_CTRL)
+
+DMD_keys <- net_DMD_up %>% distinct(source, target, interaction_name, pathway_name)
+CTRL_keys <- net_CTRL_up %>% distinct(source, target, interaction_name, pathway_name)
+
+top_DMD <- LR_shared %>%
+  semi_join(DMD_keys, by = c("source", "target", "interaction_name", "pathway_name")) %>%
+  filter(delta_prob > 0) %>%
+  arrange(desc(delta_prob)) %>%
+  slice_head(n = 10) %>%
+  mutate(Direction = "Higher communication in DMD")
+
+top_CTRL <- LR_shared %>%
+  semi_join(CTRL_keys, by = c("source", "target", "interaction_name", "pathway_name")) %>%
+  filter(delta_prob < 0) %>%
+  arrange(delta_prob) %>%
+  slice_head(n = 10) %>%
+  mutate(Direction = "Higher communication in CTRL")
+
+selected_LR <- bind_rows(top_DMD, top_CTRL) %>%
+  mutate(Interaction = paste0(source, " \u2192 ", target, " | ", interaction_name),
+         Direction = factor(Direction, levels = c("Higher communication in DMD", "Higher communication in CTRL")))
+
+write.csv(selected_LR, here::here(output_dir_data, "CellChat_top_concordant_differential_LR.csv"), row.names = FALSE)
+
+LR_plot <- bind_rows(
+  selected_LR %>% transmute(Interaction, Direction, Dataset = "CTRL", prob = prob_CTRL, pval = pval_CTRL, delta_prob),
+  selected_LR %>% transmute(Interaction, Direction, Dataset = "DMD", prob = prob_DMD, pval = pval_DMD, delta_prob)
+) %>%
+  mutate(Dataset = factor(Dataset, levels = c("CTRL", "DMD")),
+         p_group = case_when(pval < 0.01 ~ "p < 0.01",
+                             pval < 0.05 ~ "0.01 \u2264 p < 0.05",
+                             TRUE ~ "p \u2265 0.05"))
+
+interaction_order <- c(
+  rev(top_DMD %>% mutate(Interaction = paste0(source, " \u2192 ", target, " | ", interaction_name)) %>% pull(Interaction)),
+  rev(top_CTRL %>% mutate(Interaction = paste0(source, " \u2192 ", target, " | ", interaction_name)) %>% pull(Interaction))
+)
+
+LR_plot$Interaction <- factor(LR_plot$Interaction, levels = unique(interaction_order))
+```
+
+```{r CellChat concordant differential LR plot, fig.width=7, fig.height=5, dpi=300}
+ggplot(LR_plot, aes(Dataset, Interaction)) +
+  geom_point(aes(size = p_group, color = prob)) +
+  facet_grid(Direction ~ ., scales = "free_y", space = "free_y") +
+  scale_size_manual(values = c("p < 0.01" = 4, "0.01 \u2264 p < 0.05" = 2.5, "p \u2265 0.05" = 1.5)) +
+  scale_color_gradientn(colors = c("#2166AC", "#67A9CF", "#FEE08B", "#D73027")) +
+  labs(x = NULL, y = NULL, color = "Communication\nprobability", size = NULL,
+       title = "Differential CellChat ligand-receptor interactions") +
+  theme_classic() +
+  theme(strip.text.y = element_text(face = "bold"), axis.text.x = element_text(face = "bold"),
+        axis.text.y = element_text(size = 7.5), legend.position = "right", plot.title = element_text(hjust = 0.5))
+```
+
+# 6. Export results
+
+```{r export combined results}
+write.xlsx(
+  list(
+    Shared_GSEA_CM = shared_CM_simple,
+    Targeted_GSEA_CM = targeted_CM_bar,
+    Shared_GSEA_ACM = shared_ACM_simple,
+    Shared_GSEA_VCM = shared_VCM_simple,
+    Targeted_GSEA_ACM_VCM = targeted_subtype_bar,
+    Module_scores = module_score_summary,
+    CellChat_DMD_mapped = net_DMD_up,
+    CellChat_CTRL_mapped = net_CTRL_up,
+    CellChat_top_LR = selected_LR
+  ),
+  here::here(output_dir_data, "Additional_revision_analysis_results.xlsx"),
+  overwrite = TRUE
+)
+```
